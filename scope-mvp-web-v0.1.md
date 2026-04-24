@@ -53,16 +53,30 @@ Las secciones §4-§7 son apoyo: bloqueantes, estimación, riesgos, definición 
 ### 1.4 Mapa y exploración
 - Mapa-mundi con nodos (ciudades, mazmorras, POIs).
 - Sub-mapas en grid al entrar en un nodo.
-- Al clickar en un nodo, se activa una tirada 1d20. Depende del valor se activa un evento [PASO MAS IMPORTANTE]
 - Top-down 2D con tiles cuadrados, cámara con zoom.
 - Movimiento por turnos con puntos de acción.
 - Niebla de guerra.
-- Viaje rápido entre nodos descubiertos con coste de tiempo de juego.
+- **Viaje rápido híbrido** (solo a nodos descubiertos):
+  - Viaje seguro entre ciudades aliadas / bioma tranquilo → sin tiradas, solo coste de tiempo.
+  - Viaje arriesgado por zona salvaje u hostil → tiradas condensadas con resumen al llegar.
 - Día/noche visualmente (efectos numéricos diferidos).
 - HUD siempre visible: HP, recursos, mini-stats.
 - Interacción con POI por tap directo.
 - 1 mapa de historia completo + generación procedural para modo Libre con semilla derivada de frase.
 - Biomas provisionales (5): llanura, bosque, desierto, glaciar, ruinas arcanas.
+
+### 1.4b Tirada de exploración (sistema raíz — ver biblia §4.15)
+- Tirada disparada por: pisar casilla, entrar a nodo, cruzar bioma, acampar, tramo de viaje rápido arriesgado.
+- 7 variables de entrada: bioma, hora, clima, nivel, reputación, flags, suerte.
+- 10 tipos de evento: combate, NPC, hallazgo, trampa, ambiental, POI descubierto, narrativo, emboscada, refugio, Nada.
+- Dado de exploración: **1d20** con mapeo por rangos sobre pesos de tabla (decisión cerrada, independiente del dado de combate).
+- Una tabla por bioma. Todas las demás variables modulan pesos, no cambian de tabla.
+- Tirada visible por completo (dado en log/HUD cada paso).
+- Toda entrada de tabla declara `evade_check` reactivo (mitigar / evitar el evento).
+- Trampas nunca matan: mínimo 1 HP garantizado.
+- Presentación: modal a pantalla completa para eventos de peso, banner superior para eventos ligeros.
+- Módulo `rules/exploration.ts` puro, determinista, consumiendo `rules/dice.ts`.
+- Historial de últimas 100 tiradas en memoria de sesión (solo Modo Privado persiste).
 
 ### 1.5 Combate
 - Por turnos puros, hasta 5 enemigos en pantalla.
@@ -156,7 +170,7 @@ Cada entrada aquí es un "no" firme para v1. Va a v1.1, v1.2 o se descarta segú
 - Navegadores Safari / no-Chromium / no-Firefox.
 - Party de varios personajes.
 - Múltiples personajes por partida.
-- Encuentros aleatorios durante viaje rápido.
+- Encuentros en tramos de viaje rápido **seguro** (solo el viaje arriesgado dispara tiradas).
 - Minimapa (solo mapa principal).
 - Efectos numéricos concretos de día/noche, clima y terreno (presentes visualmente, sin impacto mecánico en v1).
 - Reparación de equipo (el equipo queda inservible al 0 de durabilidad, pero el sistema de repararlo es v1.1).
@@ -200,12 +214,17 @@ Nueve hitos. Cada uno termina en un estado jugable concreto y testeable. No se a
 - **Entregable:** URL accesible con login que muestra "Hola {usuario}" tras autenticarse.
 
 ### Hito 1 — Motor de reglas núcleo
-- `rules/dice.ts` con implementación del sistema de dados elegido tras cerrar el bloqueante.
+- `rules/dice.ts` con los dos sistemas de dados (combate y exploración) como primitivas separadas.
 - `rules/character.ts` con creación, validación, cálculo de stats derivados.
 - `rules/progression.ts` con subida de habilidad por uso + por XP.
-- Tests unitarios para cada una.
+- `rules/exploration.ts` con dos funciones puras:
+  - `rollExplorationTick(worldState, character, trigger) → ExplorationEvent`: evaluador de pesos con las 7 variables, filtrado por `conditions`.
+  - `resolveEvadeCheck(event, character, dice) → EvadeResult`: aplica el `evade_check` de la entrada (fija/enfrentada, éxito/crítico/fracaso/pifia, coste, entrenamiento de habilidad, cascada si `fallback_check`).
+- Tests unitarios para cada módulo:
+  - `exploration.ts`: test de distribución estadística (1.000 tiradas de bioma conocido respetan pesos configurados).
+  - `resolveEvadeCheck`: test por cada uno de los 10 tipos del catálogo §4.15.3, cubriendo rama éxito/crítico/fracaso/pifia donde aplique.
 - Ningún render todavía.
-- **Entregable:** suite de tests verde. Creación de personaje por consola con JSON de entrada/salida.
+- **Entregable:** suite de tests verde. Creación de personaje por consola con JSON de entrada/salida. Tirada de exploración dispara eventos resolubles sobre un `worldState` mock.
 
 ### Hito 2 — Creación de personaje en UI
 - Flujo "Empezar de cero" / "Empezar con preset".
@@ -225,10 +244,17 @@ Nueve hitos. Cada uno termina en un estado jugable concreto y testeable. No se a
 ### Hito 4 — Mapa y exploración
 - `rules/world-gen.ts` con generación de mapa-mundi y sub-mapas en grid.
 - Mapa de historia hardcodeado (versión mínima, 1 ciudad + 2 mazmorras + zona exterior).
-- Generación procedural para modo Libre con frase-semilla hasheada.
-- Movimiento por puntos de acción, niebla de guerra, viaje rápido entre nodos descubiertos.
-- Combate se dispara al colisionar con enemigo en mapa.
-- **Entregable:** jugar una partida corta extremo a extremo. Crear → explorar → combatir → morir → epitafio.
+- Generación procedural para modo Libre con frase-semilla hasheada (misma semilla alimenta mapa y sucesión de tiradas de exploración).
+- Movimiento por puntos de acción, niebla de guerra.
+- **Integración de la tirada de exploración:**
+  - Disparadores activos: pisar casilla, entrar a nodo, cruzar bioma, acampar.
+  - Tablas iniciales para los 5 biomas provisionales en `data/exploration/*.json`.
+  - Dado de exploración visible en HUD con cada tirada.
+  - Presentación de eventos: modal para eventos de peso, banner para ligeros.
+  - Resolución de tirada reactiva de mitigación cuando corresponda.
+- **Viaje rápido híbrido:** grafo de nodos marca tramos como seguro/arriesgado según bioma y reputación. Arriesgado dispara tiradas condensadas y muestra resumen al llegar.
+- Combate se dispara por evento de exploración tipo `combat`, ya no por colisión directa en mapa.
+- **Entregable:** jugar una partida corta extremo a extremo. Crear → explorar con tiradas visibles → evento → combate o evitación → morir → epitafio.
 
 ### Hito 5 — Inventario, equipo y loot
 - Sistema de inventario (5×4 slots) con drag & drop.
@@ -259,9 +285,15 @@ Nueve hitos. Cada uno termina en un estado jugable concreto y testeable. No se a
 - Banco (CRUD + filtros + favoritos + import/export).
 - Campo de pruebas (spawn, edición HP/recursos, cola de tiradas forzadas, editor de recetas por form).
 - Simulación masiva IA vs IA ≤ 5 s / 1.000 combates.
+- **Herramientas de tirada de exploración:**
+  - Forzar próximo evento (`next_event = combate_lobos`).
+  - Ver tabla activa en el tick actual con pesos resueltos.
+  - Simular 1.000 tiradas en una zona y ver distribución de eventos.
+  - Editor de tabla en vivo por formulario.
+  - Log detallado por tirada: "tabla bosque, entrada X, peso Y, condición Z aplicada, resultado final".
 - Publicación doble vía.
 - Gateado por flag + credenciales admin.
-- **Entregable:** Bazalo crea 3 ítems en el Banco, los prueba en Campo, publica uno, aparece en juego base.
+- **Entregable:** Bazalo crea 3 ítems en el Banco, los prueba en Campo, publica uno, aparece en juego base. Edita una tabla de exploración, simula 1.000 tiradas, ajusta pesos, re-simula.
 
 ### Hito 9 — Onboarding, tutorial y pulido
 - Escena tutorial guiada de ~5 min.
@@ -281,12 +313,16 @@ Estos no son "trabajo del MVP", son pre-requisitos. Sin cerrarlos, los hitos cor
 
 | Bloqueante | Bloquea el Hito | Estado | Cómo se cierra |
 |---|---|---|---|
-| Sistema de dados (pool vs único) | H1 | Abierto | Simulación numérica |
-| Fórmula de iniciativa | H3 | Abierto | Simulación (depende del dado) |
+| Dado de combate (pool vs único) | H1, H3 | Abierto | Simulación numérica |
+| Dado de exploración | H1, H4 | **Cerrado (1d20)** | — |
+| Fórmula de iniciativa | H3 | Abierto | Simulación (depende del dado de combate) |
 | Curva de XP al nivel 50 | H7 | Abierto | Simulación + ritmo de combate de H3 |
+| Definición de "Suerte" como variable de exploración | H1 | Abierto | Decisión de diseño + simulación |
+| Diseño de la tirada reactiva por tipo de evento | H1, H4 | **Cerrado (v0.5 biblia §4.15.6–§4.15.9)** | — |
 | Contenido concreto del onboarding (decisión + combate forzado) | H9 | Abierto | Sesión de diseño de narrativa |
-| Stat-lines definitivas de los 5 arquetipos | H2 | Abierto | Se deriva de los dos anteriores |
-| Lista concreta de habilidades | H2 | Abierto | Se deriva del sistema de dados |
+| Stat-lines definitivas de los 5 arquetipos | H2 | Abierto | Se deriva del dado de combate |
+| Lista concreta de habilidades | H2 | Abierto | Se deriva del dado de combate |
+| Tablas de exploración iniciales (5 biomas) | H4 | Abierto | Se redacta en H4 con herramientas de H8 adelantadas si hace falta |
 
 H0 no tiene bloqueantes y se puede arrancar cuando Bazalo quiera.
 
@@ -299,16 +335,16 @@ H0 no tiene bloqueantes y se puede arrancar cuando Bazalo quiera.
 | Hito | Esfuerzo aproximado (sesiones de 4 h) |
 |---|---|
 | H0 — Fundaciones | 3-5 |
-| H1 — Reglas núcleo | 4-6 |
+| H1 — Reglas núcleo (incluye `exploration.ts`) | 6-9 |
 | H2 — Creación UI | 5-7 |
 | H3 — Combate vertical slice | 8-12 |
-| H4 — Mapa y exploración | 10-15 |
+| H4 — Mapa y exploración (incluye integración de tirada raíz) | 14-20 |
 | H5 — Inventario | 5-7 |
 | H6 — Crafteo | 5-7 |
 | H7 — Progresión + NPCs + facciones | 10-15 |
-| H8 — Modo Privado | 6-10 |
+| H8 — Modo Privado (incluye herramientas de tabla de exploración) | 8-12 |
 | H9 — Pulido y onboarding | 8-12 |
-| **Total** | **64-96 sesiones** |
+| **Total** | **72-106 sesiones** |
 
 A una sesión jugable por semana en los bloques buenos (realista para Bazalo con todos sus proyectos), son **15-24 meses de calendario**. Dos sesiones por semana en sprints buenos bajan a **8-12 meses**. Más rápido que eso sería inesperado.
 
@@ -364,16 +400,42 @@ No todo se decide hoy. Estas quedan marcadas para decidirlas cuando llegue su hi
 
 ## 9. Qué hace Bazalo esta semana
 
-Tras firmar este documento, el orden de atención de Bazalo es:
+Estado al cerrar v0.3 del scope (biblia v0.5):
 
-1. **Cerrar el bloqueante 1 del §4:** pool de dados o dado único. Sin esto, no arranca H1.
-2. **Revisar §2** y marcar cualquier "fuera del MVP" que sea intolerable (si lo hay, vuelve a §1 y sale de ahí otra cosa).
-3. **Opcional:** arrancar H0 en paralelo. No depende del dado. Hacer esto en tiempos muertos ya adelanta trabajo.
+- **Dado de exploración:** cerrado (1d20).
+- **Tirada reactiva:** cerrada (marco común + 10 tipos).
+- **H0:** totalmente desbloqueado, se puede arrancar cuando Bazalo quiera.
+- **H1:** bloqueado solo por el dado de combate. Todo lo demás del módulo ya está diseñado.
 
-Cuando el bloqueante 1 esté cerrado con simulación documentada, volvemos a este documento, actualizamos estimaciones de H1 y arrancamos.
+Orden de atención:
+
+1. **Arrancar H0.** No depende de ningún bloqueante. Trabajo productivo desde ya.
+2. **Cerrar el dado de combate** por simulación numérica. Es el único bloqueante numérico crítico que queda antes de H1.
+3. **Revisar §2** y marcar cualquier "fuera del MVP" intolerable.
+4. Bloqueantes de segundo orden (Suerte, iniciativa, curva de XP, onboarding narrativo) se cierran cuando el dado de combate cierre, no antes.
 
 ---
 
 ## 10. Historial
 
 **v0.1** — Primera versión. Producida tras test de funcionalidades (130 preguntas) + test de profundización (54 preguntas) + biblia v0.4. Define 9 hitos, inventario cerrado de MVP, lista explícita de no-MVP, bloqueantes externos y riesgos.
+
+**v0.2** — Integración del sistema de tirada de exploración como raíz del juego (biblia §4.15). Cambios:
+
+- Nueva sección §1.4b dentro del MVP: tirada de exploración.
+- Viaje rápido reescrito a modelo híbrido (seguro/arriesgado, solo a nodos descubiertos).
+- H1 amplía alcance con `rules/exploration.ts` y test de distribución estadística.
+- H4 amplía alcance con integración del sistema, tablas de 5 biomas en `data/exploration/`, dado de exploración visible en HUD, viaje rápido con tramos arriesgados.
+- H8 añade herramientas de tabla de exploración (forzar evento, ver tabla activa, simular 1.000 tiradas, editor en vivo, log detallado).
+- §2 ajustada: "encuentros en viaje rápido" se matiza (solo arriesgado dispara, seguro no).
+- §4 bloqueantes: dado de combate y dado de exploración separados como bloqueantes independientes. Añadidos: Suerte, tirada reactiva por tipo, tablas iniciales de 5 biomas.
+- §5 estimación subida a 72-106 sesiones por la carga adicional de H1, H4 y H8.
+- §9 reordenado: la semana ahora arranca por confirmar el 1d20 propuesto.
+
+**v0.3** — Cierre del subsistema de tirada reactiva (biblia §4.15.6–§4.15.9) tras test `tirada-reactiva-v0.1.md`. Cambios:
+
+- Dado de exploración cerrado oficialmente como **1d20** (decisión cerrada #26 en biblia).
+- Tirada reactiva cerrada para los 10 tipos del catálogo: marco común + tabla por tipo + formato `evade_check` ampliado.
+- H1 amplía entregable con `resolveEvadeCheck` como función pura separada y test unitario por cada uno de los 10 tipos.
+- §4 bloqueantes: eliminados "Dado de exploración" y "Diseño de tirada reactiva por tipo". Bloqueantes restantes = 8.
+- §9 semana actualizada: solo queda el dado de combate como bloqueante numérico crítico antes de H1. H0 totalmente desbloqueado.

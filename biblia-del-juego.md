@@ -1,7 +1,7 @@
 # El Teknomoro — Biblia del juego
 
 > Documento vivo. Consolida todo lo que sabemos (y lo que no sabemos) sobre el proyecto.
-> **Versión:** v0.4 · **Fecha:** 24 de abril de 2026 · **Autor:** Bazalo con dirección de el-teknomoro-director
+> **Versión:** v0.5 · **Fecha:** 24 de abril de 2026 · **Autor:** Bazalo con dirección de el-teknomoro-director
 
 ---
 
@@ -349,9 +349,11 @@ El peso relativo de "Nada" es alto en biomas seguros y baja en biomas hostiles.
 
 #### 4.15.4 Sistema de dados
 
-Decisión cerrada: **dado propio de exploración, independiente del dado de combate.** No comparte motor con `rules/combat.ts`. El formato concreto (d100 con tabla, pool d6, otro) queda como **bloqueante numérico propio** (ver §6, bloqueante 2bis).
+Decisión cerrada: **1d20 como dado de exploración**, independiente del dado de combate. No comparte motor con `rules/combat.ts`.
 
-Consecuencia arquitectónica: habrá dos sistemas de tirada cerrados por separado. El módulo `rules/dice.ts` ofrece ambos como primitivas, y cada subsistema (`combat.ts`, `exploration.ts`) usa el que le corresponde.
+El resultado del 1d20 se mapea contra la tabla de bioma activa: los pesos de cada entrada se normalizan a rangos sobre 20 (más las modulaciones de las 7 variables de §4.15.2). En la práctica, una tabla de bioma con pesos `[30, 20, 10, 40]` se convierte en rangos proporcionales sobre el d20 tras aplicar modificadores.
+
+Consecuencia arquitectónica: habrá dos sistemas de tirada cerrados por separado. El módulo `rules/dice.ts` ofrece ambos como primitivas (`rollCombat()` y `rollD20()`), y cada subsistema (`combat.ts`, `exploration.ts`) usa el que le corresponde.
 
 #### 4.15.5 Frecuencia, ritmo y presentación
 
@@ -370,22 +372,55 @@ Antes del tick:
 - **Consumibles:** amuletos, hechizos, brújulas de fortuna modifican la tabla del próximo tick.
 - **Acampar / descansar:** refresca recursos y permite afrontar la siguiente zona con modificadores favorables.
 
-Durante el tick:
+Durante el tick: **toda entrada de la tabla declara una tirada reactiva `evade_check`** que permite al jugador mitigar o evitar el evento. Marco común cerrado (v0.5):
 
-- **Todo evento tiene una tirada reactiva de mitigar o evitar.** Combate → tirada de Sigilo para evitar enfrentamiento. Trampa → tirada de Percepción reactiva para esquivarla. NPC hostil → opción de diálogo previa antes del combate. Emboscada → tirada de Percepción para quitar la desventaja inicial.
-- Cada entrada de la tabla declara su `evade_check` (ver §4.15.8).
+- **Momento:** se ejecuta entre el revelado del evento (tirada raíz 1d20) y su consumación. El modal del evento muestra siempre al menos dos botones: `[Intentar evadir / mitigar]` y `[Afrontar]`.
+- **Coste:** gratis si usa habilidad pasiva (Percepción, Instinto, Supervivencia); 1 punto de acción del turno si usa activa (Sigilo, Esquiva, Persuasión); consumible si usa ítem. Los tres conviven según lo declare cada entrada.
+- **Tipo de tirada:** mixta. Fija contra dificultad para eventos ambientales/pasivos; **enfrentada** contra stat del evento para enemigos conscientes (emboscada, combate).
+- **Dado:** **1d20 compartido con la tirada raíz de exploración** durante H1 como decisión provisional pragmática. Se migrará al dado de combate cuando ese sistema cierre, sin tocar `exploration.ts` (la abstracción vive en `rules/dice.ts`).
+- **Fracaso crítico (pifia):** aplica solo en combate, emboscada y trampa. En el resto, fracasar = el evento sucede tal cual.
+- **Éxito crítico:** aplica a todos los tipos con tirada. Recompensa de gama alta del sistema.
+- **Sin habilidad requerida:** si el personaje no tiene la habilidad, el botón "Intentar" aparece desactivado con tooltip ("Percepción insuficiente"). No se tira con penalizador fantasma.
+- **Afrontar siempre disponible:** renunciar a la tirada y aceptar el evento tal cual es agencia del jugador, botón presente en todo modal.
+- **Entrena habilidad:** toda tirada reactiva acumula en `skills.{skillId}.usage`, ganes o pierdas. El techo blando de §4.2 evita farmeo.
+- **Presentación:** dado visible rodando (animación propia distinta a la del combate), número comparado con DIF en overlay, texto del resultado, color-coding (verde éxito / dorado crítico / amarillo justo / rojo fracaso / morado pifia).
 
-Hay que diseñar una tirada reactiva para cada tipo de evento del catálogo §4.15.3. Esto no es opcional, es parte del contrato del sistema.
+#### 4.15.7 Tabla de tiradas reactivas por tipo de evento
 
-#### 4.15.7 Arquitectura
+Catálogo cerrado v0.5. Las DIF son orientativas y se ajustarán con simulación en H8.
+
+| Tipo | Habilidad | DIF | Coste | Éxito | Crítico | Fracaso | Pifia | Modo |
+|---|---|---|---|---|---|---|---|---|
+| **Combate** | Sigilo vs Percepción enemiga | según enemigo | 1 PA | Evitas el combate | Evitas + 1 turno gratis si reatacas luego | Combate normal | — (no aplica) | Ofrecida si Sigilo ≥ 1 |
+| **Encuentro NPC** | — | — | — | — | — | — | — | Modal con `[Hablar]` `[Ignorar]` `[Atacar]`, sin tirada |
+| **Hallazgo** | Percepción vs DIF fija | 1-3 | gratis | Ves el hallazgo | Hallazgo mejorado | "Sientes algo cerca": opción de buscar con coste | — | Automática (sin confirmación) |
+| **Trampa** | Percepción reactiva | 2-4 | gratis | Detectas, no se activa, puedes desarmar | Extraes recurso de la trampa | Se activa, daño fuerte, mínimo 1 HP | Trampa + estado adverso (sangrado, etc.) | Automática → si falla, **segunda tirada activa Reflejos/DES** con coste 1 PA |
+| **Evento ambiental** | Supervivencia o Voluntad (según evento) | 2-4 | gratis o 1 consumible | Mitigas efectos negativos | Aprovechas el evento (escondite, etc.) | Sufres efectos completos | — | Ofrecida en el modal |
+| **POI descubierto** | Percepción pasiva | 1-4 | gratis | POI visible en el mapa | POI + pista en diario | POI queda oculto, redescubrible con mejor Percepción | — | Automática (no hay evitar) |
+| **Evento narrativo** | — | — | — | — | — | — | — | Tiradas viven dentro del guion, no a nivel global |
+| **Emboscada** | Percepción reactiva (no Sigilo: aquí eres el cazado) | 3-4 | gratis | Combate sin desventaja inicial | Combate con **ventaja** (primer turno + iniciativa) | Combate con desventaja (enemigo primero, estado "sorprendido") | Combate con desventaja doble (turnos perdidos o "aturdido") | Automática |
+| **Refugio** | Supervivencia pasiva | 1-3 | gratis | HP según tabla | HP extra + refresca 1 consumible de habilidad | Refugio comprometido → puede encadenar evento ambiental o emboscada | — | Automática al elegir "Descansar". No evita, modula calidad |
+| **Nada** | — | — | — | — | — | — | — | Sin modal, sin tirada reactiva. Avanza reloj, +1-2 HP, −1 durabilidad mínima |
+
+Casos especiales notables:
+
+- **Trampa** es el único tipo con **tirada en cascada**: Percepción pasiva primero; si falla, se ofrece Reflejos activa para esquivar en el último momento con coste de PA.
+- **Refugio** es el único tipo donde la tirada reactiva **modula calidad** en vez de evitar.
+- **Encuentro NPC** y **Evento narrativo** no tienen tirada global. El primero usa botones de modal; el segundo usa tiradas internas al guion.
+- **Hallazgo** y **POI descubierto** resuelven la tirada **antes** de mostrar el modal. El jugador ve el resultado, no la tirada.
+
+#### 4.15.8 Arquitectura
 
 Nuevo módulo `rules/exploration.ts`, hermano de `rules/combat.ts` y `rules/crafting.ts`. Puro y determinista dada la misma semilla + estado del mundo.
 
 - **Una tabla por bioma**, no combinatoria plena. Las demás variables (hora, clima, nivel, reputación, flags, suerte) modulan los pesos dentro de la tabla del bioma, no cambian de tabla.
-- **Historial de tiradas:** últimas 100 tiradas en memoria de sesión, purga al cerrar. En Modo Privado se persiste para auditoría; en modo normal se descarta.
-- El módulo consume `rules/dice.ts` y expone una API pura: `rollExplorationTick(worldState, character, trigger) → ExplorationEvent`.
+- **Historial de tiradas:** últimas 100 tiradas raíz **y reactivas** en memoria de sesión, purga al cerrar. En Modo Privado se persiste completo para auditoría.
+- API pura expuesta:
+  - `rollExplorationTick(worldState, character, trigger) → ExplorationEvent`
+  - `resolveEvadeCheck(event, character, dice) → EvadeResult`
+- Ambas funciones consumen `rules/dice.ts`. Deterministas dado el mismo estado del PRNG.
 
-#### 4.15.8 Formato de entrada de tabla
+#### 4.15.9 Formato de entrada de tabla
 
 ```json
 {
@@ -403,11 +438,33 @@ Nuevo módulo `rules/exploration.ts`, hermano de `rules/combat.ts` y `rules/craf
   "type": "combat",
   "payload": {
     "enemy_group": "lobos_3",
-    "ambush_chance": 0.2,
-    "evade_check": { "skill": "sigilo", "difficulty": 2 }
+    "ambush_chance": 0.2
+  },
+  "evade_check": {
+    "skill": "sigilo",
+    "difficulty": 3,
+    "opposed": true,
+    "opposed_stat": "perception",
+    "cost": { "type": "action_point", "amount": 1 },
+    "on_success": { "outcome": "skip_event", "bonus": null },
+    "on_critical": { "outcome": "skip_event", "bonus": { "type": "initiative", "value": 2 } },
+    "on_failure": { "outcome": "resolve_as_normal", "penalty": null },
+    "on_fumble": { "outcome": "resolve_as_normal", "penalty": { "type": "status", "value": "stunned" } },
+    "auto": false,
+    "trains_skill": true,
+    "fallback_check": null
   }
 }
 ```
+
+Campos de `evade_check`:
+
+- `opposed` / `opposed_stat`: si `true`, tirada enfrentada contra `opposed_stat` del payload en vez de `difficulty` fija.
+- `cost`: `{ "type": "free" | "action_point" | "consumable", "amount": N, "item_id"?: "string" }`.
+- `on_success` / `on_critical` / `on_failure` / `on_fumble`: define el efecto. `on_fumble` puede ser `null` si el tipo no aplica pifia.
+- `auto`: `true` resuelve sin preguntar (R3 Hallazgo, R6 POI, R8 Emboscada, R9 Refugio). `false` ofrece botón `[Intentar]`.
+- `trains_skill`: `true` en todos por defecto (decisión E4). Se declara por si alguna entrada futura lo excluye.
+- `fallback_check`: otra `evade_check` encadenada si la primaria falla. Solo se usa en trampas (R4). `null` en el resto.
 
 `weight` = probabilidad relativa dentro de la tabla del bioma. `conditions` filtra elegibilidad. `payload` es específico del `type`.
 
@@ -444,39 +501,51 @@ Estas no se reabren sin motivo fuerte. Si Bazalo las cuestiona, la dirección le
 | 23 | Tirada de exploración visible por completo (dado en log/HUD cada paso). | v0.5 |
 | 24 | Toda entrada de tabla de exploración debe declarar `evade_check` reactivo. | v0.5 |
 | 25 | Trampas nunca matan directamente (mínimo 1 HP garantizado). | v0.5 |
+| 26 | Dado de exploración: **1d20** con mapeo por rangos sobre pesos de tabla. | v0.5 |
+| 27 | Marco común de tirada reactiva: momento, coste mixto, enfrentada/fija, afrontar siempre disponible, éxito crítico en todos, pifia solo en combate/emboscada/trampa. | v0.5 |
+| 28 | Tirada reactiva reutiliza 1d20 de exploración durante H1; migra al dado de combate cuando cierre sin tocar `exploration.ts`. | v0.5 |
+| 29 | Sin habilidad requerida → botón desactivado con tooltip, no se tira con penalizador. | v0.5 |
+| 30 | Tiradas reactivas entrenan habilidad ganes o pierdas (techo blando de §4.2 evita abuso). | v0.5 |
+| 31 | Cascada de tiradas solo en Trampa (Percepción pasiva → Reflejos activa). | v0.5 |
+| 32 | Encuentro NPC y Evento narrativo no tienen tirada reactiva global. | v0.5 |
+| 33 | Hallazgo y POI resuelven tirada antes del modal; jugador ve resultado, no tirada. | v0.5 |
+| 34 | Refugio: la tirada reactiva modula calidad, no evita. | v0.5 |
+| 35 | Historial persiste tiradas raíz **y** reactivas juntas en Modo Privado. | v0.5 |
 
 ---
 
 ## 6. Preguntas abiertas
 
-### Bloqueantes (hay que responderlas antes de v0.5)
+### Bloqueantes (hay que responderlas antes de v0.6)
 
-1. **¿Pool de dados o dado único?** Determina todas las matemáticas del sistema. Se cierra con simulación.
+1. **¿Pool de dados o dado único para combate?** Determina la matemática del subsistema de combate. Se cierra con simulación.
 2. **Fórmula de iniciativa** (depende de 1).
 3. **Curva de XP para llegar a nivel 50** (depende de 1 y del ritmo esperado de combate).
-4. **Efectos numéricos de día/noche, clima y terreno** (depende de 1).
-5. **Qué cuenta como "partida terminada"** en modo Historia (condición de victoria/cierre narrativo).
-6. **Contenido exacto de la decisión inmediata + primer combate forzado** del onboarding.
+4. **Efectos numéricos de día/noche, clima y terreno** (depende de 1 y del 1d20 de exploración).
+5. **Definición de "Suerte"** como variable de exploración: atributo derivado, stat oculto o consumible.
+6. **Qué cuenta como "partida terminada"** en modo Historia (condición de victoria/cierre narrativo).
+7. **Contenido exacto de la decisión inmediata + primer combate forzado** del onboarding.
 
-### Importantes (v0.6 puede vivir sin ellas, pero no mucho más)
+### Importantes (v0.7 puede vivir sin ellas, pero no mucho más)
 
-7. Lista concreta de habilidades.
-8. Los 5 arquetipos: nombres, stat-line por defecto, inventario inicial, árbol de perks derivado.
-9. Catálogo inicial de 50 items de MVP.
-10. Catálogo inicial de recetas (objetivo: 30-50 para el MVP).
-11. Catálogo inicial de enemigos (objetivo: 10 tipos con variantes).
-12. Biomas definitivos y reglas de generación procedural por bioma.
-13. Las 3 facciones del MVP: identidad, conflictos, reputación inicial.
-14. Las 15 entradas del catálogo de logros.
+10. Lista concreta de habilidades.
+11. Los 5 arquetipos: nombres, stat-line por defecto, inventario inicial, árbol de perks derivado.
+12. Catálogo inicial de 50 items de MVP.
+13. Catálogo inicial de recetas (objetivo: 30-50 para el MVP).
+14. Catálogo inicial de enemigos (objetivo: 10 tipos con variantes).
+15. Biomas definitivos y reglas de generación procedural por bioma.
+16. Las 3 facciones del MVP: identidad, conflictos, reputación inicial.
+17. Las 15 entradas del catálogo de logros.
+18. **Tablas de exploración iniciales para los 5 biomas provisionales** (JSON en `data/exploration/*.json`).
 
 ### Diferibles (no bloquean nada a corto plazo)
 
-15. Sistema de reparación de equipo dañado (economía asociada).
-16. Coste concreto del re-spec.
-17. Branding visual, UI final, música.
-18. Monetización en fase 2 (si llega).
-19. Soporte móvil (se evalúa cuando v1 esté funcional en desktop).
-20. Soporte de mando.
+19. Sistema de reparación de equipo dañado (economía asociada).
+20. Coste concreto del re-spec.
+21. Branding visual, UI final, música.
+22. Monetización en fase 2 (si llega).
+23. Soporte móvil (se evalúa cuando v1 esté funcional en desktop).
+24. Soporte de mando.
 
 ---
 
@@ -502,7 +571,8 @@ el-teknomoro/
 │   │   ├── character.ts
 │   │   ├── combat.ts
 │   │   ├── crafting.ts
-│   │   ├── dice.ts
+│   │   ├── dice.ts          # Dos sistemas como primitivas: combate y exploración.
+│   │   ├── exploration.ts   # Tirada raíz. Consume dice.ts. Puro y determinista.
 │   │   ├── progression.ts
 │   │   └── world-gen.ts
 │   ├── render/          # Todo lo visual. Consume rules/, nunca al revés.
@@ -518,10 +588,16 @@ el-teknomoro/
 │   ├── dev/             # Modo Privado. Se compila solo con flag de dev.
 │   │   ├── bank.ts
 │   │   └── sandbox.ts
-│   ├── data/            # JSONs de contenido: recetas, enemigos, items, biomas.
+│   ├── data/            # JSONs de contenido: recetas, enemigos, items, biomas, exploración.
 │   │   ├── recipes.json
 │   │   ├── enemies.json
-│   │   └── items.json
+│   │   ├── items.json
+│   │   └── exploration/ # Una tabla JSON por bioma.
+│   │       ├── bosque.json
+│   │       ├── desierto.json
+│   │       ├── glaciar.json
+│   │       ├── llanura.json
+│   │       └── ruinas_arcanas.json
 │   └── main.ts
 ├── public/
 └── index.html
@@ -639,4 +715,14 @@ Login → Modo (Historia/Libre) → Creación → Tutorial guiado → Decisión 
 - **Nueva sección §8** con flujos y pantallas del MVP.
 - Bloqueantes reducidos de 5 a 6, pero ahora son todos numéricos (todos los de diseño cualitativo están cerrados).
 
-**v0.5** — Pendiente. Se produce cuando se cierren los bloqueantes numéricos del §6 por simulación. Debe fijar sistema de dados, iniciativa, curva de XP, efectos ambientales y contenido del onboarding inicial.
+**v0.5** — Introducción del sistema de **tirada de exploración** como raíz del juego (§4.15) y cierre del subsistema de **tirada reactiva de mitigación**, tras dos tests dedicados respondidos por Bazalo (`tirada-exploracion-v0.1.md` y `tirada-reactiva-v0.1.md`). Cambios:
+
+- Nueva §4.15 "Tirada de exploración" con 9 subsecciones: brújula, disparadores, variables, catálogo de eventos, dado (1d20), ritmo, marco común de tirada reactiva, tabla de tiradas reactivas por tipo, arquitectura, formato de `evade_check` ampliado.
+- Intención de diseño citada textualmente ("libertad, pero la libertad no te da paz; te da cautela y opción a preparar tu siguiente movimiento") como brújula de balance.
+- §4.10 reescrita: viaje rápido híbrido (solo nodos descubiertos, tramo seguro o arriesgado con tiradas condensadas).
+- §4.14 (Modo Privado) ampliada con herramientas para tabla de exploración.
+- Decisiones cerradas 19-35 añadidas. Dado de exploración 1d20 cerrado. Marco de tirada reactiva cerrado (momento, coste mixto, afrontar, crítico/pifia, sin habilidad, entrenamiento, cascada). 10 tipos de evento con tirada reactiva tabulada.
+- Bloqueantes reducidos de 9 a 7: cerrados el dado de exploración y la tirada reactiva. Quedan 7 bloqueantes (todos dependen del dado de combate o de diseño narrativo).
+- Arquitectura §7 añade `rules/exploration.ts` y `data/exploration/*.json`. API pura: `rollExplorationTick()` + `resolveEvadeCheck()`.
+
+**v0.6** — Pendiente. Se produce cuando se cierren los bloqueantes restantes del §6 por simulación. Debe fijar dado de combate, iniciativa, curva de XP, efectos ambientales, Suerte, condición de victoria y contenido del onboarding inicial.
