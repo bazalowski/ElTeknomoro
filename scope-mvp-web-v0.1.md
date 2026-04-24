@@ -1,0 +1,379 @@
+# El Teknomoro — Scope del MVP web
+
+> Contrato de alcance. Qué entra en v1 del navegador, qué no entra, en qué orden se construye y qué lo bloquea.
+> **Versión:** v0.1 · **Fecha:** 24 de abril de 2026
+> **Autor:** el-teknomoro-director
+> **Destino:** referencia firme del equipo (Bazalo + dirección) durante toda la construcción del MVP. Si algo no está aquí, no se construye en v1.
+
+---
+
+## 0. Cómo se lee este documento
+
+Tres secciones que importan:
+
+- **§1 Dentro del MVP** — lo que se construye. Cerrado.
+- **§2 Fuera del MVP** — lo que NO se construye. También cerrado: cada entrada aquí es un "no" explícito para cortar scope creep antes de que empiece.
+- **§3 Orden de construcción** — hitos numerados. Un hito entregable por bloque. No se empieza un hito hasta que el anterior esté funcional.
+
+Las secciones §4-§7 son apoyo: bloqueantes, estimación, riesgos, definición de "terminado".
+
+**Regla sagrada del scope:** si surge una idea durante la construcción, va a "Fuera del MVP" o a una lista v1.1, nunca al hito en curso. Mover la meta mientras corres es la muerte de los proyectos personales.
+
+---
+
+## 1. Dentro del MVP (lo que v1 entrega)
+
+### 1.1 Identidad y sesión
+- Login con Supabase (email + contraseña).
+- Menú principal: Nueva Partida · Cargar Partida · Opciones.
+- Modo Privado oculto tras flag de dev + credenciales admin.
+- 3 slots de partida por usuario, persistidos en Supabase.
+- Guardado mixto (manual + autoguardado por eventos + heartbeat cada 5 turnos).
+- Cache local en IndexedDB para sesión activa; Supabase autoritativo.
+
+### 1.2 Onboarding
+- Selección de modo: Historia (mapa fijo) o Libre (procedural por frase-semilla).
+- Creación de personaje (ver 1.3).
+- **Una** escena tutorial guiada de ~5 minutos que enseña los tres verbos base: moverse, combatir, craftear.
+- Una decisión inmediata post-tutorial.
+- Un primer combate forzado derivado de esa decisión.
+- Apertura del mapa-mundi.
+
+### 1.3 Creación de personaje
+- Pantalla inicial "Empezar de cero" / "Empezar con preset".
+- 5 arquetipos predefinidos (uno por atributo dominante).
+- 12 puntos de atributo, máximo 4 al crear, mínimo 1 por atributo. +/- con preview en tiempo real.
+- 10 puntos de habilidad, máximo 3 al crear. Pantalla separada.
+- Elección de 1 perk inicial.
+- Set de 12 retratos fijos en grid.
+- Inventario inicial fijo por arquetipo + botón "Sorpréndeme" con preview antes de confirmar.
+- Preview del personaje en una pantalla de combate antes de confirmar.
+- Botón Reset. Tras confirmar, personaje bloqueado.
+
+### 1.4 Mapa y exploración
+- Mapa-mundi con nodos (ciudades, mazmorras, POIs).
+- Sub-mapas en grid al entrar en un nodo.
+- Al clickar en un nodo, se activa una tirada 1d20. Depende del valor se activa un evento [PASO MAS IMPORTANTE]
+- Top-down 2D con tiles cuadrados, cámara con zoom.
+- Movimiento por turnos con puntos de acción.
+- Niebla de guerra.
+- Viaje rápido entre nodos descubiertos con coste de tiempo de juego.
+- Día/noche visualmente (efectos numéricos diferidos).
+- HUD siempre visible: HP, recursos, mini-stats.
+- Interacción con POI por tap directo.
+- 1 mapa de historia completo + generación procedural para modo Libre con semilla derivada de frase.
+- Biomas provisionales (5): llanura, bosque, desierto, glaciar, ruinas arcanas.
+
+### 1.5 Combate
+- Por turnos puros, hasta 5 enemigos en pantalla.
+- Iniciativa: estadística base + tirada.
+- Timeline visible de los próximos 8 turnos.
+- Acciones fijas: Atacar / Esquivar / Habilidad / Item / Huir (botón reservado, grisado hasta cierre de regla).
+- Targeting mixto (clic + Tab).
+- Log de combate en panel lateral desplegable.
+- Log de la última tirada copiable como texto.
+- Animación de dado + texto en log por cada tirada.
+- Críticos diferenciados (color + sonido + shake).
+- Iconos de estados sobre el sprite.
+- Terreno con tags por casilla (efectos numéricos diferidos).
+- Pausa del resto del mundo.
+- Consulta de hoja de personaje sin salir del combate.
+- **Motor de combate desacoplado del render** (requisito para 1.11).
+- Pantalla de loot post-combate (modal bloqueante con "Dejar").
+
+### 1.6 Inventario y equipo
+- Cuadrícula fija 5×4 (20 slots).
+- Equipo: cabeza, torso, manos, arma principal, arma secundaria, accesorio.
+- Drag & drop.
+- Tooltip con daño, durabilidad, peso, rareza.
+- Comparativa al hover vs equipado.
+- Rareza visual por color + prefijo.
+- Durabilidad: al 0 queda inservible hasta reparar (el ítem no se destruye).
+- Stacking según ítem.
+- Catálogo de 50 items de MVP.
+
+### 1.7 Crafteo
+- Pantalla de crafteo accesible desde menú de personaje.
+- Recetas conocidas visibles (descubiertas por combinación + aprendidas por libro).
+- Combinación libre de materiales con descubrimiento automático de recetas válidas.
+- Porcentajes success/critical/failure siempre visibles antes de craftear.
+- Station: si la receta lo requiere, botón desactivado con tooltip.
+- Craft x10 en batch con tiradas independientes.
+- Encadenamiento de hasta 3 recetas en un clic (no cola temporal).
+- Catálogo de 30-50 recetas de MVP.
+
+### 1.8 Progresión
+- Nivel máximo 50 (curva de XP provisional hasta cierre numérico).
+- Subir nivel manual (botón), pausa el juego.
+- Habilidades suben por uso (techo blando) y por XP (rompe techo).
+- Re-spec con coste de recurso de juego.
+- 15 logros en MVP.
+- 3 facciones con reputación numérica bidireccional.
+- Hoja de personaje ampliada en modo lectura.
+
+### 1.9 NPCs y diálogos
+- Lista de temas por NPC (hasta 6 visibles con scroll).
+- UI modal en panel inferior, retrato + nombre.
+- Tiradas sociales visibles antes de comprometerse.
+- Comercio en pantalla dedicada accesible desde diálogo.
+- Atacar a NPC no hostil con confirmación modal.
+- Catálogo de 10 tipos de enemigos con variantes para combate.
+- Set mínimo de NPCs no hostiles para el mapa de historia y para los nodos-ciudad procedurales.
+
+### 1.10 Muerte y epitafio
+- Permadeath con validación del servidor.
+- Slot marcado como "muerto" tras la muerte, consultable como epitafio (stats, logros, causa, ubicación).
+- Epitafio accesible desde Cargar Partida en solo lectura.
+
+### 1.11 Modo Privado (dev-only)
+- Flag de dev + login con credenciales admin.
+- Banco ilimitado con etiquetas, favoritos, buscador, filtros, lista/grid.
+- Banco como plantilla: clon al jugar, nunca mutación directa.
+- Import/Export del Banco completo a `.tkm.json`.
+- Publicación doble: botón "Publicar" + edición de `content-approved.json`.
+- Campo de pruebas: spawn de enemigos, edición de HP/recursos en vivo, cola de tiradas forzadas `[6,1,4]`, materiales infinitos, editor de recetas por formulario.
+- Simulación masiva IA vs IA: 1.000 combates sin UI en ≤5 segundos.
+- Badge "Dev Mode" visible.
+
+### 1.12 Presentación y accesibilidad
+- 60 FPS objetivo en Canvas.
+- Teclado + ratón.
+- Texto redimensionable en 3 tamaños (S/M/L).
+- Desktop only en v1 (Chromium + Firefox).
+- Música + SFX mínimos (clicks, golpes, dado).
+- Pantalla de carga visible al cargar partida o mundo.
+
+---
+
+## 2. Fuera del MVP (lo que v1 NO entrega)
+
+Cada entrada aquí es un "no" firme para v1. Va a v1.1, v1.2 o se descarta según la tracción de v1.
+
+- Soporte móvil / tablet.
+- Soporte de mando.
+- Modo daltónico.
+- Slider continuo de tamaño de texto.
+- Navegadores Safari / no-Chromium / no-Firefox.
+- Party de varios personajes.
+- Múltiples personajes por partida.
+- Encuentros aleatorios durante viaje rápido.
+- Minimapa (solo mapa principal).
+- Efectos numéricos concretos de día/noche, clima y terreno (presentes visualmente, sin impacto mecánico en v1).
+- Reparación de equipo (el equipo queda inservible al 0 de durabilidad, pero el sistema de repararlo es v1.1).
+- Export CSV de simulación masiva.
+- JSON raw editor en UI del Campo de pruebas.
+- Replay visual de combate.
+- Rankings globales / leaderboards.
+- Branding visual definitivo y música original (placeholders válidos).
+- Lore y narrativa extensa (mapa de historia mínimo viable, no épico).
+- Monetización.
+- Multijugador de cualquier tipo.
+- Generación procedural avanzada (mazmorras procedurales, quests procedurales).
+- Modo espectador.
+- Más de 5 biomas.
+- Más de 50 items.
+- Más de 30-50 recetas.
+- Más de 10 tipos de enemigos.
+- Más de 3 facciones.
+- Más de 15 logros.
+- Sistema de mascotas, compañeros IA o invocaciones.
+- Meteorología dinámica con impacto jugable (presente visualmente, no mecánicamente).
+- Diálogos ramificados por árbol.
+- Voice over.
+
+Si durante la construcción de un hito aparece la tentación de meter algo de esta lista, la respuesta es **no** y se anota para v1.1.
+
+---
+
+## 3. Orden de construcción
+
+Nueve hitos. Cada uno termina en un estado jugable concreto y testeable. No se arranca el hito N+1 hasta que el N pasa la validación de §7.
+
+### Hito 0 — Fundaciones (sin juego visible todavía)
+- Repositorio inicializado con Vite + TypeScript + Canvas.
+- Estructura de carpetas de §7 de la biblia (`rules/`, `render/`, `state/`, `backend/`, `dev/`, `data/`).
+- Supabase conectado: schema inicial (users, save_slots, banks).
+- Login funcional end-to-end.
+- IndexedDB configurado para caché de sesión.
+- Pipeline de build + deploy a Netlify/Vercel.
+- Test runner (Vitest) con al menos un test del módulo de dados.
+- **Entregable:** URL accesible con login que muestra "Hola {usuario}" tras autenticarse.
+
+### Hito 1 — Motor de reglas núcleo
+- `rules/dice.ts` con implementación del sistema de dados elegido tras cerrar el bloqueante.
+- `rules/character.ts` con creación, validación, cálculo de stats derivados.
+- `rules/progression.ts` con subida de habilidad por uso + por XP.
+- Tests unitarios para cada una.
+- Ningún render todavía.
+- **Entregable:** suite de tests verde. Creación de personaje por consola con JSON de entrada/salida.
+
+### Hito 2 — Creación de personaje en UI
+- Flujo "Empezar de cero" / "Empezar con preset".
+- Las 5 pantallas de creación (retrato, atributos, habilidades, perk, inventario) con preview en tiempo real.
+- Persistencia del personaje confirmado en Supabase.
+- 5 arquetipos en `data/` con stat-lines provisionales.
+- **Entregable:** crear personaje en navegador, guardarlo, cerrar pestaña, recargar, ver personaje guardado.
+
+### Hito 3 — Combate vertical slice
+- `rules/combat.ts` completo: iniciativa, resolución de ataque, daño, estados, muerte.
+- UI de combate: timeline, targeting, botones de acción, log lateral, animación de dado.
+- **Un** enemigo tipo, **un** escenario de combate, **sin** mapa todavía.
+- Loot post-combate.
+- Permadeath funcionando: al morir, slot pasa a epitafio en Supabase.
+- **Entregable:** combate jugable extremo a extremo. Personaje creado → combate → victoria o muerte.
+
+### Hito 4 — Mapa y exploración
+- `rules/world-gen.ts` con generación de mapa-mundi y sub-mapas en grid.
+- Mapa de historia hardcodeado (versión mínima, 1 ciudad + 2 mazmorras + zona exterior).
+- Generación procedural para modo Libre con frase-semilla hasheada.
+- Movimiento por puntos de acción, niebla de guerra, viaje rápido entre nodos descubiertos.
+- Combate se dispara al colisionar con enemigo en mapa.
+- **Entregable:** jugar una partida corta extremo a extremo. Crear → explorar → combatir → morir → epitafio.
+
+### Hito 5 — Inventario, equipo y loot
+- Sistema de inventario (5×4 slots) con drag & drop.
+- Slots de equipo con tooltip comparativo.
+- Durabilidad funcionando (ítem inservible al 0).
+- Catálogo de 50 items en `data/items.json`.
+- Tirar ítems al suelo con recogida posterior.
+- **Entregable:** personaje combate → loot → equipar → mejor stats → combate con equipo mejor.
+
+### Hito 6 — Crafteo
+- `rules/crafting.ts` completo: combinación, descubrimiento, outputs ramificados, batch, station.
+- UI de crafteo con porcentajes visibles y encadenamiento x3.
+- Catálogo de 30-50 recetas en `data/recipes.json`.
+- Libros de recetas como ítems que desbloquean entradas.
+- **Entregable:** recoger materiales → craftear → craft falla → craft crítico → nueva receta descubierta.
+
+### Hito 7 — Progresión, NPCs y facciones
+- Subida de nivel manual con pantalla pausada.
+- Re-spec con coste de recurso.
+- 15 logros con triggers implementados.
+- 3 facciones con reputación persistente.
+- Sistema de diálogo: lista de temas, tiradas sociales visibles, comercio.
+- Catálogo de 10 tipos de enemigos con variantes.
+- NPCs mínimos en mapa de historia y en ciudades procedurales.
+- **Entregable:** partida completa que toca todos los sistemas en 30-45 min.
+
+### Hito 8 — Modo Privado
+- Banco (CRUD + filtros + favoritos + import/export).
+- Campo de pruebas (spawn, edición HP/recursos, cola de tiradas forzadas, editor de recetas por form).
+- Simulación masiva IA vs IA ≤ 5 s / 1.000 combates.
+- Publicación doble vía.
+- Gateado por flag + credenciales admin.
+- **Entregable:** Bazalo crea 3 ítems en el Banco, los prueba en Campo, publica uno, aparece en juego base.
+
+### Hito 9 — Onboarding, tutorial y pulido
+- Escena tutorial guiada de ~5 min.
+- Decisión inmediata + combate forzado post-tutorial.
+- Música y SFX integrados.
+- HUD, logros, badges, Dev Mode badge.
+- 3 tamaños de texto.
+- Pantalla de carga.
+- Pase de bugs, sonido, feedback visual.
+- **Entregable:** v1 pública, jugable por alguien que no sea Bazalo sin instrucciones externas.
+
+---
+
+## 4. Bloqueantes externos al scope
+
+Estos no son "trabajo del MVP", son pre-requisitos. Sin cerrarlos, los hitos correspondientes no se empiezan.
+
+| Bloqueante | Bloquea el Hito | Estado | Cómo se cierra |
+|---|---|---|---|
+| Sistema de dados (pool vs único) | H1 | Abierto | Simulación numérica |
+| Fórmula de iniciativa | H3 | Abierto | Simulación (depende del dado) |
+| Curva de XP al nivel 50 | H7 | Abierto | Simulación + ritmo de combate de H3 |
+| Contenido concreto del onboarding (decisión + combate forzado) | H9 | Abierto | Sesión de diseño de narrativa |
+| Stat-lines definitivas de los 5 arquetipos | H2 | Abierto | Se deriva de los dos anteriores |
+| Lista concreta de habilidades | H2 | Abierto | Se deriva del sistema de dados |
+
+H0 no tiene bloqueantes y se puede arrancar cuando Bazalo quiera.
+
+---
+
+## 5. Estimación gruesa
+
+**Sin compromiso.** Bazalo va lento y lento está bien. Esto es solo para que exista un orden de magnitud.
+
+| Hito | Esfuerzo aproximado (sesiones de 4 h) |
+|---|---|
+| H0 — Fundaciones | 3-5 |
+| H1 — Reglas núcleo | 4-6 |
+| H2 — Creación UI | 5-7 |
+| H3 — Combate vertical slice | 8-12 |
+| H4 — Mapa y exploración | 10-15 |
+| H5 — Inventario | 5-7 |
+| H6 — Crafteo | 5-7 |
+| H7 — Progresión + NPCs + facciones | 10-15 |
+| H8 — Modo Privado | 6-10 |
+| H9 — Pulido y onboarding | 8-12 |
+| **Total** | **64-96 sesiones** |
+
+A una sesión jugable por semana en los bloques buenos (realista para Bazalo con todos sus proyectos), son **15-24 meses de calendario**. Dos sesiones por semana en sprints buenos bajan a **8-12 meses**. Más rápido que eso sería inesperado.
+
+---
+
+## 6. Riesgos identificados y mitigación
+
+**Riesgo 1 — El sistema de dados tarda en cerrar.** Es el nodo crítico: bloquea H1 y cascada el resto.
+- *Mitigación:* H0 no depende del dado. Se arranca H0 en paralelo a la simulación.
+
+**Riesgo 2 — Supabase coste/complejidad.**
+- *Mitigación:* capa `backend/` aislada. Si hay que migrar, se cambia una carpeta.
+
+**Riesgo 3 — Scope creep interno.** Bazalo se motiva y quiere meter features nuevas.
+- *Mitigación:* este documento. Cualquier cosa que no esté en §1 va a lista v1.1 sin discusión.
+
+**Riesgo 4 — Balance de combate insatisfactorio en H3.**
+- *Mitigación:* H8 (Modo Privado) adelanta la herramienta de simulación masiva. Si H3 deja dudas, se puede acelerar H8 parcialmente para tener simulación antes.
+
+**Riesgo 5 — Burnout por proyectos paralelos.**
+- *Mitigación:* cuello de botella reconocido. No se fija deadline. Entre hitos, pausas largas están permitidas.
+
+**Riesgo 6 — Migración a Godot en fase 2 más dolorosa de lo previsto.**
+- *Mitigación:* `rules/` aislado desde H0, tests unitarios desde H1, determinismo como invariante. El port es mecánico, no arqueológico.
+
+---
+
+## 7. Definición de "terminado" por hito
+
+Un hito está terminado si y solo si:
+
+1. **Funciona en navegador limpio** (perfil privado, caché limpia).
+2. **Tests unitarios verdes** para toda la lógica de `rules/` del hito.
+3. **Bazalo juega el entregable del hito** al menos una vez extremo a extremo sin intervenir sobre el código.
+4. **Los sistemas del hito están documentados** en `biblia-del-juego.md` si introducen reglas nuevas, o en `scope-mvp-web-v0.1.md` si ajustan scope.
+5. **No bloquea** los hitos siguientes por deuda técnica silenciosa.
+
+Si un hito no cumple los cinco puntos, no se declara terminado, no se pasa al siguiente, y el trabajo extra entra como hito N.1.
+
+---
+
+## 8. Decisiones diferidas al momento del hito
+
+No todo se decide hoy. Estas quedan marcadas para decidirlas cuando llegue su hito, no antes:
+
+- **Granularidad exacta de los puntos de acción por turno** en mapa (se decide al empezar H4, tras tener H3 jugable).
+- **UI concreta del árbol de perks** (se decide al empezar H7).
+- **Tono y estética visual definitiva** (se decide en H9, con placeholders hasta entonces).
+- **Identidad narrativa del mapa de historia** (se decide al empezar H4; hasta entonces, placeholders geográficos).
+- **Contenido del catálogo de 50 items y 30-50 recetas** (se redacta en H5 y H6 respectivamente, no antes).
+
+---
+
+## 9. Qué hace Bazalo esta semana
+
+Tras firmar este documento, el orden de atención de Bazalo es:
+
+1. **Cerrar el bloqueante 1 del §4:** pool de dados o dado único. Sin esto, no arranca H1.
+2. **Revisar §2** y marcar cualquier "fuera del MVP" que sea intolerable (si lo hay, vuelve a §1 y sale de ahí otra cosa).
+3. **Opcional:** arrancar H0 en paralelo. No depende del dado. Hacer esto en tiempos muertos ya adelanta trabajo.
+
+Cuando el bloqueante 1 esté cerrado con simulación documentada, volvemos a este documento, actualizamos estimaciones de H1 y arrancamos.
+
+---
+
+## 10. Historial
+
+**v0.1** — Primera versión. Producida tras test de funcionalidades (130 preguntas) + test de profundización (54 preguntas) + biblia v0.4. Define 9 hitos, inventario cerrado de MVP, lista explícita de no-MVP, bloqueantes externos y riesgos.
