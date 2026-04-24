@@ -725,4 +725,15 @@ Login → Modo (Historia/Libre) → Creación → Tutorial guiado → Decisión 
 - Bloqueantes reducidos de 9 a 7: cerrados el dado de exploración y la tirada reactiva. Quedan 7 bloqueantes (todos dependen del dado de combate o de diseño narrativo).
 - Arquitectura §7 añade `rules/exploration.ts` y `data/exploration/*.json`. API pura: `rollExplorationTick()` + `resolveEvadeCheck()`.
 
+**v0.5.1** — Hito de construcción, no de reglamento. **H.0 "Fundaciones" cerrado** el 25/4/2026. Entregable en producción:
+
+- Repositorio Vite + TypeScript vanilla inicializado con la estructura de §7 (`rules/`, `render/`, `state/`, `backend/`, `dev/`, `data/exploration/`).
+- `rules/dice.ts` con PRNG determinista (mulberry32) + `rollD20()`. `rollCombat()` queda deliberadamente fuera hasta cerrar el bloqueante del dado de combate (§6).
+- Schema Supabase aplicado en producción: `public.save_slots` y `public.banks`, ambas con RLS por dueño y FK a `auth.users` con `on delete cascade`. No existe `public.users`: se referencia `auth.users` directamente.
+- Login/signup/logout funcional end-to-end con persistencia de sesión.
+- Vitest con 4 tests verdes del módulo de dados.
+- Desplegado en Vercel con deploy automático por push a `main`.
+
+Sin cambios al reglamento. Los bloqueantes de §6 siguen abiertos tal cual estaban en v0.5.
+
 **v0.6** — Pendiente. Se produce cuando se cierren los bloqueantes restantes del §6 por simulación. Debe fijar dado de combate, iniciativa, curva de XP, efectos ambientales, Suerte, condición de victoria y contenido del onboarding inicial.

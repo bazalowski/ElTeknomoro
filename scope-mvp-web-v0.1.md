@@ -1,7 +1,7 @@
 # El Teknomoro — Scope del MVP web
 
 > Contrato de alcance. Qué entra en v1 del navegador, qué no entra, en qué orden se construye y qué lo bloquea.
-> **Versión:** v0.1 · **Fecha:** 24 de abril de 2026
+> **Versión:** v0.4 · **Fecha:** 25 de abril de 2026 (H0 cerrado)
 > **Autor:** el-teknomoro-director
 > **Destino:** referencia firme del equipo (Bazalo + dirección) durante toda la construcción del MVP. Si algo no está aquí, no se construye en v1.
 
@@ -400,19 +400,18 @@ No todo se decide hoy. Estas quedan marcadas para decidirlas cuando llegue su hi
 
 ## 9. Qué hace Bazalo esta semana
 
-Estado al cerrar v0.3 del scope (biblia v0.5):
+Estado al cerrar v0.4 del scope (biblia v0.5.1, 25/4/2026):
 
+- **H0:** **cerrado** y desplegado en Vercel. URL con login funcional y "Hola {usuario}" post-auth.
 - **Dado de exploración:** cerrado (1d20).
 - **Tirada reactiva:** cerrada (marco común + 10 tipos).
-- **H0:** totalmente desbloqueado, se puede arrancar cuando Bazalo quiera.
 - **H1:** bloqueado solo por el dado de combate. Todo lo demás del módulo ya está diseñado.
 
 Orden de atención:
 
-1. **Arrancar H0.** No depende de ningún bloqueante. Trabajo productivo desde ya.
-2. **Cerrar el dado de combate** por simulación numérica. Es el único bloqueante numérico crítico que queda antes de H1.
-3. **Revisar §2** y marcar cualquier "fuera del MVP" intolerable.
-4. Bloqueantes de segundo orden (Suerte, iniciativa, curva de XP, onboarding narrativo) se cierran cuando el dado de combate cierre, no antes.
+1. **Cerrar el dado de combate** por simulación numérica. Único bloqueante numérico crítico antes de H1.
+2. Revisar §2 y marcar cualquier "fuera del MVP" intolerable.
+3. Bloqueantes de segundo orden (Suerte, iniciativa, curva de XP, onboarding narrativo) se cierran cuando el dado de combate cierre, no antes.
 
 ---
 
@@ -439,3 +438,8 @@ Orden de atención:
 - H1 amplía entregable con `resolveEvadeCheck` como función pura separada y test unitario por cada uno de los 10 tipos.
 - §4 bloqueantes: eliminados "Dado de exploración" y "Diseño de tirada reactiva por tipo". Bloqueantes restantes = 8.
 - §9 semana actualizada: solo queda el dado de combate como bloqueante numérico crítico antes de H1. H0 totalmente desbloqueado.
+
+**v0.4** — H0 cerrado y desplegado (25/4/2026). Sin cambios de reglamento. Cambios al scope:
+
+- §9 "Qué hace Bazalo esta semana": H0 marcado como cerrado. El orden de atención pierde el punto 1 (arrancar H0). Ahora la tarea prioritaria es cerrar el dado de combate.
+- §4 bloqueantes sin cambios: el dado de combate y los de segundo orden siguen abiertos. El cierre de H0 no era un bloqueante, era un hito.
