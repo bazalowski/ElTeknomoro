@@ -98,17 +98,29 @@ La convivencia uso + XP se cierra con este modelo: el uso premia la coherencia d
 
 ### 4.3 Sistema de tiradas
 
-**Estado: BLOQUEANTE. Pendiente de simulación.**
+**Estado: cerrado en v0.6 tras simulación (decisión #36).**
 
-Pregunta fundamental sin responder: ¿dado pool (tiro N dados, cuento éxitos sobre un umbral) o dado único (tiro un d20/d100, sumo modificadores)?
+El dado de **combate** es **pool de d6 con umbral de éxito en 4+**. Resolución:
 
-Hasta que esa pregunta se responda, todos los números de balance son provisionales. Recomendación de dirección: **pool de d6 con umbral de éxito en 4+**. Razones:
+1. El atacante tira `N` dados d6, donde `N = ATR + HAB`.
+2. Cada dado que saca **4, 5 o 6** cuenta como **1 éxito**.
+3. Cada **6** habilita además crítico: si en la tirada hay **2 o más seises**, el ataque que impacta es crítico.
+4. El ataque impacta si `éxitos ≥ umbral_DEF` (umbral derivado de la DEF del objetivo, ver §4.4).
+5. El daño es función del arma base + el margen de éxitos sobre el umbral. El crítico dobla el daño final.
 
-- Más dados = más sensación de progresión palpable (pasar de 3 a 4 dados se siente).
-- d6 es el dado más accesible mentalmente.
-- Umbral 4+ da 50% base por dado, fácil de intuir.
+Razones del cierre (validadas en `simulaciones/dado-combate-v0.2.md`):
 
-Esta recomendación NO está cerrada. Se cierra solo con simulación numérica documentada.
+- **Sensación de progresión palpable**: subir 1 punto en niveles bajos da +18.9% de probabilidad de impactar (criterio de §4.3 cumplido sin asteriscos).
+- **Crítico jugable sin reglas extra**: 7-66% de crítico según el build, los seises emergen del propio dado.
+- **Ritmo cuadra con MVP**: 3 turnos contra enemigo medio, 8 turnos contra jefe. Encaja con el objetivo del scope (§7).
+- **d6 es el dado más accesible mentalmente** y "cuenta los 4+" es regla unitaria.
+
+Limitaciones conocidas, asumidas:
+
+- En niveles altos el experto satura P(impactar) cerca del 100%. El crecimiento se canaliza vía daño y críticos, no consistencia. Si en H3-H7 esto se siente plano, se introducirá una mecánica de techo (DEF crece más rápido o defensa con dados); no se decide ahora.
+- Render de pools grandes (hasta 17 dados con builds extremos) es problema de UX, se resuelve en H3 con animación agregada.
+
+El dado de **exploración** sigue siendo **1d20** (decisión #26, §4.15.4), independiente y separado del de combate por arquitectura (decisión #20).
 
 ### 4.4 Defensa
 
@@ -511,20 +523,20 @@ Estas no se reabren sin motivo fuerte. Si Bazalo las cuestiona, la dirección le
 | 33 | Hallazgo y POI resuelven tirada antes del modal; jugador ve resultado, no tirada. | v0.5 |
 | 34 | Refugio: la tirada reactiva modula calidad, no evita. | v0.5 |
 | 35 | Historial persiste tiradas raíz **y** reactivas juntas en Modo Privado. | v0.5 |
+| 36 | Dado de combate: **pool de d6 con éxito 4+**. N dados = ATR + HAB. Crítico si ≥2 seises. Daño = arma + margen sobre umbral; crítico dobla. | v0.6 |
 
 ---
 
 ## 6. Preguntas abiertas
 
-### Bloqueantes (hay que responderlas antes de v0.6)
+### Bloqueantes (hay que responderlas antes de v0.7)
 
-1. **¿Pool de dados o dado único para combate?** Determina la matemática del subsistema de combate. Se cierra con simulación.
-2. **Fórmula de iniciativa** (depende de 1).
-3. **Curva de XP para llegar a nivel 50** (depende de 1 y del ritmo esperado de combate).
-4. **Efectos numéricos de día/noche, clima y terreno** (depende de 1 y del 1d20 de exploración).
-5. **Definición de "Suerte"** como variable de exploración: atributo derivado, stat oculto o consumible.
-6. **Qué cuenta como "partida terminada"** en modo Historia (condición de victoria/cierre narrativo).
-7. **Contenido exacto de la decisión inmediata + primer combate forzado** del onboarding.
+1. **Fórmula de iniciativa** (ahora desbloqueada: el dado de combate cerró en v0.6 como pool d6 4+, decisión #36).
+2. **Curva de XP para llegar a nivel 50** (depende del ritmo real de combate observado en H3).
+3. **Efectos numéricos de día/noche, clima y terreno** (depende del dado de exploración 1d20 ya cerrado).
+4. **Definición de "Suerte"** como variable de exploración: atributo derivado, stat oculto o consumible.
+5. **Qué cuenta como "partida terminada"** en modo Historia (condición de victoria/cierre narrativo).
+6. **Contenido exacto de la decisión inmediata + primer combate forzado** del onboarding.
 
 ### Importantes (v0.7 puede vivir sin ellas, pero no mucho más)
 
@@ -736,4 +748,11 @@ Login → Modo (Historia/Libre) → Creación → Tutorial guiado → Decisión 
 
 Sin cambios al reglamento. Los bloqueantes de §6 siguen abiertos tal cual estaban en v0.5.
 
-**v0.6** — Pendiente. Se produce cuando se cierren los bloqueantes restantes del §6 por simulación. Debe fijar dado de combate, iniciativa, curva de XP, efectos ambientales, Suerte, condición de victoria y contenido del onboarding inicial.
+**v0.6** — Cierre del **dado de combate** (25/4/2026) tras dos rondas de simulación documentadas en `simulaciones/dado-combate-v0.1.md` (común a los tres candidatos) y `simulaciones/dado-combate-v0.2.md` (recalibración por candidato para evitar saturación de B/C). Cambios:
+
+- §4.3 reescrito: el sistema de tiradas de combate queda cerrado como **pool de d6 con éxito 4+**, N dados = ATR + HAB, crítico con ≥2 seises, daño = arma + margen, crítico dobla.
+- Decisión #36 añadida en §5.
+- §6 bloqueantes: cerrado el dado de combate. Quedan 6 bloqueantes (todos dependen del ritmo de H3 o de diseño narrativo). La iniciativa y la curva de XP ya no son bloqueantes "matemáticos puros": son ajustes de parámetro sobre el dado cerrado.
+- Sin cambios en exploración (sigue 1d20, decisión #26) ni en arquitectura.
+
+**v0.7** — Pendiente. Se produce cuando se cierren los bloqueantes restantes del §6. Debe fijar iniciativa, curva de XP, efectos ambientales, Suerte, condición de victoria y contenido del onboarding inicial.

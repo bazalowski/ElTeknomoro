@@ -1,7 +1,7 @@
 // Simulación del dado de combate — El Teknomoro
 // Corre con: node simulaciones/dado-combate.mjs
 // Determinista: mismo seed, mismos resultados.
-// Ver simulaciones/dado-combate-v0.1.md para contexto y metodología.
+// Ver simulaciones/dado-combate-v0.2.md para contexto y metodología.
 
 const SEED = 0xcafebabe;
 const ITERACIONES = 10_000;
@@ -91,19 +91,41 @@ function candidatoC_2d10(rng, atr, hab, def, daño_base_arma) {
 
 // -----------------------------------------------------------------------------
 // Perfiles de encuentro
+//
+// v0.2: cada candidato tiene su propio set de DEF.
+// Motivo: B/C suman ATR+HAB al dado. Con la DEF original (4-12) saturaban al
+// 95-99% de impactar y la comparación contra A no era honesta. Subiendo DEF
+// para B/C el rango operativo de los tres queda alineado en P(impactar) y
+// permite comparar varianza, daño y sensibilidad de tú a tú.
+//
+// HP_obj y arma se mantienen iguales para los tres candidatos: lo que medimos
+// es el dado, no la curva de HP.
 // -----------------------------------------------------------------------------
-const PERFILES = [
-  { nombre: 'Novato vs novato', atr: 2, hab: 1, def: 4, hp_obj: 10, arma: 2 },
-  { nombre: 'Experto vs novato', atr: 5, hab: 8, def: 4, hp_obj: 10, arma: 3 },
-  { nombre: 'Medio 1v1', atr: 4, hab: 5, def: 8, hp_obj: 20, arma: 3 },
-  { nombre: 'Jefe vs mid', atr: 4, hab: 5, def: 12, hp_obj: 40, arma: 3 },
+const PERFILES_BASE = [
+  { nombre: 'Novato vs novato', atr: 2, hab: 1, hp_obj: 10, arma: 2 },
+  { nombre: 'Experto vs novato', atr: 5, hab: 8, hp_obj: 10, arma: 3 },
+  { nombre: 'Medio 1v1', atr: 4, hab: 5, hp_obj: 20, arma: 3 },
+  { nombre: 'Jefe vs mid', atr: 4, hab: 5, hp_obj: 40, arma: 3 },
 ];
+
+// DEF nativa por candidato. A se queda con la DEF original de v0.1.
+// B/C suben para que ATR+HAB+dado no aplaste la DEF.
+const DEFS_POR_CANDIDATO = {
+  'A · pool d6 4+':  [4, 4, 8, 12],
+  'B · 1d20+mods':   [10, 14, 18, 22],
+  'C · 2d10+mods':   [10, 14, 18, 22],
+};
 
 const CANDIDATOS = [
   { nombre: 'A · pool d6 4+', fn: candidatoA_pool },
   { nombre: 'B · 1d20+mods', fn: candidatoB_d20 },
   { nombre: 'C · 2d10+mods', fn: candidatoC_2d10 },
 ];
+
+function perfilesPara(candidato) {
+  const defs = DEFS_POR_CANDIDATO[candidato.nombre];
+  return PERFILES_BASE.map((p, i) => ({ ...p, def: defs[i] }));
+}
 
 // -----------------------------------------------------------------------------
 // Simulación
@@ -156,25 +178,28 @@ function sensibilidad(candidato, perfil, rng) {
 const pct = (x) => (x * 100).toFixed(1).padStart(5) + '%';
 const fx = (x, n = 2) => x.toFixed(n).padStart(6);
 
-console.log(`\n=== SIMULACIÓN DADO DE COMBATE · ${ITERACIONES.toLocaleString()} iteraciones · seed ${SEED} ===\n`);
+console.log(`\n=== SIMULACIÓN DADO DE COMBATE v0.2 · ${ITERACIONES.toLocaleString()} iteraciones · seed ${SEED} ===\n`);
+console.log('Nota: cada candidato usa su propia tabla de DEF para evitar saturación de B/C.\n');
 
 for (const cand of CANDIDATOS) {
-  console.log(`── ${cand.nombre} ──`);
-  console.log('Perfil              | P(imp) | P(crit)| P(pif) | DañoMed |  σ  |  CV  | KO turnos | Δ+1atr impacto | Δ+1atr daño');
-  console.log('--------------------|--------|--------|--------|---------|------|------|-----------|----------------|------------');
-  for (const perfil of PERFILES) {
+  const perfiles = perfilesPara(cand);
+  console.log(`── ${cand.nombre} ──  (DEFs: ${perfiles.map((p) => p.def).join(' / ')})`);
+  console.log('Perfil              | DEF | P(imp) | P(crit)| P(pif) | DañoMed |  σ  |  CV  | KO turnos | Δ+1atr impacto | Δ+1atr daño');
+  console.log('--------------------|-----|--------|--------|--------|---------|------|------|-----------|----------------|------------');
+  for (const perfil of perfiles) {
     const rng = createRng(SEED);
     const m = medir(cand, perfil, rng);
     const rngSens = createRng(SEED);
     const s = sensibilidad(cand, perfil, rngSens);
     console.log(
-      `${perfil.nombre.padEnd(20)}|${pct(m.pImpactar)} |${pct(m.pCritico)} |${pct(m.pPifia)} | ${fx(m.dañoMedio)}  |${fx(m.dañoStd, 2)}|${fx(m.cv, 2)}|${fx(m.turnosKO, 2)}    |${pct(s.deltaPImpacto).padStart(14)}  |${fx(s.deltaDaño, 2).padStart(10)}`,
+      `${perfil.nombre.padEnd(20)}| ${String(perfil.def).padStart(2)}  |${pct(m.pImpactar)} |${pct(m.pCritico)} |${pct(m.pPifia)} | ${fx(m.dañoMedio)}  |${fx(m.dañoStd, 2)}|${fx(m.cv, 2)}|${fx(m.turnosKO, 2)}    |${pct(s.deltaPImpacto).padStart(14)}  |${fx(s.deltaDaño, 2).padStart(10)}`,
     );
   }
   console.log('');
 }
 
 console.log('--- Guía de lectura ---');
+console.log('DEF:       defensa del objetivo en este perfil (varía por candidato).');
 console.log('P(imp):    probabilidad de impactar.');
 console.log('P(crit):   probabilidad de crítico.');
 console.log('P(pif):    probabilidad de pifia (solo B/C).');

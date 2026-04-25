@@ -313,18 +313,18 @@ Estos no son "trabajo del MVP", son pre-requisitos. Sin cerrarlos, los hitos cor
 
 | Bloqueante | Bloquea el Hito | Estado | Cómo se cierra |
 |---|---|---|---|
-| Dado de combate (pool vs único) | H1, H3 | Abierto | Simulación numérica |
+| Dado de combate (pool vs único) | H1, H3 | **Cerrado (pool d6 4+, decisión #36)** | — |
 | Dado de exploración | H1, H4 | **Cerrado (1d20)** | — |
-| Fórmula de iniciativa | H3 | Abierto | Simulación (depende del dado de combate) |
+| Fórmula de iniciativa | H3 | Abierto | Simulación (ahora desbloqueada por el cierre del dado de combate) |
 | Curva de XP al nivel 50 | H7 | Abierto | Simulación + ritmo de combate de H3 |
 | Definición de "Suerte" como variable de exploración | H1 | Abierto | Decisión de diseño + simulación |
 | Diseño de la tirada reactiva por tipo de evento | H1, H4 | **Cerrado (v0.5 biblia §4.15.6–§4.15.9)** | — |
 | Contenido concreto del onboarding (decisión + combate forzado) | H9 | Abierto | Sesión de diseño de narrativa |
-| Stat-lines definitivas de los 5 arquetipos | H2 | Abierto | Se deriva del dado de combate |
-| Lista concreta de habilidades | H2 | Abierto | Se deriva del dado de combate |
+| Stat-lines definitivas de los 5 arquetipos | H2 | Abierto | Se deriva del dado de combate (ahora cerrado, ya derivable) |
+| Lista concreta de habilidades | H2 | Abierto | Se deriva del dado de combate (ahora cerrado, ya derivable) |
 | Tablas de exploración iniciales (5 biomas) | H4 | Abierto | Se redacta en H4 con herramientas de H8 adelantadas si hace falta |
 
-H0 no tiene bloqueantes y se puede arrancar cuando Bazalo quiera.
+H1 desbloqueado: con el dado de combate cerrado, ya no quedan bloqueantes que impidan empezar `rules/dice.ts` con su primitiva de combate.
 
 ---
 
@@ -400,18 +400,19 @@ No todo se decide hoy. Estas quedan marcadas para decidirlas cuando llegue su hi
 
 ## 9. Qué hace Bazalo esta semana
 
-Estado al cerrar v0.4 del scope (biblia v0.5.1, 25/4/2026):
+Estado al cerrar v0.5 del scope (biblia v0.6, 25/4/2026):
 
-- **H0:** **cerrado** y desplegado en Vercel. URL con login funcional y "Hola {usuario}" post-auth.
+- **H0:** **cerrado** y desplegado en Vercel.
 - **Dado de exploración:** cerrado (1d20).
 - **Tirada reactiva:** cerrada (marco común + 10 tipos).
-- **H1:** bloqueado solo por el dado de combate. Todo lo demás del módulo ya está diseñado.
+- **Dado de combate:** **cerrado** (pool d6 4+, decisión #36) tras simulación v0.2.
+- **H1:** **desbloqueado**. Empieza ya por `rules/dice.ts` (añadir primitiva de combate junto a la de exploración).
 
 Orden de atención:
 
-1. **Cerrar el dado de combate** por simulación numérica. Único bloqueante numérico crítico antes de H1.
-2. Revisar §2 y marcar cualquier "fuera del MVP" intolerable.
-3. Bloqueantes de segundo orden (Suerte, iniciativa, curva de XP, onboarding narrativo) se cierran cuando el dado de combate cierre, no antes.
+1. **Arrancar H1** por `rules/dice.ts`: añadir `rollCombatPool` (pool d6 4+, conteo de éxitos y seises). Tests unitarios de distribución y determinismo.
+2. Continuar H1 por orden: `rules/character.ts` → `rules/progression.ts` → `rules/exploration.ts` + `resolveEvadeCheck`.
+3. Bloqueantes de segundo orden (iniciativa, curva de XP, Suerte) se cierran cuando aparezcan en su hito, ya con el dado en mano.
 
 ---
 
@@ -443,3 +444,9 @@ Orden de atención:
 
 - §9 "Qué hace Bazalo esta semana": H0 marcado como cerrado. El orden de atención pierde el punto 1 (arrancar H0). Ahora la tarea prioritaria es cerrar el dado de combate.
 - §4 bloqueantes sin cambios: el dado de combate y los de segundo orden siguen abiertos. El cierre de H0 no era un bloqueante, era un hito.
+
+**v0.5** — Cierre del **dado de combate** (25/4/2026, biblia v0.6, decisión #36). Cambios:
+
+- §4 bloqueantes: marcado **Cerrado** el dado de combate (pool d6 4+). La iniciativa queda explícitamente desbloqueada para H3. Stat-lines y habilidades quedan derivables.
+- §9 reescrita: H1 está desbloqueado. La semana arranca por `rules/dice.ts` (añadir `rollCombatPool`) y baja por el resto de módulos del hito.
+- Sin cambios en §1, §2, §3, §5, §6, §7, §8: el cierre del dado no altera el inventario del MVP, los hitos ni la estimación.
