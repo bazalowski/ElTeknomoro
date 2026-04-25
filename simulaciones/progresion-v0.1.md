@@ -3,7 +3,7 @@
 > **Propósito:** cerrar los 4 huecos abiertos del sistema de progresión que bloquean `rules/progression.ts` (módulo restante de H1).
 > **Versión:** v0.1 · **Fecha:** 25 de abril de 2026
 > **Autor:** el-teknomoro-director
-> **Estado:** preguntas planteadas, decisiones pendientes de Bazalo en una sola sesión.
+> **Estado:** **cerrado.** Las 4 propuestas del director aprobadas por Bazalo en una sola pasada (25/4/2026). Decisiones #37-#40 anotadas en biblia v0.7.
 > **Script de soporte:** [`progresion.mjs`](./progresion.mjs)
 
 ---
@@ -234,25 +234,17 @@ Por qué cuadra con tu brújula (§4.15: "libertad → cautela y opción a prepa
 
 ---
 
-## Resumen para responder de un tirón
+## Resumen de las decisiones cerradas
 
-Si copias y pegas estas 4 líneas con tu respuesta, tengo todo lo que necesito:
+Las 4 propuestas del director aprobadas tal cual por Bazalo:
 
-- **P1 curva XP**: ___________ (lineal `100·n` / suave `75·n^1.3` / propia: ____)
-- **P2 cadencia puntos**: ___________ (B aprobado / B con ajustes: ____ / propia: ____)
-- **P3 techo blando**: ___________ (A fijo / B `min(floor(level/2)+2, 7)` / C sin techo)
-- **P4 curva uso**: ___________ (lineal / exponencial `5·1.7^v` / cuadrática)
-
-Tras tu respuesta:
-
-1. Anoto decisiones #37, #38, #39, #40 en biblia §5.
-2. Reescribo §4.2 (uso + XP con números) y §4.11 (cadencia de puntos).
-3. Cierro bloqueante "curva de XP al nivel 50" en §6.
-4. Escribo `rules/progression.ts` con esos números reales, sus tests, commit + push.
-5. **H1 entregable según scope §3 cerrado.**
+- **P1 — curva XP**: **lineal `XP(n) = 100·n`**. → decisión #37.
+- **P2 — cadencia de puntos**: modelo B. **+2 hab/nivel + 1 atr cada 5 niveles + 1 perk cada 5 niveles**. Niveles redondos (5, 10, 15…) son los rituales: dan los tres tipos a la vez. → decisión #38.
+- **P3 — techo blando del uso**: **`min(floor(level/2) + 2, 7)`**. → decisión #39.
+- **P4 — curva de uso**: **exponencial `5·1.7^v`** (redondeada al entero más cercano). → decisión #40.
 
 ---
 
 ## Historial
 
-**v0.1** — 25/4/2026. Primera ronda de las 4 preguntas con simulación numérica de soporte (`progresion.mjs`). Pendiente de respuesta de Bazalo.
+**v0.1** — 25/4/2026. Primera y única ronda de las 4 preguntas con simulación numérica de soporte (`progresion.mjs`). Bazalo aprueba las 4 propuestas del director sin cambios. Decisiones #37-#40 anotadas en biblia v0.7. Bloqueante "curva de XP al nivel 50" cerrado en §6. `rules/progression.ts` desbloqueado.

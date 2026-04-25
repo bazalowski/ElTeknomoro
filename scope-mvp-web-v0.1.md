@@ -316,7 +316,7 @@ Estos no son "trabajo del MVP", son pre-requisitos. Sin cerrarlos, los hitos cor
 | Dado de combate (pool vs único) | H1, H3 | **Cerrado (pool d6 4+, decisión #36)** | — |
 | Dado de exploración | H1, H4 | **Cerrado (1d20)** | — |
 | Fórmula de iniciativa | H3 | Abierto | Simulación (ahora desbloqueada por el cierre del dado de combate) |
-| Curva de XP al nivel 50 | H7 | Abierto | Simulación + ritmo de combate de H3 |
+| Curva de XP al nivel 50 | H7 | **Cerrada (lineal `100·n`, decisión #37)** | — |
 | Definición de "Suerte" como variable de exploración | H1 | Abierto | Decisión de diseño + simulación |
 | Diseño de la tirada reactiva por tipo de evento | H1, H4 | **Cerrado (v0.5 biblia §4.15.6–§4.15.9)** | — |
 | Contenido concreto del onboarding (decisión + combate forzado) | H9 | Abierto | Sesión de diseño de narrativa |
@@ -400,19 +400,20 @@ No todo se decide hoy. Estas quedan marcadas para decidirlas cuando llegue su hi
 
 ## 9. Qué hace Bazalo esta semana
 
-Estado al cerrar v0.5 del scope (biblia v0.6, 25/4/2026):
+Estado al cerrar v0.6 del scope (biblia v0.7, 25/4/2026):
 
 - **H0:** **cerrado** y desplegado en Vercel.
 - **Dado de exploración:** cerrado (1d20).
+- **Dado de combate:** cerrado (pool d6 4+, decisión #36).
 - **Tirada reactiva:** cerrada (marco común + 10 tipos).
-- **Dado de combate:** **cerrado** (pool d6 4+, decisión #36) tras simulación v0.2.
-- **H1:** **desbloqueado**. Empieza ya por `rules/dice.ts` (añadir primitiva de combate junto a la de exploración).
+- **Subsistema de progresión:** cerrado (decisiones #37-#40: curva XP `100·n`, cadencia +2 hab/nivel + 1 atr/5 + 1 perk/5, techo blando `min(floor(level/2)+2, 7)`, curva uso `5·1.7^v`).
+- **H1 código:** `rules/dice.ts`, `rules/character.ts`, `rules/exploration.ts` cerrados. Falta `rules/progression.ts`.
 
 Orden de atención:
 
-1. **Arrancar H1** por `rules/dice.ts`: añadir `rollCombatPool` (pool d6 4+, conteo de éxitos y seises). Tests unitarios de distribución y determinismo.
-2. Continuar H1 por orden: `rules/character.ts` → `rules/progression.ts` → `rules/exploration.ts` + `resolveEvadeCheck`.
-3. Bloqueantes de segundo orden (iniciativa, curva de XP, Suerte) se cierran cuando aparezcan en su hito, ya con el dado en mano.
+1. **Cerrar H1** escribiendo `rules/progression.ts` con los números de las decisiones #37-#40. Tests por cada vía (uso, XP, level-up, cadencia, techo blando).
+2. **H1 ENTREGABLE COMPLETO** según scope §3 una vez cierre `progression.ts`.
+3. Tras H1, arrancar H2 (creación de personaje en UI). Bloqueantes restantes (iniciativa, Suerte, etc.) se cierran cuando aparezcan en su hito.
 
 ---
 
@@ -450,3 +451,9 @@ Orden de atención:
 - §4 bloqueantes: marcado **Cerrado** el dado de combate (pool d6 4+). La iniciativa queda explícitamente desbloqueada para H3. Stat-lines y habilidades quedan derivables.
 - §9 reescrita: H1 está desbloqueado. La semana arranca por `rules/dice.ts` (añadir `rollCombatPool`) y baja por el resto de módulos del hito.
 - Sin cambios en §1, §2, §3, §5, §6, §7, §8: el cierre del dado no altera el inventario del MVP, los hitos ni la estimación.
+
+**v0.6** — Cierre del **subsistema de progresión** (25/4/2026, biblia v0.7, decisiones #37-#40). Cambios:
+
+- §4 bloqueantes: marcada **Cerrada** la curva de XP al nivel 50 (lineal `100·n`).
+- §9 reescrita: H1 al 75% en código (faltan solo `progression.ts`). La semana se centra en cerrar ese módulo con los números reales y dar H1 por entregable completo.
+- Sin cambios en §1, §2, §3, §5, §6, §7, §8.

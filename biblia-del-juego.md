@@ -85,16 +85,51 @@ Los cinco atributos se confirman en esta versión porque son el eje vertebral de
 
 ### 4.2 Habilidades
 
-**Estado: estructura propuesta, lista abierta.**
+**Estado: estructura y números cerrados (decisiones #9, #39, #40). Lista concreta de habilidades abierta.**
 
-- 10 puntos para repartir en creación, máximo 3 al crear.
+- 10 puntos para repartir en creación, máximo 3 al crear (decisión #9).
+- Techo absoluto = 7 (igual que atributos, §4.1).
 - Las habilidades suben por **dos vías que conviven**:
-  - **Uso**: usar la habilidad acumula progreso hasta un techo blando.
-  - **XP**: al subir de nivel, puntos para gastar rompen ese techo.
+  - **Uso**: usar la habilidad acumula progreso en `skills.{id}.usage`. Al alcanzar el umbral de uso para el escalón actual, `value` sube en 1 y `usage` se resetea a 0. La vía del uso solo puede subir hasta el **techo blando**.
+  - **XP**: al subir de nivel se reciben puntos de habilidad (§4.11). Cada punto sube `value` en 1 directamente, sin tocar `usage`. Esta vía **rompe el techo blando** y solo se detiene en el techo absoluto = 7.
 
-La convivencia uso + XP se cierra con este modelo: el uso premia la coherencia del jugador (haces lo que tu personaje hace), el XP premia la estrategia de build (decides dónde invertir). El uso llega hasta cierto techo, el XP rompe el techo. Esto evita el problema de Skyrim (farmear saltos) y el problema de Diablo (builds rígidos).
+**Techo blando del uso (decisión #39):**
 
-**Lista concreta de habilidades:** pendiente. Se aborda cuando los bloqueantes de dado y defensa estén cerrados.
+```
+techo_blando(level) = min(floor(level / 2) + 2, 7)
+```
+
+Tabla de techos por nivel:
+
+| Nivel | Techo blando | Comentario |
+|---|---|---|
+| 1 | 2 | Coherente con el máximo de creación (3): habilidades de creación ya rozan el techo desde el día 1. |
+| 5 | 4 | A nivel 5, el uso lleva habilidades hasta 4. |
+| 10+ | 7 | A partir de nivel 10, el techo blando llega al absoluto: el uso por sí solo puede llevar cualquier habilidad hasta 7. |
+
+Diseño detrás del techo: en niveles bajos, el uso premia el rol coherente sin permitir maximizar; el XP de los primeros niveles compra los escalones que el uso aún no permite. En niveles altos, ambas vías convergen y la elección "dónde gastar XP" se vuelve "qué priorizar" en lugar de "qué desbloquear".
+
+**Curva de uso (decisión #40):**
+
+```
+tiradas_para_subir(value) = round(5 · 1.7^value)
+```
+
+Tiradas que `usage` debe acumular para que `value` pase de v a v+1:
+
+| Sube de | Tiradas | Acumulado |
+|---|---|---|
+| 0 → 1 | 5 | 5 |
+| 1 → 2 | 9 | 14 |
+| 2 → 3 | 14 | 28 |
+| 3 → 4 | 25 | 53 |
+| 4 → 5 | 42 | 95 |
+| 5 → 6 | 71 | 166 |
+| 6 → 7 | 121 | 287 |
+
+Cada tirada reactiva (decisión #30) suma 1 a `usage` ganes o pierdas. La curva exponencial garantiza que habilidades nuevas suben rápido (premia probar verbos) y habilidades dominantes se vuelven caras (empuja a diversificar el build).
+
+**Lista concreta de habilidades:** pendiente. Se redacta cuando el catálogo de enemigos y la lista de perks entren en scope (H7 según `scope-mvp-web-v0.1.md` §3).
 
 ### 4.3 Sistema de tiradas
 
@@ -253,14 +288,35 @@ El tutorial es **escena guiada**, no tooltips contextuales ni "aprender jugando"
 
 ### 4.11 Progresión
 
-**Estado: estructura cerrada, curva abierta.**
+**Estado: estructura y números cerrados (decisiones #15, #37, #38). Catálogo de logros y de facciones abierto.**
 
-- **Nivel máximo 50.**
-- **Subir de nivel no es automático:** el jugador pulsa "Subir nivel" cuando quiere (estilo Diablo). Pausa el juego.
-- **Curva de XP:** pendiente del sistema de dados y del ritmo de combate esperado. Para wireframe se reserva espacio tipo "XP: 1.234 / 9.999".
-- **Logros:** 15 en MVP, cubriendo hitos clave (primer combate ganado, primer craft, primera muerte evitada, etc.).
-- **Facciones:** 3 en MVP con reputación numérica. Las decisiones del jugador mueven reputación en ambas direcciones.
-- **Re-spec:** disponible, cuesta recurso de juego (no gratis, no ilimitado).
+- **Nivel máximo 50** (decisión #15).
+- **Subir de nivel no es automático:** el jugador pulsa "Subir nivel" cuando alcanza el umbral. Pausa el juego.
+- **Curva de XP (decisión #37):** lineal `XP(n) = 100·n` para pasar de nivel n-1 a n. El XP necesario crece de forma constante (200 para subir a 2, 5.000 para subir de 49 a 50). Total acumulado al 50: 127.400 XP.
+
+**Cadencia de puntos al subir nivel (decisión #38):**
+
+Cada vez que el jugador pulsa "Subir nivel" recibe un paquete según la regla:
+
+| Tipo | Cadencia |
+|---|---|
+| Habilidades | **+2 puntos cada nivel** |
+| Atributos | **+1 punto cada 5 niveles** |
+| Perks | **+1 perk cada 5 niveles** |
+
+Los niveles redondos (5, 10, 15, 20, 25, 30, 35, 40, 45, 50) son **rituales**: entregan los tres tipos a la vez. Los niveles intermedios solo entregan habilidades. El diseño busca reforzar el momento del nivel redondo como evento, no diluirlo.
+
+Totales en una partida completa (49 escalones, nivel 1 → 50):
+
+- 98 puntos de habilidad (= ~14 habilidades hasta el cap absoluto, o muchas más si se reparte).
+- 10 puntos de atributo (= subes 2 atributos del 1 al 6, o 1 al cap 7 y otro un par de puntos).
+- 10 perks adicionales (más el de creación = 11 perks por personaje).
+
+Cada punto de atributo o habilidad gastado por XP sube `value` directamente y rompe el techo blando del uso (§4.2).
+
+- **Logros:** 15 en MVP, cubriendo hitos clave (primer combate ganado, primer craft, primera muerte evitada, etc.). Catálogo concreto pendiente.
+- **Facciones:** 3 en MVP con reputación numérica. Las decisiones del jugador mueven reputación en ambas direcciones. Identidad concreta pendiente.
+- **Re-spec:** disponible, cuesta recurso de juego (no gratis, no ilimitado). Coste concreto pendiente.
 - **Hoja de personaje:** misma pantalla que creación, pero en modo read-only con secciones ampliadas (logros, facciones, biografía generada).
 
 ### 4.12 Inventario y equipo
@@ -524,19 +580,22 @@ Estas no se reabren sin motivo fuerte. Si Bazalo las cuestiona, la dirección le
 | 34 | Refugio: la tirada reactiva modula calidad, no evita. | v0.5 |
 | 35 | Historial persiste tiradas raíz **y** reactivas juntas en Modo Privado. | v0.5 |
 | 36 | Dado de combate: **pool de d6 con éxito 4+**. N dados = ATR + HAB. Crítico si ≥2 seises. Daño = arma + margen sobre umbral; crítico dobla. | v0.6 |
+| 37 | Curva de XP: **lineal `XP(n) = 100·n`** para pasar de nivel n-1 a n. Total al 50: 127.400 XP. | v0.7 |
+| 38 | Cadencia de puntos por nivel: **+2 habilidades cada nivel + 1 atributo cada 5 niveles + 1 perk cada 5 niveles**. Niveles redondos (5, 10, …) son rituales y entregan los tres tipos juntos. | v0.7 |
+| 39 | Techo blando del uso: una habilidad sube por uso hasta `min(floor(level/2) + 2, 7)`. A partir de ahí solo XP. UI muestra el techo activo. | v0.7 |
+| 40 | Curva de uso: tiradas necesarias para subir la habilidad de v a v+1 = `round(5 · 1.7^v)`. 0→1 = 5, 4→5 = 42, 6→7 = 121. | v0.7 |
 
 ---
 
 ## 6. Preguntas abiertas
 
-### Bloqueantes (hay que responderlas antes de v0.7)
+### Bloqueantes (hay que responderlas antes de v0.8)
 
-1. **Fórmula de iniciativa** (ahora desbloqueada: el dado de combate cerró en v0.6 como pool d6 4+, decisión #36).
-2. **Curva de XP para llegar a nivel 50** (depende del ritmo real de combate observado en H3).
-3. **Efectos numéricos de día/noche, clima y terreno** (depende del dado de exploración 1d20 ya cerrado).
-4. **Definición de "Suerte"** como variable de exploración: atributo derivado, stat oculto o consumible.
-5. **Qué cuenta como "partida terminada"** en modo Historia (condición de victoria/cierre narrativo).
-6. **Contenido exacto de la decisión inmediata + primer combate forzado** del onboarding.
+1. **Fórmula de iniciativa** (depende del dado de combate, ya cerrado #36; bloquea H3).
+2. **Efectos numéricos de día/noche, clima y terreno** (depende del dado de exploración 1d20 ya cerrado).
+3. **Definición de "Suerte"** como variable de exploración: atributo derivado, stat oculto o consumible.
+4. **Qué cuenta como "partida terminada"** en modo Historia (condición de victoria/cierre narrativo).
+5. **Contenido exacto de la decisión inmediata + primer combate forzado** del onboarding.
 
 ### Importantes (v0.7 puede vivir sin ellas, pero no mucho más)
 
@@ -755,4 +814,12 @@ Sin cambios al reglamento. Los bloqueantes de §6 siguen abiertos tal cual estab
 - §6 bloqueantes: cerrado el dado de combate. Quedan 6 bloqueantes (todos dependen del ritmo de H3 o de diseño narrativo). La iniciativa y la curva de XP ya no son bloqueantes "matemáticos puros": son ajustes de parámetro sobre el dado cerrado.
 - Sin cambios en exploración (sigue 1d20, decisión #26) ni en arquitectura.
 
-**v0.7** — Pendiente. Se produce cuando se cierren los bloqueantes restantes del §6. Debe fijar iniciativa, curva de XP, efectos ambientales, Suerte, condición de victoria y contenido del onboarding inicial.
+**v0.7** — Cierre del **subsistema de progresión** (25/4/2026) tras sesión de diseño documentada en `simulaciones/progresion-v0.1.md`. Cambios:
+
+- §4.2 reescrita con números cerrados: techo blando del uso `min(floor(level/2)+2, 7)` (decisión #39) y curva de uso `round(5·1.7^value)` (decisión #40).
+- §4.11 reescrita: curva de XP lineal `100·n` (decisión #37) y cadencia de puntos (+2 hab/nivel + 1 atr/5 niveles + 1 perk/5 niveles, decisión #38). Niveles redondos como rituales que entregan los tres tipos.
+- Decisiones #37-#40 añadidas en §5.
+- §6 bloqueantes: cerrada la curva de XP. Quedan 5 bloqueantes (iniciativa, efectos ambientales, Suerte, condición de victoria, onboarding narrativo).
+- Sin cambios en exploración, combate ni arquitectura.
+
+**v0.8** — Pendiente. Se produce cuando se cierren los bloqueantes restantes del §6. Debe fijar iniciativa, efectos ambientales, Suerte, condición de victoria y contenido del onboarding inicial.
