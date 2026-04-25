@@ -239,6 +239,14 @@ describe('selectByD20', () => {
     expect(selectByD20([{ entry: entry(), weight: 0 }], 10)).toBeNull();
   });
 
+  it('rechaza die fuera de [1, 20] o no entero', () => {
+    const w: WeightedEntry[] = [{ entry: entry(), weight: 10 }];
+    expect(() => selectByD20(w, 0)).toThrow(RangeError);
+    expect(() => selectByD20(w, 21)).toThrow(RangeError);
+    expect(() => selectByD20(w, 10.5)).toThrow(RangeError);
+    expect(() => selectByD20(w, NaN)).toThrow(RangeError);
+  });
+
   it('elige siempre la única entrada con peso > 0', () => {
     const e = entry();
     const weighted: WeightedEntry[] = [
@@ -415,13 +423,54 @@ describe('resolveEvadeCheck', () => {
       rngWithDie(10),
     );
     expect(result.branch).toBe('failure');
+    expect(result.opposed_resolved).toEqual({
+      mode: 'opposed',
+      difficulty: 18,
+      stat_name: 'enemy_perception',
+      stat_value: 18,
+    });
   });
 
-  it('opposed=true sin opposed_stat válido: usa fallback DIF=10', () => {
-    const check = baseEvade({ opposed: true, opposed_stat: 'no_existe', difficulty: 0 });
-    // sigilo=2, die=10 → total=12 ≥ 10 (fallback)
+  it('opposed_resolved.mode = "fixed" cuando opposed=false', () => {
+    const result = resolveEvadeCheck(
+      'combat',
+      {},
+      baseEvade({ opposed: false, difficulty: 12 }),
+      baseCharacter(),
+      rngWithDie(10),
+    );
+    expect(result.opposed_resolved).toEqual({ mode: 'fixed', difficulty: 12 });
+  });
+
+  it('opposed_resolved.mode = "opposed_fallback" si opposed_stat ausente', () => {
+    // opposed=true sin declarar opposed_stat → fallback DIF=10.
+    const check = baseEvade({ opposed: true, difficulty: 0 });
+    delete (check as { opposed_stat?: string }).opposed_stat;
     const result = resolveEvadeCheck('combat', {}, check, baseCharacter(), rngWithDie(10));
+    expect(result.opposed_resolved.mode).toBe('opposed_fallback');
+    expect(result.opposed_resolved.difficulty).toBe(10);
+    expect(result.opposed_resolved.stat_name).toBeUndefined();
+    // sigilo=2, die=10 → total=12 ≥ 10 → success contra el fallback.
     expect(result.branch).toBe('success');
+  });
+
+  it('opposed_resolved.mode = "opposed_fallback" si payload no tiene el stat o no es número', () => {
+    const check = baseEvade({ opposed: true, opposed_stat: 'no_existe', difficulty: 0 });
+    const r1 = resolveEvadeCheck('combat', {}, check, baseCharacter(), rngWithDie(10));
+    expect(r1.opposed_resolved).toEqual({
+      mode: 'opposed_fallback',
+      difficulty: 10,
+      stat_name: 'no_existe',
+    });
+    // Payload con stat presente pero no numérico (typo del autor de la tabla).
+    const r2 = resolveEvadeCheck(
+      'combat',
+      { no_existe: 'alto' },
+      check,
+      baseCharacter(),
+      rngWithDie(10),
+    );
+    expect(r2.opposed_resolved.mode).toBe('opposed_fallback');
   });
 
   it('skill ausente del personaje cuenta como valor 0', () => {

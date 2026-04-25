@@ -100,6 +100,9 @@ export interface WeightModifier {
   if_max_reputation?: { faction_id: string; value: number };
   if_min_luck?: number;
   if_max_luck?: number;
+  // Multiplicador. 1 = sin cambio. 0 = apaga la entrada (forma idiomática de
+  // decir "no aplica en estas condiciones"). Negativo se trata como 0 en
+  // computeEffectiveWeight. >1 sube probabilidad relativa.
   factor: number;
 }
 
@@ -175,11 +178,29 @@ export interface ExplorationEvent {
 
 export type EvadeOutcomeBranch = 'success' | 'critical' | 'failure' | 'fumble';
 
+// Cómo se resolvió la dificultad de esta tirada. Útil para auditar tablas:
+// - 'fixed': la entrada declara opposed=false, se usó check.difficulty.
+// - 'opposed': opposed=true y opposed_stat resuelto a número en el payload.
+// - 'opposed_fallback': opposed=true pero opposed_stat ausente, no nombrado o
+//   no numérico. Cayó al fallback DIF=10. La simulación masiva de §4.14 debe
+//   contar estos casos: si una tabla de producción los genera, hay bug de
+//   datos (typo en opposed_stat, payload mal montado, etc.).
+export interface OpposedResolution {
+  mode: 'fixed' | 'opposed' | 'opposed_fallback';
+  difficulty: number;
+  // Solo presente en 'opposed': nombre del campo del payload que se leyó y
+  // valor encontrado.
+  stat_name?: string;
+  stat_value?: number;
+}
+
 export interface EvadeResult {
   // El resultado decidido tras tirar. 'fumble' solo en eventos donde aplica.
   branch: EvadeOutcomeBranch;
   outcome: EvadeOutcome;
   roll: RollDetail;
+  // Cómo se resolvió la dificultad. Auditable.
+  opposed_resolved: OpposedResolution;
   // Coste efectivo aplicado (se replica para que el consumidor no lo recalcule).
   applied_cost: EvadeCost;
   // Si el evade primario falló y la entrada declara fallback_check (Trampa),
@@ -319,6 +340,9 @@ export function selectByD20(
   weighted: readonly WeightedEntry[],
   die: number,
 ): TableEntry | null {
+  if (!Number.isInteger(die) || die < 1 || die > 20) {
+    throw new RangeError(`selectByD20: die debe ser entero en [1, 20], recibido ${die}`);
+  }
   const total = weighted.reduce((sum, w) => sum + w.weight, 0);
   if (total <= 0) return null;
   // Posición dentro de [0, total) según el d20. die ∈ 1..20.
@@ -376,23 +400,33 @@ export function rollExplorationTick(
 // Tipos en los que aplica pifia mecánica. §4.15.6: combate, emboscada, trampa.
 const TYPES_WITH_FUMBLE: ReadonlySet<EventType> = new Set(['combat', 'ambush', 'trap']);
 
-// Mapeo simbólico de stat enfrentado → atributo del defensor mock. La biblia
-// §4.15.6 deja la mecánica enfrentada como "vs stat del evento", pero el
-// payload de cada entrada declara qué stat representa. En H1 implementamos
-// soporte para enfrentar contra un atributo del personaje (worldState no tiene
-// enemigos todavía: eso es trabajo de combat.ts/H3). Si el opposed_stat no
-// coincide con un atributo, la dificultad fija (10) se aplica como fallback.
+// Resuelve la dificultad efectiva de una evade_check y reporta cómo lo hizo.
+// Biblia §4.15.6: "vs stat del evento" para enfrentadas; el payload de la
+// entrada declara qué stat representa al rival. En H1 no hay enemigos reales
+// (combat.ts/H3 los proveerá); el payload es la fuente.
+//
+// Si opposed=true pero opposed_stat no resuelve (ausente, mal nombrado, no
+// numérico), caemos a DIF=10 deliberadamente neutro y MARCAMOS el resultado
+// como 'opposed_fallback' para que las herramientas dev de §4.14 detecten
+// tablas mal escritas.
+const OPPOSED_FALLBACK_DIFFICULTY = 10;
+
 function resolveOpposedDifficulty(
   check: EvadeCheck,
   payload: Readonly<Record<string, unknown>>,
-  fallback: number,
-): number {
-  if (!check.opposed) return check.difficulty;
+): OpposedResolution {
+  if (!check.opposed) {
+    return { mode: 'fixed', difficulty: check.difficulty };
+  }
   const statName = check.opposed_stat;
-  if (statName === undefined) return fallback;
+  if (statName === undefined) {
+    return { mode: 'opposed_fallback', difficulty: OPPOSED_FALLBACK_DIFFICULTY };
+  }
   const raw = payload[statName];
-  if (typeof raw === 'number' && Number.isFinite(raw)) return raw;
-  return fallback;
+  if (typeof raw === 'number' && Number.isFinite(raw)) {
+    return { mode: 'opposed', difficulty: raw, stat_name: statName, stat_value: raw };
+  }
+  return { mode: 'opposed_fallback', difficulty: OPPOSED_FALLBACK_DIFFICULTY, stat_name: statName };
 }
 
 function getSkillValue(character: Character, skillId: string): number {
@@ -416,9 +450,7 @@ function resolveSingleEvade(
   const fumbleApplies = TYPES_WITH_FUMBLE.has(type);
   const fumble = fumbleApplies && die === 1;
 
-  // Dificultad efectiva: enfrentada (lee del payload) o fija.
-  // El fallback 10 cuando opposed_stat no resuelve es deliberadamente neutro.
-  const difficulty = resolveOpposedDifficulty(check, payload, 10);
+  const opposed_resolved = resolveOpposedDifficulty(check, payload);
 
   let branch: EvadeOutcomeBranch;
   let outcome: EvadeOutcome;
@@ -428,7 +460,7 @@ function resolveSingleEvade(
   } else if (fumble && check.on_fumble !== null) {
     branch = 'fumble';
     outcome = check.on_fumble;
-  } else if (total >= difficulty) {
+  } else if (total >= opposed_resolved.difficulty) {
     branch = 'success';
     outcome = check.on_success;
   } else {
@@ -442,6 +474,7 @@ function resolveSingleEvade(
     branch,
     outcome,
     roll: { die, total, critical, fumble },
+    opposed_resolved,
     applied_cost: check.cost,
     cascade: null,
     trained_skill: check.trains_skill ? check.skill : null,
