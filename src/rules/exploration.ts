@@ -1,0 +1,465 @@
+// Módulo SAGRADO. Puro, determinista. Sin imports de Canvas, DOM, Supabase.
+// Biblia §4.15 entera. H1.
+//
+// Dos funciones públicas:
+//   - rollExplorationTick: dado un mundo + personaje + disparador + tabla del
+//     bioma, selecciona un evento (1d20 sobre rangos proporcionales a pesos
+//     filtrados y modulados).
+//   - resolveEvadeCheck: dada una entrada con evade_check, ejecuta la tirada
+//     reactiva (1d20 fija o enfrentada, 20 crítico, 1 pifia donde aplica,
+//     cascada en trampas).
+
+import type { Rng } from './dice';
+import { rollD20 } from './dice';
+import type { Character } from './character';
+
+// -----------------------------------------------------------------------------
+// Tipos públicos
+// -----------------------------------------------------------------------------
+
+export type EventType =
+  | 'combat'
+  | 'npc'
+  | 'discovery'
+  | 'trap'
+  | 'environmental'
+  | 'poi'
+  | 'narrative'
+  | 'ambush'
+  | 'shelter'
+  | 'nothing';
+
+export type TimeOfDay = 'dawn' | 'day' | 'dusk' | 'night';
+
+// "any" es comodín: la entrada acepta cualquier valor de esa variable.
+export type WeatherTag = 'clear' | 'fog' | 'storm' | 'snow' | 'any';
+
+export type BiomeId = string;
+
+// Condiciones de elegibilidad de una entrada. Todas son AND. min_level y
+// max_level son inclusivos. weather acepta 'any' como comodín explícito.
+// time_of_day no tiene comodín: omite el campo si quieres aceptar todas las
+// horas, o lista las cuatro.
+export interface TableConditions {
+  min_level?: number;
+  max_level?: number;
+  time_of_day?: readonly TimeOfDay[];
+  weather?: readonly WeatherTag[];
+  required_flags?: readonly string[];
+  forbidden_flags?: readonly string[];
+}
+
+// Coste declarado por la evade_check.
+export type EvadeCost =
+  | { type: 'free' }
+  | { type: 'action_point'; amount: number }
+  | { type: 'consumable'; amount: number; item_id: string };
+
+// Outcome de cada rama de la evade_check. La biblia §4.15.7 enumera los modos
+// posibles; mantenemos el string libre para no inventar un enum cerrado antes
+// de tiempo (lo consume combat.ts/UI según el caso).
+export interface EvadeOutcome {
+  outcome: string;
+  bonus?: { type: string; value: number | string } | null;
+  penalty?: { type: string; value: number | string } | null;
+}
+
+export interface EvadeCheck {
+  skill: string;
+  difficulty: number;
+  opposed: boolean;
+  // Solo se usa si opposed === true.
+  opposed_stat?: string;
+  cost: EvadeCost;
+  on_success: EvadeOutcome;
+  on_critical: EvadeOutcome;
+  on_failure: EvadeOutcome;
+  // null si el tipo no aplica pifia (todo lo que no sea combat/ambush/trap).
+  on_fumble: EvadeOutcome | null;
+  // true: se resuelve sin preguntar al jugador. false: ofrece botón [Intentar].
+  auto: boolean;
+  // Acumula en skills.{skill}.usage tras resolver. Decisión E4 de §4.15.6.
+  trains_skill: boolean;
+  // Cascada solo en Trampa (§4.15.7). Si la primaria falla, se ofrece esta.
+  fallback_check: EvadeCheck | null;
+}
+
+// Modulaciones declarativas opcionales que una entrada puede aplicar a su
+// propio peso. Cada modulador es un multiplicador (1.0 = sin cambio) que se
+// activa solo si la condición se cumple en el worldState/character.
+//
+// La biblia §4.15.2 menciona las 7 variables como moduladoras de pesos pero no
+// fija fórmula de modulación. Esta API permite declararlo por entrada sin
+// inventar una curva global. Si una entrada no declara modificadores, su peso
+// no cambia. Numéricamente las tablas viven en H4.
+export interface WeightModifier {
+  // Cualquiera de estos campos. Si está, debe matchear para aplicar el factor.
+  if_time_of_day?: readonly TimeOfDay[];
+  if_weather?: readonly WeatherTag[];
+  if_min_reputation?: { faction_id: string; value: number };
+  if_max_reputation?: { faction_id: string; value: number };
+  if_min_luck?: number;
+  if_max_luck?: number;
+  factor: number;
+}
+
+export interface TableEntry {
+  id: string;
+  biome: BiomeId;
+  weight: number;
+  conditions: TableConditions;
+  type: EventType;
+  payload: Readonly<Record<string, unknown>>;
+  evade_check: EvadeCheck | null;
+  weight_modifiers?: readonly WeightModifier[];
+}
+
+export interface BiomeTable {
+  biome: BiomeId;
+  entries: readonly TableEntry[];
+}
+
+// Estado del mundo que rodea al personaje en el momento de la tirada. Lo
+// rellena state/world.ts (H4). En H1 lo usamos como contrato.
+export interface WorldState {
+  biome: BiomeId;
+  time_of_day: TimeOfDay;
+  weather: WeatherTag;
+  // Reputación con cualquier facción que el mundo conozca.
+  faction_reputation: Readonly<Record<string, number>>;
+  // Banderas narrativas activas.
+  flags: Readonly<Record<string, boolean>>;
+  // Suerte agregada del personaje resuelta para este tick. Bloqueante: la
+  // biblia §6 deja la definición de "Suerte" abierta. exploration.ts solo la
+  // consume como número; la procedencia (atributo, oculto, consumible) la
+  // resuelve quien construye el WorldState.
+  luck: number;
+}
+
+export type Trigger =
+  | 'step_tile'
+  | 'enter_node'
+  | 'cross_biome'
+  | 'camp'
+  | 'fast_travel_segment';
+
+// Detalle de una tirada concreta (raíz o reactiva). Sirve para log y replay.
+export interface RollDetail {
+  // 1d20.
+  die: number;
+  // Total final tras sumar mods (en raíz no aplica; en reactiva = die + skill).
+  total: number;
+  // Crítico (die === 20).
+  critical: boolean;
+  // Pifia (die === 1).
+  fumble: boolean;
+}
+
+// Pareja entrada + peso final tras filtrado y modulación. Útil para tests y
+// para el Modo Privado de §4.14.
+export interface WeightedEntry {
+  entry: TableEntry;
+  weight: number;
+}
+
+export interface ExplorationEvent {
+  // null = "Nada" (la tabla del bioma no devolvió entradas elegibles, o la
+  // entrada elegida es del tipo 'nothing'). El consumidor decide cómo pintar.
+  entry: TableEntry | null;
+  trigger: Trigger;
+  // Tirada raíz que produjo el evento.
+  root_roll: RollDetail;
+  // Pesos efectivos en el momento de la elección. Para auditoría/log.
+  weighted_entries: readonly WeightedEntry[];
+}
+
+export type EvadeOutcomeBranch = 'success' | 'critical' | 'failure' | 'fumble';
+
+export interface EvadeResult {
+  // El resultado decidido tras tirar. 'fumble' solo en eventos donde aplica.
+  branch: EvadeOutcomeBranch;
+  outcome: EvadeOutcome;
+  roll: RollDetail;
+  // Coste efectivo aplicado (se replica para que el consumidor no lo recalcule).
+  applied_cost: EvadeCost;
+  // Si el evade primario falló y la entrada declara fallback_check (Trampa),
+  // el resultado de la cascada se anida aquí.
+  cascade: EvadeResult | null;
+  // Skill que entrenó la tirada (decisión E4: gane o pierda). null si la
+  // entrada declara trains_skill === false.
+  trained_skill: string | null;
+}
+
+// -----------------------------------------------------------------------------
+// Filtrado por condiciones
+// -----------------------------------------------------------------------------
+
+export function isEntryEligible(
+  entry: TableEntry,
+  character: Character,
+  worldState: WorldState,
+): boolean {
+  if (entry.biome !== worldState.biome) return false;
+
+  const c = entry.conditions;
+
+  if (c.min_level !== undefined && character.level < c.min_level) return false;
+  if (c.max_level !== undefined && character.level > c.max_level) return false;
+
+  // time_of_day: si la lista existe y no está vacía, debe contener el valor
+  // actual. No hay valor comodín ('any') en este enum: si quieres aceptar
+  // todos, omites el campo o pasas la lista completa.
+  if (
+    c.time_of_day !== undefined &&
+    c.time_of_day.length > 0 &&
+    !c.time_of_day.includes(worldState.time_of_day)
+  ) {
+    return false;
+  }
+
+  // weather: 'any' actúa como comodín explícito (lo usan las tablas de §4.15.9).
+  if (c.weather !== undefined && c.weather.length > 0) {
+    if (!c.weather.includes('any') && !c.weather.includes(worldState.weather)) {
+      return false;
+    }
+  }
+
+  if (c.required_flags !== undefined) {
+    for (const flag of c.required_flags) {
+      if (!worldState.flags[flag]) return false;
+    }
+  }
+  if (c.forbidden_flags !== undefined) {
+    for (const flag of c.forbidden_flags) {
+      if (worldState.flags[flag]) return false;
+    }
+  }
+
+  return true;
+}
+
+export function filterEligibleEntries(
+  table: BiomeTable,
+  character: Character,
+  worldState: WorldState,
+): TableEntry[] {
+  return table.entries.filter((e) => isEntryEligible(e, character, worldState));
+}
+
+// -----------------------------------------------------------------------------
+// Modulación de pesos
+// -----------------------------------------------------------------------------
+
+function modifierApplies(
+  mod: WeightModifier,
+  worldState: WorldState,
+): boolean {
+  if (mod.if_time_of_day !== undefined && !mod.if_time_of_day.includes(worldState.time_of_day)) {
+    return false;
+  }
+  if (mod.if_weather !== undefined) {
+    if (!mod.if_weather.includes('any') && !mod.if_weather.includes(worldState.weather)) {
+      return false;
+    }
+  }
+  if (mod.if_min_reputation !== undefined) {
+    const rep = worldState.faction_reputation[mod.if_min_reputation.faction_id] ?? 0;
+    if (rep < mod.if_min_reputation.value) return false;
+  }
+  if (mod.if_max_reputation !== undefined) {
+    const rep = worldState.faction_reputation[mod.if_max_reputation.faction_id] ?? 0;
+    if (rep > mod.if_max_reputation.value) return false;
+  }
+  if (mod.if_min_luck !== undefined && worldState.luck < mod.if_min_luck) return false;
+  if (mod.if_max_luck !== undefined && worldState.luck > mod.if_max_luck) return false;
+  return true;
+}
+
+export function computeEffectiveWeight(
+  entry: TableEntry,
+  worldState: WorldState,
+): number {
+  let weight = entry.weight;
+  if (entry.weight_modifiers === undefined) return weight;
+  for (const mod of entry.weight_modifiers) {
+    if (modifierApplies(mod, worldState)) {
+      weight *= mod.factor;
+    }
+  }
+  // Las tablas pueden, intencional o accidentalmente, dejar un peso negativo.
+  // El selector trata negativos y ceros igual: no elegibles.
+  return weight < 0 ? 0 : weight;
+}
+
+export function computeWeightedEntries(
+  entries: readonly TableEntry[],
+  worldState: WorldState,
+): WeightedEntry[] {
+  return entries.map((entry) => ({
+    entry,
+    weight: computeEffectiveWeight(entry, worldState),
+  }));
+}
+
+// -----------------------------------------------------------------------------
+// Selector por 1d20 sobre rangos proporcionales (§4.15.4)
+// -----------------------------------------------------------------------------
+
+// Mapea el d20 a una entrada según rangos proporcionales al peso efectivo.
+// Devuelve null si no hay entradas con peso > 0.
+//
+// La biblia §4.15.4 dice "los pesos se normalizan a rangos sobre 20". Eso es
+// equivalente a tirar el d20, multiplicar por la suma de pesos, dividir entre
+// 20 y elegir la entrada cuyo rango acumulado contiene el resultado. Este
+// método usa la posición del d20 directamente para mantener la traza visible.
+//
+// Exportado para que las herramientas dev de §4.14 (simular 1.000 tiradas,
+// ver tabla activa con pesos resueltos) puedan auditarlo aislado.
+export function selectByD20(
+  weighted: readonly WeightedEntry[],
+  die: number,
+): TableEntry | null {
+  const total = weighted.reduce((sum, w) => sum + w.weight, 0);
+  if (total <= 0) return null;
+  // Posición dentro de [0, total) según el d20. die ∈ 1..20.
+  // Usamos (die - 0.5)/20 para que cada cara mapee al centro de su rango y no
+  // haya colisión en los extremos.
+  const cursor = ((die - 0.5) / 20) * total;
+  let acc = 0;
+  for (const w of weighted) {
+    if (w.weight <= 0) continue;
+    acc += w.weight;
+    if (cursor < acc) return w.entry;
+  }
+  // Por redondeo de coma flotante el cursor podría caer justo en el total.
+  // Devolvemos la última entrada con peso > 0 como fallback determinista.
+  for (let i = weighted.length - 1; i >= 0; i--) {
+    const w = weighted[i];
+    if (w !== undefined && w.weight > 0) return w.entry;
+  }
+  return null;
+}
+
+// -----------------------------------------------------------------------------
+// rollExplorationTick — orquestador raíz
+// -----------------------------------------------------------------------------
+
+export function rollExplorationTick(
+  worldState: WorldState,
+  character: Character,
+  trigger: Trigger,
+  table: BiomeTable,
+  rng: Rng,
+): ExplorationEvent {
+  if (table.biome !== worldState.biome) {
+    throw new Error(
+      `rollExplorationTick: bioma de la tabla (${table.biome}) no coincide con worldState.biome (${worldState.biome}).`,
+    );
+  }
+  const eligible = filterEligibleEntries(table, character, worldState);
+  const weighted = computeWeightedEntries(eligible, worldState);
+  const die = rollD20(rng);
+  const root_roll: RollDetail = {
+    die,
+    total: die,
+    critical: die === 20,
+    fumble: die === 1,
+  };
+  const entry = selectByD20(weighted, die);
+  return { entry, trigger, root_roll, weighted_entries: weighted };
+}
+
+// -----------------------------------------------------------------------------
+// resolveEvadeCheck — tirada reactiva
+// -----------------------------------------------------------------------------
+
+// Tipos en los que aplica pifia mecánica. §4.15.6: combate, emboscada, trampa.
+const TYPES_WITH_FUMBLE: ReadonlySet<EventType> = new Set(['combat', 'ambush', 'trap']);
+
+// Mapeo simbólico de stat enfrentado → atributo del defensor mock. La biblia
+// §4.15.6 deja la mecánica enfrentada como "vs stat del evento", pero el
+// payload de cada entrada declara qué stat representa. En H1 implementamos
+// soporte para enfrentar contra un atributo del personaje (worldState no tiene
+// enemigos todavía: eso es trabajo de combat.ts/H3). Si el opposed_stat no
+// coincide con un atributo, la dificultad fija (10) se aplica como fallback.
+function resolveOpposedDifficulty(
+  check: EvadeCheck,
+  payload: Readonly<Record<string, unknown>>,
+  fallback: number,
+): number {
+  if (!check.opposed) return check.difficulty;
+  const statName = check.opposed_stat;
+  if (statName === undefined) return fallback;
+  const raw = payload[statName];
+  if (typeof raw === 'number' && Number.isFinite(raw)) return raw;
+  return fallback;
+}
+
+function getSkillValue(character: Character, skillId: string): number {
+  const entry = character.skills[skillId];
+  return entry === undefined ? 0 : entry.value;
+}
+
+// Bloque interno que resuelve UN evade_check (sin cascada). La cascada se
+// orquesta en resolveEvadeCheck principal.
+function resolveSingleEvade(
+  type: EventType,
+  payload: Readonly<Record<string, unknown>>,
+  check: EvadeCheck,
+  character: Character,
+  rng: Rng,
+): { result: EvadeResult; failed: boolean } {
+  const die = rollD20(rng);
+  const skillValue = getSkillValue(character, check.skill);
+  const total = die + skillValue;
+  const critical = die === 20;
+  const fumbleApplies = TYPES_WITH_FUMBLE.has(type);
+  const fumble = fumbleApplies && die === 1;
+
+  // Dificultad efectiva: enfrentada (lee del payload) o fija.
+  // El fallback 10 cuando opposed_stat no resuelve es deliberadamente neutro.
+  const difficulty = resolveOpposedDifficulty(check, payload, 10);
+
+  let branch: EvadeOutcomeBranch;
+  let outcome: EvadeOutcome;
+  if (critical) {
+    branch = 'critical';
+    outcome = check.on_critical;
+  } else if (fumble && check.on_fumble !== null) {
+    branch = 'fumble';
+    outcome = check.on_fumble;
+  } else if (total >= difficulty) {
+    branch = 'success';
+    outcome = check.on_success;
+  } else {
+    branch = 'failure';
+    outcome = check.on_failure;
+  }
+
+  const failed = branch === 'failure' || branch === 'fumble';
+
+  const result: EvadeResult = {
+    branch,
+    outcome,
+    roll: { die, total, critical, fumble },
+    applied_cost: check.cost,
+    cascade: null,
+    trained_skill: check.trains_skill ? check.skill : null,
+  };
+  return { result, failed };
+}
+
+export function resolveEvadeCheck(
+  type: EventType,
+  payload: Readonly<Record<string, unknown>>,
+  check: EvadeCheck,
+  character: Character,
+  rng: Rng,
+): EvadeResult {
+  const primary = resolveSingleEvade(type, payload, check, character, rng);
+  if (!primary.failed || check.fallback_check === null) return primary.result;
+
+  const cascade = resolveSingleEvade(type, payload, check.fallback_check, character, rng);
+  return { ...primary.result, cascade: cascade.result };
+}
+
