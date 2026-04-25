@@ -1,7 +1,7 @@
 # El Teknomoro — Biblia del juego
 
 > Documento vivo. Consolida todo lo que sabemos (y lo que no sabemos) sobre el proyecto.
-> **Versión:** v0.5 · **Fecha:** 24 de abril de 2026 · **Autor:** Bazalo con dirección de el-teknomoro-director
+> **Versión:** v0.7 · **Fecha:** 25 de abril de 2026 · **Autor:** Bazalo con dirección de el-teknomoro-director
 
 ---
 
@@ -10,9 +10,9 @@
 1. Identidad del proyecto
 2. Visión y scope
 3. Estado actual y roadmap
-4. Reglamento v0.4 (estado en revisión)
-5. Decisiones cerradas
-6. Preguntas abiertas (lo que hay que responder)
+4. Reglamento (núcleo numérico cerrado)
+5. Decisiones cerradas (40)
+6. Preguntas abiertas (5)
 7. Arquitectura técnica planeada
 8. Flujos y pantallas del MVP
 9. Historial de versiones
@@ -51,24 +51,33 @@ La fase motor existe como posibilidad, no como compromiso. Solo se activa si la 
 
 ## 3. Estado actual y roadmap
 
-**Estado hoy (24 abril 2026):** diseño en revisión. Biblia en v0.4 tras dos pases de tests de diseño con Bazalo (130 preguntas de funcionalidad + 54 preguntas de profundización arquitectónica).
+**Estado hoy (25 abril 2026):** biblia en v0.7. **H0 y H1 cerrados.** El motor de reglas núcleo está construido, testeado y desplegado.
 
-**Proceso de dirección activo** (detallado en `proceso-director.md`):
+**Proceso de dirección** (detallado en `proceso-director.md`):
 
 1. ✅ Diagnóstico del estado.
 2. ✅ Test de funcionalidades del MVP (130 preguntas).
 3. ✅ Test de profundización (54 preguntas).
-4. ⏳ **Documento de Scope v0.1 del MVP web** ← siguiente entregable.
-5. ⏳ Cierre de bloqueantes numéricos del reglamento por simulación (en paralelo).
-6. ⏳ Arquitectura técnica detallada.
-7. ⏳ Código.
-8. ⏳ Playtest recurrente del prototipo.
+4. ✅ Scope v0.1 del MVP web (`scope-mvp-web-v0.1.md`).
+5. ✅ Cierre de bloqueantes numéricos del reglamento por simulación:
+   - ✅ Dado de exploración (1d20, decisión #26).
+   - ✅ Tirada reactiva (marco común + 10 tipos, decisiones #27-#35).
+   - ✅ Dado de combate (pool d6 4+, decisión #36, simulado en `simulaciones/dado-combate-v0.2.md`).
+   - ✅ Subsistema de progresión (decisiones #37-#40, simulado en `simulaciones/progresion-v0.1.md`).
+6. ✅ Arquitectura técnica (§7).
+7. 🔄 Código.
+   - ✅ H0: scaffold + login Supabase + Vercel.
+   - ✅ H1: `rules/dice.ts` + `rules/character.ts` + `rules/exploration.ts` + `rules/progression.ts`. 118 tests verdes.
+   - ⏳ H2: creación de personaje en UI.
+8. ⏳ Playtest del prototipo (entrega cuando H3 cierre el primer combate jugable).
 
-**Cuello de botella real:** tiempo del autor. Bazalo trabaja turnos alternos y tiene otros proyectos (Furbito v2.0, YouTube, ventas en Vinted/Cardmarket). El Teknomoro vive en los bloques cognitivos libres. Estimar ritmo realista: una a dos sesiones de diseño al mes hasta que el reglamento numérico esté cerrado.
+**Bloqueantes numéricos restantes (§6):** iniciativa, efectos ambientales, Suerte, condición de victoria, contenido del onboarding. Todos diferibles a su hito o a sesiones de diseño dedicadas.
+
+**Cuello de botella real:** tiempo del autor. Bazalo trabaja turnos alternos y tiene otros proyectos (Furbito v2.0, YouTube, ventas en Vinted/Cardmarket). El Teknomoro vive en los bloques cognitivos libres. Las simulaciones del 25/4 (dado de combate + progresión) demuestran que en sesiones intensas el ritmo es alto; en otras semanas no se toca el repositorio. No hay deadline.
 
 ---
 
-## 4. Reglamento v0.4 (estado en revisión)
+## 4. Reglamento v0.7 (núcleo numérico cerrado)
 
 ### 4.1 Atributos
 

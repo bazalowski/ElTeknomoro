@@ -1,7 +1,7 @@
 # El Teknomoro — Scope del MVP web
 
 > Contrato de alcance. Qué entra en v1 del navegador, qué no entra, en qué orden se construye y qué lo bloquea.
-> **Versión:** v0.4 · **Fecha:** 25 de abril de 2026 (H0 cerrado)
+> **Versión:** v0.6 · **Fecha:** 25 de abril de 2026 (H1 cerrado)
 > **Autor:** el-teknomoro-director
 > **Destino:** referencia firme del equipo (Bazalo + dirección) durante toda la construcción del MVP. Si algo no está aquí, no se construye en v1.
 
