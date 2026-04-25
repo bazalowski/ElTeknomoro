@@ -55,6 +55,16 @@ export interface LocationBlock {
   y: number;
 }
 
+// Puntos sin gastar acumulados por subidas de nivel. Los rellena
+// rules/progression.ts (decisión #38) y los consume el jugador desde la UI
+// pulsando "+" sobre habilidades/atributos o eligiendo perks. Persistir
+// estos campos garantiza que recargar la partida no pierde puntos.
+export interface PendingPoints {
+  skill: number;
+  attribute: number;
+  perk: number;
+}
+
 export interface Character {
   id: string;
   name: string;
@@ -74,6 +84,9 @@ export interface Character {
   alive: boolean;
   // El epitafio se rellena al morir (rules/death.ts en H3). Hasta entonces, null.
   epitaph: null | unknown;
+  // Puntos sin gastar acumulados por subidas de nivel pulsadas pero no
+  // asignadas a habilidad/atributo/perk concretos. En creación, todo a 0.
+  pending: PendingPoints;
 }
 
 // -----------------------------------------------------------------------------
@@ -252,5 +265,6 @@ export function createCharacter(input: CreateCharacterInput): Character {
     flags: {},
     alive: true,
     epitaph: null,
+    pending: { skill: 0, attribute: 0, perk: 0 },
   };
 }
