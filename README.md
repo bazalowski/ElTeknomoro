@@ -23,7 +23,9 @@ Para las decisiones de reglamento (atributos, dado de combate, exploración, pro
 ```
 biblia-del-juego.md       Reglamento autoritativo. Cualquier número del juego nace aquí.
 scope-mvp-web-v0.1.md     Qué entra/no entra en v1, hitos H0..H9, bloqueantes externos.
-proceso-director.md       Cómo trabajamos Bazalo + dirección técnica.
+proceso-director.md       Cómo trabajamos Bazalo + dirección técnica. Incluye pipeline UI.
+PRODUCT.md                Marca, register, anti-references, principios. Fuente de marca.
+DESIGN.md                 Paleta OKLCH, tipografía, contrastes. Sistema visual provisional.
 
 simulaciones/             Documentos de cierre de bloqueantes numéricos.
   dado-combate-v0.2.md    Cierre del dado de combate (decisión #36).

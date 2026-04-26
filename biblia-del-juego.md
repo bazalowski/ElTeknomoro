@@ -1,7 +1,7 @@
 # El Teknomoro — Biblia del juego
 
 > Documento vivo. Consolida todo lo que sabemos (y lo que no sabemos) sobre el proyecto.
-> **Versión:** v0.8 · **Fecha:** 26 de abril de 2026 · **Autor:** Bazalo con dirección de el-teknomoro-director
+> **Versión:** v0.9 · **Fecha:** 26 de abril de 2026 · **Autor:** Bazalo con dirección de el-teknomoro-director
 
 ---
 
@@ -39,7 +39,9 @@
 
 ## 2. Visión y scope
 
-El Teknomoro es un RPG donde el jugador explora un mundo fracturado por un evento arcano, compone un personaje con atributos y habilidades, combate, craftea, se une a facciones y toma decisiones que modifican el mundo de manera persistente. Muere una vez, muere para siempre.
+El Teknomoro es un RPG donde el jugador explora un mundo **post-humano** — la humanidad se extinguió y la naturaleza creció encima, hostil y mutada — compone un personaje con atributos y habilidades, combate, craftea, se une a facciones y toma decisiones que modifican el mundo de manera persistente. Sobre la base biológica corre una veta esotérica/demoníaca **rara y reverencial**: cuando aparece, es evento singular, no atmósfera. Muere una vez, muere para siempre.
+
+El marco lore queda fijado en decisión #47 (§5). Cualquier contenido, paleta, copy o iconografía deriva de ahí.
 
 **Dos fases, no tres.** La fase de mesa (PDF jugable) que aparecía en versiones anteriores está fuera del proceso activo. El reglamento ya no se valida jugando en papel: se valida por **simulación numérica** (hoja de cálculo / Monte Carlo) antes de tocar código, y por **playtest del propio prototipo web** una vez haya módulos jugables.
 
@@ -78,7 +80,7 @@ La fase motor existe como posibilidad, no como compromiso. Solo se activa si la 
 
 ---
 
-## 4. Reglamento v0.8 (núcleo numérico cerrado)
+## 4. Reglamento v0.9 (núcleo numérico cerrado)
 
 ### 4.1 Atributos
 
@@ -612,6 +614,7 @@ Estas no se reabren sin motivo fuerte. Si Bazalo las cuestiona, la dirección le
 | 44 | Condición de fin de partida: muerte (cualquier causa) o quest principal del mapa de historia (Modo Historia). Modo Libre solo cierra por muerte. La pantalla de victoria reutiliza el formato de epitafio con `cause.kind = 'victory'`. La quest principal se diseña en H4 con el contenido del mapa. | v0.8 |
 | 45 | Onboarding: tras tutorial, decisión binaria que escribe bandera narrativa (`viajero_audaz` o `viajero_cauto`), combate forzado contra enemigo tier "lobo" sin posibilidad de huir ni evitar, apertura del mapa-mundi en el nodo de la rama elegida. Texto y enemigo concretos en H9. Morir en el combate forzado activa epitafio normal sin red de seguridad. | v0.8 |
 | 46 | Umbral de éxitos para impactar: `threshold = ceil(DEF / 3)`. Promovida a decisión propia desde la simulación implícita del dado v0.2 (era la fórmula que validó P(impacto) en cada perfil). DEF 4 → 2, DEF 8 → 3, DEF 12 → 4. | v0.8 |
+| 47 | **Marco lore del mundo:** post-humano, naturaleza vencedora, mutaciones orgánicas, esoterismo/demoníaco **raro y reverencial**. La humanidad se extinguió y la vegetación creció encima — no es ruina seca, es bosque hostil vivo. La grieta arcana aparece como evento singular, nunca como atmósfera de fondo permanente. De este marco derivan paleta, copy, iconografía y contenido. Sustituye cualquier lectura previa tipo "tierra desértica fracturada" o "manuscrito viejo seco". El sistema visual concreto vive en `DESIGN.md` y la marca/anti-references en `PRODUCT.md`. | v0.9 |
 
 ---
 
@@ -865,3 +868,11 @@ Sin cambios al reglamento. Los bloqueantes de §6 siguen abiertos tal cual estab
 - §4.3, §4.4, §4.6, §4.8, §4.9, §4.15.2 reescritas con las decisiones cerradas.
 
 Esta versión es la primera en la que **todo el reglamento numérico que el código necesita está cerrado**. Lo que queda abierto es contenido (catálogos, lista de habilidades, arquetipos) y decisiones que pertenecen a su hito (UI de perks, branding, etc.).
+
+**v0.9** — Cierre del **marco lore del mundo** y del **sistema visual provisional** (26/4/2026), antes de arrancar la primera UI de H2. Cambios:
+
+- **Decisión #47 — Marco lore del mundo:** post-humano, naturaleza vencedora con mutaciones orgánicas, esoterismo demoníaco raro y reverencial. La humanidad se extinguió y la vegetación creció encima — bosque vivo hostil, no ruina seca. La grieta arcana es evento singular, no atmósfera de fondo. Sustituye cualquier lectura previa.
+- §2 reescrita: lore explicitado en la sección de visión, ya no se lee como "mundo fracturado por un evento arcano" genérico.
+- Sistema visual provisional documentado en `PRODUCT.md` (register=product, marca, anti-references, principios) y `DESIGN.md` (paleta OKLCH cerrada — Bosque podrido + violeta arcano reverencial ≤5%, tipografía Cormorant Garamond + Inter + JetBrains Mono, escala de spacing/rounded, contrastes WCAG AA, pares prohibidos). Ambos archivos son derivados de la decisión #47, no decisiones independientes.
+- Pipeline obligatorio para crear o modificar UI: Prompt Master → el-teknomoro-director → impeccable. Documentado en `proceso-director.md` v0.3 y enforcado por la skill `.claude/skills/modopipeline/SKILL.md`.
+- Sin cambios en §4 reglamento. Sin cambios en §6 bloqueantes (siguen 0 abiertos). Sin cambios en §7 arquitectura ni §8 flujos.

@@ -1,8 +1,8 @@
 # El Teknomoro — Proceso de dirección
 
 > Documento de ruta. Lo que el director está haciendo, por qué, y en qué paso estamos.
-> **Versión:** v0.2 · **Fecha:** 24 de abril de 2026
-> **Cambio v0.1 → v0.2:** eliminada la fase de juego de mesa del proceso activo. El reglamento se valida por simulación numérica y por playtest del propio prototipo web.
+> **Versión:** v0.3 · **Fecha:** 26 de abril de 2026
+> **Cambio v0.2 → v0.3:** añadida sección "Pipeline de UI" (Prompt Master → director → impeccable) como protocolo obligatorio para H2 en adelante. El lore del mundo deja de estar fuera de scope: queda fijado en decisión #47 de la biblia v0.9.
 > Autor: el-teknomoro-director.
 
 ---
@@ -139,7 +139,7 @@ Esperando de Bazalo:
 - **No estoy escribiendo código.** Regla sagrada: bloqueantes numéricos sin cerrar.
 - **No estoy diseñando la arquitectura detallada de `rules.ts`.** Depende del dado.
 - **No estoy eligiendo librerías ni definiendo `tsconfig.json`.** Prematuro.
-- **No estoy diseñando el lore ni los biomas concretos.** Fuera de scope en esta fase.
+- **No estoy generando biomas concretos ni catálogos de contenido todavía.** El marco lore del mundo sí está fijado (decisión #47 biblia v0.9: post-humano, naturaleza vencedora, esoterismo raro y reverencial), pero los biomas, NPCs, items y recetas concretos se redactan en su hito.
 - **No estoy generando catálogos de items, enemigos o recetas.** Son entregables del Paso 3/4.
 - **No estoy abriendo Figma.** El MVP web es Canvas; el wireframe llega después del Scope.
 - **No estoy pensando en versión de mesa ni en PDF de reglas.** Eliminada del proceso activo.
@@ -158,8 +158,43 @@ Si Bazalo quiere **cambiar el orden del proceso** (ej. "quiero empezar a codific
 
 ---
 
+## Pipeline de UI (obligatorio desde H2)
+
+Toda creación o modificación de UI en El Teknomoro pasa por una cadena fija de tres pasos. No se salta ni se reordena. Aplica desde H2 (creación de personaje en UI) en adelante.
+
+```
+[Intención bruta de Bazalo]
+   ↓
+[1] Prompt Master           — estructura el prompt UI (tarea, contexto, restricciones, criterio de éxito, formato)
+   ↓
+[2] el-teknomoro-director   — valida contra biblia, scope, decisión #47 y PRODUCT/DESIGN. Veredicto: APTO / APTO CON CAMBIOS / NO APTO.
+   ↓
+[3] impeccable              — diseña/implementa con PRODUCT.md y DESIGN.md cargados.
+   ↓
+[Output revisable]
+```
+
+**Reglas de avance:**
+- Cada paso muestra su output a Bazalo antes de avanzar al siguiente.
+- Si el director devuelve **NO APTO**, el pipeline se detiene. La razón típica: regla todavía no jugada/simulada, contenido no cerrado, decisión arquitectónica reabierta sin justificación.
+- Si devuelve **APTO CON CAMBIOS**, se avanza al paso 3 con el prompt corregido por el director, no con el original.
+
+**Prerrequisitos one-time (cerrados en v0.9):**
+- `PRODUCT.md` en raíz (marca, register, anti-references, principios estratégicos).
+- `DESIGN.md` en raíz (paleta OKLCH cerrada, tipografía, contrastes, pares prohibidos).
+- Skill `.claude/skills/modopipeline/SKILL.md` que enforza el flujo.
+
+**Cuándo NO aplica el pipeline:**
+- Cambios de reglas, datos o motor (`rules/`, biblia, simulaciones) → director directo, sin impeccable.
+- Backend, Supabase, scripts → trabajo normal sin skill.
+- Microajustes triviales en UI ya existente (renombrar un label, ajustar 2px de padding) → permitido directo, salvo que Bazalo invoque "modo pipeline" explícitamente.
+
+---
+
 ## Historial de este documento
 
 **v0.1** — creación tras diagnóstico inicial. Seis pasos, uno en curso. Incluía fase de mesa como requisito previo al código.
 
 **v0.2** — eliminada fase de mesa del proceso activo. El reglamento se valida por simulación numérica y por playtest del propio prototipo web. Añadido Paso 7 (playtest). Ajustada la regla sagrada para centrarla en simulación, no en mesa.
+
+**v0.3** — añadida sección "Pipeline de UI" (Prompt Master → director → impeccable) como protocolo obligatorio desde H2 en adelante, con `PRODUCT.md`, `DESIGN.md` y skill `modopipeline` como prerrequisitos cerrados. El lore del mundo (decisión #47 biblia v0.9) sale de la lista "fuera de scope": el marco está fijado, lo que queda fuera son los catálogos concretos de contenido por hito.
