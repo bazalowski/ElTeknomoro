@@ -1,6 +1,10 @@
 // Módulo SAGRADO. Puro, determinista. Sin imports de Canvas, DOM, Supabase.
 // Biblia §4.1, §4.2, §4.4, §4.7 y §7 (modelo de datos). H1.
 
+import type { Inventory } from './inventory';
+import { createEmptyInventory } from './inventory';
+import type { Epitaph } from './death';
+
 // -----------------------------------------------------------------------------
 // Constantes de creación (biblia §4.1, §4.2, §4.7)
 // -----------------------------------------------------------------------------
@@ -21,6 +25,16 @@ export const CREATION_RULES = {
   perksAtCreation: 1,
 } as const;
 
+// Flags narrativos reservados por el sistema. Decisión #45: el onboarding
+// fija una de estas dos según la rama elegida en la decisión binaria. El
+// resto del juego (eventos de exploración, NPCs, quests) puede leerlas como
+// `character.flags[ONBOARDING_FLAGS.viajero_audaz]` para gatear contenido.
+// Otras flags reservadas se documentan aquí cuando aparezcan.
+export const ONBOARDING_FLAGS = {
+  viajero_audaz: 'viajero_audaz',
+  viajero_cauto: 'viajero_cauto',
+} as const;
+
 // -----------------------------------------------------------------------------
 // Tipos del personaje autoritativo (biblia §7)
 // -----------------------------------------------------------------------------
@@ -39,14 +53,6 @@ export type SkillBlock = Readonly<Record<string, SkillEntry>>;
 export interface HpBlock {
   current: number;
   max: number;
-}
-
-export interface InventoryBlock {
-  // El inventario en sí lo modelará rules/inventory.ts en H5. Aquí solo
-  // mantenemos la forma del modelo autoritativo (§7) para que el personaje
-  // se serialice idéntico desde H1.
-  slots: readonly unknown[];
-  equipped: Readonly<Record<string, unknown>>;
 }
 
 export interface LocationBlock {
@@ -76,14 +82,14 @@ export interface Character {
   level: number;
   xp: number;
   hp: HpBlock;
-  inventory: InventoryBlock;
+  inventory: Inventory;
   location: LocationBlock;
   faction_reputation: Readonly<Record<string, number>>;
   achievements: readonly string[];
   flags: Readonly<Record<string, unknown>>;
   alive: boolean;
   // El epitafio se rellena al morir (rules/death.ts en H3). Hasta entonces, null.
-  epitaph: null | unknown;
+  epitaph: Epitaph | null;
   // Puntos sin gastar acumulados por subidas de nivel pulsadas pero no
   // asignadas a habilidad/atributo/perk concretos. En creación, todo a 0.
   pending: PendingPoints;
@@ -104,6 +110,20 @@ export function computeDefense(attributes: AttributeBlock, armor = 0): number {
 // del dado v0.2. Pendiente de cierre cuando se cierre la curva de XP (§6).
 export function computeMaxHp(attributes: AttributeBlock): number {
   return 8 + 2 * attributes.con;
+}
+
+// Suerte derivada. Decisión #43:
+//   luck = floor((INT + VOL) / 2) - floor(level / 10)
+// INT/VOL como base: atributos "mentales", el sabio y voluntarioso lee mejor
+// las situaciones. Decrece con nivel: el late-game depende menos del azar
+// (sensación de maestría). Puede ser negativa con builds extremos a alto nivel.
+//
+// Lo consume rules/exploration.ts vía worldState.luck. Quien construye el
+// WorldState (state/ en H4) llama esta función al inicializar el tick.
+export function computeLuck(character: Character): number {
+  const mental = Math.floor((character.attributes.int + character.attributes.vol) / 2);
+  const decay = Math.floor(character.level / 10);
+  return mental - decay;
 }
 
 // -----------------------------------------------------------------------------
@@ -258,7 +278,7 @@ export function createCharacter(input: CreateCharacterInput): Character {
     level: 1,
     xp: 0,
     hp: { current: maxHp, max: maxHp },
-    inventory: { slots: [], equipped: {} },
+    inventory: createEmptyInventory(),
     location: { ...input.location },
     faction_reputation: {},
     achievements: [],

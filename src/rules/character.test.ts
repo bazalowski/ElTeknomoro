@@ -174,7 +174,9 @@ describe('createCharacter', () => {
     // Perks, location, inventory se reflejan
     expect(c.perks).toEqual(['perk-golpe-firme']);
     expect(c.location).toEqual({ mapId: 'historia-01', x: 0, y: 0 });
-    expect(c.inventory.slots).toEqual([]);
+    // Cuadrícula 5×4 = 20 slots fijos, todos vacíos al crear (biblia §4.12).
+    expect(c.inventory.slots).toHaveLength(20);
+    expect(c.inventory.slots.every((s) => s === null)).toBe(true);
     expect(c.inventory.equipped).toEqual({});
 
     // Inicialización limpia
