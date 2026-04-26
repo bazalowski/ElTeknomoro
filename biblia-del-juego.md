@@ -1,7 +1,7 @@
 # El Teknomoro — Biblia del juego
 
 > Documento vivo. Consolida todo lo que sabemos (y lo que no sabemos) sobre el proyecto.
-> **Versión:** v0.7 · **Fecha:** 25 de abril de 2026 · **Autor:** Bazalo con dirección de el-teknomoro-director
+> **Versión:** v0.8 · **Fecha:** 26 de abril de 2026 · **Autor:** Bazalo con dirección de el-teknomoro-director
 
 ---
 
@@ -11,8 +11,8 @@
 2. Visión y scope
 3. Estado actual y roadmap
 4. Reglamento (núcleo numérico cerrado)
-5. Decisiones cerradas (40)
-6. Preguntas abiertas (5)
+5. Decisiones cerradas (46)
+6. Preguntas abiertas (0 bloqueantes)
 7. Arquitectura técnica planeada
 8. Flujos y pantallas del MVP
 9. Historial de versiones
@@ -51,7 +51,7 @@ La fase motor existe como posibilidad, no como compromiso. Solo se activa si la 
 
 ## 3. Estado actual y roadmap
 
-**Estado hoy (25 abril 2026):** biblia en v0.7. **H0 y H1 cerrados.** El motor de reglas núcleo está construido, testeado y desplegado.
+**Estado hoy (26 abril 2026):** biblia en v0.8. **H0 y H1 cerrados, esqueleto extendido completo.** Todos los módulos de `rules/` (combat, inventory, crafting, world-gen, fast-travel, death, time, faction, dialog, achievements) tienen sus contratos públicos definidos y la mecánica que la biblia ya cierra está implementada y testeada (168 tests verdes). Los 5 bloqueantes de diseño que restaban están cerrados (decisiones #41-#45 más #46 emergente).
 
 **Proceso de dirección** (detallado en `proceso-director.md`):
 
@@ -67,17 +67,18 @@ La fase motor existe como posibilidad, no como compromiso. Solo se activa si la 
 6. ✅ Arquitectura técnica (§7).
 7. 🔄 Código.
    - ✅ H0: scaffold + login Supabase + Vercel.
-   - ✅ H1: `rules/dice.ts` + `rules/character.ts` + `rules/exploration.ts` + `rules/progression.ts`. 118 tests verdes.
+   - ✅ H1: `rules/dice.ts` + `rules/character.ts` + `rules/exploration.ts` + `rules/progression.ts`.
+   - ✅ Esqueleto extendido: `inventory.ts`, `combat.ts` (resolución + iniciativa + bucle de turnos), `crafting.ts`, `world-gen.ts` (Modo Historia mínimo), `fast-travel.ts` (BFS + tirada condensada), `death.ts` (con victoria), `time.ts`, `faction.ts`, `dialog.ts`, `achievements.ts`. 168 tests verdes.
    - ⏳ H2: creación de personaje en UI.
 8. ⏳ Playtest del prototipo (entrega cuando H3 cierre el primer combate jugable).
 
-**Bloqueantes numéricos restantes (§6):** iniciativa, efectos ambientales, Suerte, condición de victoria, contenido del onboarding. Todos diferibles a su hito o a sesiones de diseño dedicadas.
+**Bloqueantes de diseño:** **0 restantes.** Las provisionales del código son de contenido (puños = 1 daño, día = 240 ticks) y se cerrarán en su hito sin requerir sesión de diseño.
 
 **Cuello de botella real:** tiempo del autor. Bazalo trabaja turnos alternos y tiene otros proyectos (Furbito v2.0, YouTube, ventas en Vinted/Cardmarket). El Teknomoro vive en los bloques cognitivos libres. Las simulaciones del 25/4 (dado de combate + progresión) demuestran que en sesiones intensas el ritmo es alto; en otras semanas no se toca el repositorio. No hay deadline.
 
 ---
 
-## 4. Reglamento v0.7 (núcleo numérico cerrado)
+## 4. Reglamento v0.8 (núcleo numérico cerrado)
 
 ### 4.1 Atributos
 
@@ -166,11 +167,17 @@ Limitaciones conocidas, asumidas:
 
 El dado de **exploración** sigue siendo **1d20** (decisión #26, §4.15.4), independiente y separado del de combate por arquitectura (decisión #20).
 
+**Umbral de éxitos para impactar (decisión #46):** `threshold = ceil(DEF / 3)`. Promovido a decisión propia desde la simulación implícita del dado v0.2: era la fórmula que validó P(impacto) en cada perfil. Resultados:
+
+- DEF 4 → threshold 2 (P(impacto) ≈ 50% con ATR+HAB ~3)
+- DEF 8 → threshold 3 (P(impacto) ≈ 91% con ATR+HAB ~7)
+- DEF 12 → threshold 4 (P(impacto) ≈ 74% con ATR+HAB ~9)
+
 ### 4.4 Defensa
 
-**Estado: propuesta de dirección, pendiente de validar con simulación.**
+**Estado: cerrada para v1.**
 
-Fórmula recomendada: `DEF = 2 + floor(DES/2) + armadura`.
+Fórmula: `DEF = 2 + floor(DES/2) + armadura`.
 
 | DES | Bono pasivo | DEF sin armadura | DEF con armadura pesada (+3) |
 |-----|-------------|------------------|------------------------------|
@@ -182,6 +189,8 @@ Fórmula recomendada: `DEF = 2 + floor(DES/2) + armadura`.
 Acción de Esquivar: bono fijo de +2 durante un turno, no suma de DES entera.
 
 Racional: la defensa pasiva debe escalar con DES (si no, los builds ágiles pierden identidad), pero acotada para no volver imposible golpear a high-DES. Esquivar se mantiene como decisión táctica con coste de acción.
+
+El threshold de impacto que la consume está en §4.3 (decisión #46): `ceil(DEF/3)`.
 
 ### 4.5 Crafteo
 
@@ -215,7 +224,7 @@ Reglas del sistema de crafteo:
 
 ### 4.6 Turno cero de sesión
 
-**Estado: estructura cerrada, onboarding concreto pendiente de guion.**
+**Estado: estructura cerrada (decisión #45). Texto y enemigo concretos pendientes de H9.**
 
 La semilla del mundo sigue siendo la base: una frase que tiñe la partida procedural y genera el `seed` del PRNG. Ejemplo: *"una tormenta mágica ha despertado algo bajo el glaciar"*.
 
@@ -225,11 +234,13 @@ En web, el onboarding queda así:
 2. **Selección de modo:** Historia (mapa fijo) o Libre (procedural con frase-semilla).
 3. **Creación de personaje** (ver §4.7).
 4. **Tutorial guiado de ~5 min** (escena, no tooltips sueltos).
-5. **Decisión inmediata** del personaje ya creado.
-6. **Primer combate forzado** derivado de esa decisión.
-7. **Mapa abierto.**
+5. **Decisión inmediata** del personaje ya creado: dos opciones presentadas en pantalla, mecánicamente equivalentes pero narrativamente opuestas. Resultado: una bandera en `character.flags`. Las dos banderas reservadas son `viajero_audaz` y `viajero_cauto` (constante `ONBOARDING_FLAGS` en `rules/character.ts`).
+6. **Primer combate forzado** contra un enemigo tier "lobo" (1 enemigo, attack_pool 2, threshold 1, daño 2, hp 3). Imposible huir, imposible evitar. Si el PJ muere aquí, va al epitafio normal sin red de seguridad: el jugador aprende que se muere de verdad desde el segundo 1.
+7. **Mapa abierto** en el nodo correspondiente a la rama elegida en (5).
 
 El tutorial es **escena guiada**, no tooltips contextuales ni "aprender jugando". Decisión cerrada.
+
+Texto exacto de la decisión binaria, enemigo concreto del primer combate y nodo destino de cada rama: se redactan en H9 con el mapa de historia ya construido.
 
 ### 4.7 Creación de personaje
 
@@ -249,10 +260,10 @@ El tutorial es **escena guiada**, no tooltips contextuales ni "aprender jugando"
 
 ### 4.8 Combate
 
-**Estado: UX cerrada, matemáticas abiertas.**
+**Estado: UX cerrada, matemáticas cerradas (decisiones #36 dado, #41 iniciativa, #46 threshold).**
 
 - **Por turnos puros.** Hasta 5 enemigos en pantalla en MVP.
-- **Iniciativa:** estadística base + tirada (fórmula exacta pendiente del sistema de dados).
+- **Iniciativa (decisión #41):** `DES + 1d20` para PJ, `initiative_base + 1d20` para enemigo. Validado en `simulaciones/iniciativa-v0.1.md` tras descartar tres iteraciones de pool d6 (empates excesivos). El d20 se reutiliza como primitiva ordenadora; no viola la decisión #20 (que separa los dados de **resolución**, no los **ordenadores**). Desempate: mayor DES bruto, luego PJ sobre enemigo.
 - **Timeline visible:** los próximos 8 turnos como iconos horizontales arriba.
 - **Targeting mixto:** clic directo sobre enemigo, o Tab para ciclar con teclado.
 - **Acciones fijas:** Atacar / Esquivar / Habilidad / Item / Huir (reservado, grisado hasta que la regla cierre).
@@ -266,13 +277,15 @@ El tutorial es **escena guiada**, no tooltips contextuales ni "aprender jugando"
 - **Motor de combate desacoplado del render.** Corre en modo "cabeza" para simulaciones masivas en el Campo de pruebas (ver §4.12).
 - **Pausa del mundo:** el combate pausa el resto del juego.
 
-### 4.9 Muerte y permadeath
+### 4.9 Muerte y permadeath (y victoria)
 
-**Estado: cerrado.**
+**Estado: cerrado, ampliado con condición de victoria (decisión #44).**
 
 - Morir es definitivo.
-- El slot de partida **no se borra**: queda marcado como "muerto", consultable como epitafio (stats finales, logros conseguidos, causa de muerte, ubicación).
+- El slot de partida **no se borra**: queda marcado, consultable como epitafio (stats finales, logros conseguidos, causa, ubicación).
 - Al epitafio se accede desde la pantalla de Cargar Partida, en estado de solo lectura.
+- **Condición de fin de partida (decisión #44):** muerte (cualquier causa) **o** completar la quest principal del mapa de historia (modo Historia). Modo Libre no tiene condición de victoria; sólo muerte. La pantalla de victoria reutiliza el formato del epitafio con `cause.kind = 'victory'`. La quest principal del modo Historia se diseña en H4 con el mapa.
+- Internamente, el tipo de causa se llama `EndOfRunCause` (engloba muerte y victoria). `DeathCause` queda como alias retro.
 
 ### 4.10 Mapa y exploración
 
@@ -403,7 +416,7 @@ Las siete variables que modulan la tirada en v1:
 - **Nivel del personaje** (filtra entradas `min_level`/`max_level`).
 - **Reputación** con la facción que domina la zona.
 - **Flags narrativos** (`required_flags` / `forbidden_flags` en cada entrada).
-- **Suerte** del personaje (atributo derivado u oculto, pendiente de concreción; modifica pesos de eventos positivos/negativos).
+- **Suerte** del personaje. Decisión #43: **atributo derivado**, no atributo separado ni consumible. Fórmula: `luck = floor((INT + VOL) / 2) - floor(level / 10)`. INT/VOL como base porque son los atributos "mentales" (un PJ sabio y voluntarioso lee mejor las situaciones). Decrece con nivel: el late-game depende menos del azar (sensación de maestría). Puede ser negativa con builds extremos a alto nivel. Modifica pesos de eventos positivos/negativos vía `weight_modifiers.if_min_luck` / `if_max_luck` (§4.15.9).
 
 Aviso de dirección: siete variables activas es más de lo prudente. El balance de esta tabla **no es viable a mano**. El Campo de pruebas (§4.14) con simulación masiva y editor en vivo se vuelve herramienta obligatoria desde el día uno, no opcional.
 
@@ -593,20 +606,29 @@ Estas no se reabren sin motivo fuerte. Si Bazalo las cuestiona, la dirección le
 | 38 | Cadencia de puntos por nivel: **+2 habilidades cada nivel + 1 atributo cada 5 niveles + 1 perk cada 5 niveles**. Niveles redondos (5, 10, …) son rituales y entregan los tres tipos juntos. | v0.7 |
 | 39 | Techo blando del uso: una habilidad sube por uso hasta `min(floor(level/2) + 2, 7)`. A partir de ahí solo XP. UI muestra el techo activo. | v0.7 |
 | 40 | Curva de uso: tiradas necesarias para subir la habilidad de v a v+1 = `round(5 · 1.7^v)`. 0→1 = 5, 4→5 = 42, 6→7 = 121. | v0.7 |
+| 41 | Iniciativa de combate: `DES + 1d20` (PJ) y `initiative_base + 1d20` (enemigo). Desempate: mayor DES bruto, luego PJ sobre enemigo. Validado en `simulaciones/iniciativa-v0.1.md` tras descartar 3 iteraciones de pool d6. El d20 se reutiliza como primitiva ordenadora; no viola decisión #20. | v0.8 |
+| 42 | Día/noche, clima y terreno modulan elegibilidad y pesos de tablas de exploración (vías ya cerradas en §4.15.2 y §4.15.6). **No tienen impacto numérico directo** sobre tiradas de combate, exploración o crafteo en v1. Diferido a v1.1. | v0.8 |
+| 43 | Suerte como atributo derivado: `luck = floor((INT + VOL) / 2) - floor(level / 10)`. Calculada al construir cada `WorldState`. No es ítem ni consumible en v1. | v0.8 |
+| 44 | Condición de fin de partida: muerte (cualquier causa) o quest principal del mapa de historia (Modo Historia). Modo Libre solo cierra por muerte. La pantalla de victoria reutiliza el formato de epitafio con `cause.kind = 'victory'`. La quest principal se diseña en H4 con el contenido del mapa. | v0.8 |
+| 45 | Onboarding: tras tutorial, decisión binaria que escribe bandera narrativa (`viajero_audaz` o `viajero_cauto`), combate forzado contra enemigo tier "lobo" sin posibilidad de huir ni evitar, apertura del mapa-mundi en el nodo de la rama elegida. Texto y enemigo concretos en H9. Morir en el combate forzado activa epitafio normal sin red de seguridad. | v0.8 |
+| 46 | Umbral de éxitos para impactar: `threshold = ceil(DEF / 3)`. Promovida a decisión propia desde la simulación implícita del dado v0.2 (era la fórmula que validó P(impacto) en cada perfil). DEF 4 → 2, DEF 8 → 3, DEF 12 → 4. | v0.8 |
 
 ---
 
 ## 6. Preguntas abiertas
 
-### Bloqueantes (hay que responderlas antes de v0.8)
+### Bloqueantes
 
-1. **Fórmula de iniciativa** (depende del dado de combate, ya cerrado #36; bloquea H3).
-2. **Efectos numéricos de día/noche, clima y terreno** (depende del dado de exploración 1d20 ya cerrado).
-3. **Definición de "Suerte"** como variable de exploración: atributo derivado, stat oculto o consumible.
-4. **Qué cuenta como "partida terminada"** en modo Historia (condición de victoria/cierre narrativo).
-5. **Contenido exacto de la decisión inmediata + primer combate forzado** del onboarding.
+**Ninguno.** Los 5 que la v0.7 listaba como bloqueantes están cerrados en v0.8 (decisiones #41-#45). El #46 surgió como subproducto: la fórmula `ceil(DEF/3)` ya estaba implícita en la simulación del dado v0.2 y se promovió a decisión propia para que el código no la asuma sin trazabilidad.
 
-### Importantes (v0.7 puede vivir sin ellas, pero no mucho más)
+Las dos provisionales que sobreviven (en código, etiquetadas) están vinculadas a contenido que se construye en su hito, no a decisiones de diseño:
+
+- Daño base por arma sin arma equipada (puños = 1): se cierra al poblar el catálogo de armas en H5.
+- Duración del día (240 ticks): se cierra en H4 cuando se ajuste el ritmo de exploración con tablas reales.
+
+Ninguna bloquea código que no le toque.
+
+### Importantes (v0.8 puede vivir sin ellas, pero no mucho más)
 
 10. Lista concreta de habilidades.
 11. Los 5 arquetipos: nombres, stat-line por defecto, inventario inicial, árbol de perks derivado.
@@ -831,4 +853,15 @@ Sin cambios al reglamento. Los bloqueantes de §6 siguen abiertos tal cual estab
 - §6 bloqueantes: cerrada la curva de XP. Quedan 5 bloqueantes (iniciativa, efectos ambientales, Suerte, condición de victoria, onboarding narrativo).
 - Sin cambios en exploración, combate ni arquitectura.
 
-**v0.8** — Pendiente. Se produce cuando se cierren los bloqueantes restantes del §6. Debe fijar iniciativa, efectos ambientales, Suerte, condición de victoria y contenido del onboarding inicial.
+**v0.8** — Cierre de los **5 bloqueantes restantes** del §6 (26/4/2026) más una decisión emergente. Cambios:
+
+- **Decisión #41 — Iniciativa:** `DES + 1d20` (PJ) y `initiative_base + 1d20` (enemigo). Validada en `simulaciones/iniciativa-v0.1.md` tras descartar tres iteraciones de pool d6 por empates excesivos (24-50%). El d20 reutilizado como primitiva ordenadora; no viola decisión #20 que separa los dados de **resolución** de combate vs exploración. Desempate: mayor DES bruto, luego PJ sobre enemigo.
+- **Decisión #42 — Día/noche, clima, terreno:** sin impacto numérico directo en v1. Modulan elegibilidad y pesos de tablas de exploración (vías ya cerradas en §4.15.2 y §4.15.6). Diferido a v1.1.
+- **Decisión #43 — Suerte:** atributo derivado `floor((INT+VOL)/2) - floor(level/10)`. INT/VOL como base por ser atributos "mentales"; decrece con nivel para que el late-game dependa menos del azar.
+- **Decisión #44 — Fin de partida:** muerte o quest principal del mapa de historia. Modo Libre solo cierra por muerte. Pantalla de victoria reutiliza formato del epitafio. Internamente `EndOfRunCause` engloba muerte y victoria; `DeathCause` queda como alias retro.
+- **Decisión #45 — Onboarding:** estructura cerrada (decisión binaria con bandera narrativa + combate forzado tier "lobo" sin red de seguridad + apertura de mapa). Texto y enemigo concretos en H9. Flags `viajero_audaz` / `viajero_cauto` reservadas.
+- **Decisión #46 — Threshold de impacto:** `ceil(DEF/3)`. Promovida a decisión propia desde la simulación implícita del dado v0.2 para que la fórmula sea explícita y no implícita en el script.
+- §6 bloqueantes: **0 restantes**. Las provisionales que sobreviven en código (daño puños, duración del día) están vinculadas a contenido de hito, no a diseño abierto.
+- §4.3, §4.4, §4.6, §4.8, §4.9, §4.15.2 reescritas con las decisiones cerradas.
+
+Esta versión es la primera en la que **todo el reglamento numérico que el código necesita está cerrado**. Lo que queda abierto es contenido (catálogos, lista de habilidades, arquetipos) y decisiones que pertenecen a su hito (UI de perks, branding, etc.).

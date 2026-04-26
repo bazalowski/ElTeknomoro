@@ -1,7 +1,7 @@
 # El Teknomoro — Scope del MVP web
 
 > Contrato de alcance. Qué entra en v1 del navegador, qué no entra, en qué orden se construye y qué lo bloquea.
-> **Versión:** v0.6 · **Fecha:** 25 de abril de 2026 (H1 cerrado)
+> **Versión:** v0.7 · **Fecha:** 26 de abril de 2026 (esqueleto del motor cerrado, 0 bloqueantes de diseño)
 > **Autor:** el-teknomoro-director
 > **Destino:** referencia firme del equipo (Bazalo + dirección) durante toda la construcción del MVP. Si algo no está aquí, no se construye en v1.
 
@@ -314,17 +314,20 @@ Estos no son "trabajo del MVP", son pre-requisitos. Sin cerrarlos, los hitos cor
 | Bloqueante | Bloquea el Hito | Estado | Cómo se cierra |
 |---|---|---|---|
 | Dado de combate (pool vs único) | H1, H3 | **Cerrado (pool d6 4+, decisión #36)** | — |
-| Dado de exploración | H1, H4 | **Cerrado (1d20)** | — |
-| Fórmula de iniciativa | H3 | Abierto | Simulación (ahora desbloqueada por el cierre del dado de combate) |
+| Dado de exploración | H1, H4 | **Cerrado (1d20, decisión #26)** | — |
+| Fórmula de iniciativa | H3 | **Cerrado (DES + 1d20, decisión #41)** | Validado en `simulaciones/iniciativa-v0.1.md` |
+| Threshold de impacto (DEF → éxitos) | H3 | **Cerrado (`ceil(DEF/3)`, decisión #46)** | Promovida desde simulación implícita del dado v0.2 |
 | Curva de XP al nivel 50 | H7 | **Cerrada (lineal `100·n`, decisión #37)** | — |
-| Definición de "Suerte" como variable de exploración | H1 | Abierto | Decisión de diseño + simulación |
+| Definición de "Suerte" como variable de exploración | H1 | **Cerrado (atributo derivado, decisión #43)** | — |
 | Diseño de la tirada reactiva por tipo de evento | H1, H4 | **Cerrado (v0.5 biblia §4.15.6–§4.15.9)** | — |
-| Contenido concreto del onboarding (decisión + combate forzado) | H9 | Abierto | Sesión de diseño de narrativa |
-| Stat-lines definitivas de los 5 arquetipos | H2 | Abierto | Se deriva del dado de combate (ahora cerrado, ya derivable) |
-| Lista concreta de habilidades | H2 | Abierto | Se deriva del dado de combate (ahora cerrado, ya derivable) |
+| Efectos numéricos de día/noche, clima y terreno | H4 | **Cerrado: diferido a v1.1 (decisión #42)** | — |
+| Condición de fin de partida en modo Historia | H3 | **Cerrado (decisión #44)** | Quest principal del mapa de historia (se diseña en H4) |
+| Contenido concreto del onboarding (decisión + combate forzado) | H9 | **Cerrado: estructura, decisión #45** | Texto y enemigo concreto pendientes de H9 (no son bloqueantes de código) |
+| Stat-lines definitivas de los 5 arquetipos | H2 | Abierto | Se deriva del dado de combate; redacción concreta en H2 |
+| Lista concreta de habilidades | H2 | Abierto | Se deriva del dado de combate; redacción concreta en H2 |
 | Tablas de exploración iniciales (5 biomas) | H4 | Abierto | Se redacta en H4 con herramientas de H8 adelantadas si hace falta |
 
-H1 desbloqueado: con el dado de combate cerrado, ya no quedan bloqueantes que impidan empezar `rules/dice.ts` con su primitiva de combate.
+**Estado de bloqueantes a 26/4/2026:** **0 bloqueantes de diseño**. Lo que queda abierto (stat-lines, habilidades, tablas de bioma) es contenido, se redacta en su hito sin necesidad de sesión de diseño previa.
 
 ---
 
@@ -400,20 +403,18 @@ No todo se decide hoy. Estas quedan marcadas para decidirlas cuando llegue su hi
 
 ## 9. Qué hace Bazalo esta semana
 
-Estado al cerrar v0.6 del scope (biblia v0.7, 25/4/2026):
+Estado al cerrar v0.7 del scope (biblia v0.8, 26/4/2026):
 
 - **H0:** **cerrado** y desplegado en Vercel.
-- **Dado de exploración:** cerrado (1d20).
-- **Dado de combate:** cerrado (pool d6 4+, decisión #36).
-- **Tirada reactiva:** cerrada (marco común + 10 tipos).
-- **Subsistema de progresión:** cerrado (decisiones #37-#40: curva XP `100·n`, cadencia +2 hab/nivel + 1 atr/5 + 1 perk/5, techo blando `min(floor(level/2)+2, 7)`, curva uso `5·1.7^v`).
-- **H1 código:** `rules/dice.ts`, `rules/character.ts`, `rules/exploration.ts` cerrados. Falta `rules/progression.ts`.
+- **H1:** **cerrado.** `rules/dice.ts`, `rules/character.ts`, `rules/exploration.ts`, `rules/progression.ts`.
+- **Esqueleto del motor extendido:** **cerrado.** Los 10 módulos restantes de `rules/` (combat, inventory, crafting, world-gen, fast-travel, death, time, faction, dialog, achievements) tienen contratos definidos y la mecánica que la biblia cierra ya está implementada y testeada (168 tests verdes). Sólo se queda NOT_IMPLEMENTED `generateFreeWorld` (sesión H4 dedicada).
+- **6 decisiones cerradas en una pasada:** #41 iniciativa (con simulación), #42 día/noche, #43 Suerte, #44 fin de partida, #45 onboarding, #46 threshold. **0 bloqueantes de diseño restantes.**
 
 Orden de atención:
 
-1. **Cerrar H1** escribiendo `rules/progression.ts` con los números de las decisiones #37-#40. Tests por cada vía (uso, XP, level-up, cadencia, techo blando).
-2. **H1 ENTREGABLE COMPLETO** según scope §3 una vez cierre `progression.ts`.
-3. Tras H1, arrancar H2 (creación de personaje en UI). Bloqueantes restantes (iniciativa, Suerte, etc.) se cierran cuando aparezcan en su hito.
+1. **Arrancar H2** (creación de personaje en UI). El motor núcleo está listo para que la UI lo consuma sin que aparezcan agujeros.
+2. Antes de tocar UI, decidir contenido mínimo necesario para H2: nombres y stat-line por defecto de los 5 arquetipos (decisión menor, no de diseño), set de 12 retratos (placeholder), lista mínima de habilidades para que el reparto tenga sentido. Esto se redacta en H2 como parte del hito, no como bloqueante previo.
+3. Tras H2, H3 (combate vertical slice) tiene todo el motor que necesita: combat.ts implementado, iniciativa cerrada, threshold cerrado, death con epitafio y victoria. Sólo añadir UI de combate.
 
 ---
 
@@ -457,3 +458,11 @@ Orden de atención:
 - §4 bloqueantes: marcada **Cerrada** la curva de XP al nivel 50 (lineal `100·n`).
 - §9 reescrita: H1 al 75% en código (faltan solo `progression.ts`). La semana se centra en cerrar ese módulo con los números reales y dar H1 por entregable completo.
 - Sin cambios en §1, §2, §3, §5, §6, §7, §8.
+
+**v0.7** — Cierre del **esqueleto extendido del motor** y de los **5 bloqueantes de diseño restantes** (26/4/2026, biblia v0.8, decisiones #41-#46). Cambios:
+
+- §4 bloqueantes: tabla actualizada — **0 bloqueantes de diseño abiertos**. Iniciativa (#41), Suerte (#43), efectos día/noche (#42), fin de partida (#44), onboarding estructural (#45) y threshold (#46) cerrados. Lo que queda abierto es contenido (stat-lines, habilidades, tablas de bioma) que se redacta en su hito.
+- §9 reescrita: H1 cerrado, esqueleto extendido cerrado, 168 tests verdes. La semana arranca H2.
+- Sin cambios en §1, §2, §3, §5, §6, §7, §8: el cierre del esqueleto no altera el inventario del MVP, los hitos ni la estimación. La forma del MVP era correcta; lo que se cerró es la cimentación.
+
+Hito implícito de proceso: este es el primer ciclo en que el motor tiene contratos completos antes de que nada de UI exista. La fase de "ajustar mecánicas y añadir contenido" puede arrancar sin que reescribir contratos rompa código de UI.
