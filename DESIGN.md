@@ -178,9 +178,38 @@ Ningún glow. Ningún drop-shadow decorativo. La elevación es información, no 
 
 ## 5. Components
 
-> Seed mode: no hay componentes implementados aún. Los componentes reales se documentarán en la próxima pasada de `$impeccable document` cuando exista código de UI (a partir de H2 de creación de personaje).
+> Seed mode parcial: las pantallas H2 se documentan aquí a medida que cierran (1/5 cerradas: retrato). El resto sigue siendo placeholder hasta su pasada de `$impeccable document` correspondiente.
 
-Los componentes provisionales heredarán las reglas anteriores: serif display reservada, mono para números, color-means-something, sin glow, flat-por-defecto, OKLCH como referencia. Cuando un componente concreto exista (botón primario, panel de atributos, tirada de dado en log), se documentará aquí con su shape, color assignment, estados y comportamiento, y se generará DESIGN.json sidecar con el HTML/CSS canónico.
+Los componentes provisionales heredan las reglas anteriores: serif display reservada, mono para números, color-means-something, sin glow, flat-por-defecto, OKLCH como referencia.
+
+### 5.1 Pantalla de retrato (H2, paso 1/7)
+
+Primera pantalla cerrada del flow de creación. Marca cómo se ve una vista interna del flow H2: shell común reutilizado (`.h2-flow__exit`, `.h2-flow__heading`, `.h2-flow__nav`, `.h2-flow__nav-button`) + bloque propio `.h2-portrait` para el contenido específico.
+
+**Archivos:** [`src/render/h2-portrait-view.ts`](src/render/h2-portrait-view.ts), bloque `h2-portrait` en [`src/style.css`](src/style.css).
+
+**Shape:** contenedor full-bleed con grid de tres filas (`auto 1fr auto`) idéntico al patrón de `.h2-flow__step` y `.h2-start`. Cabecera arriba (heading sans + instrucción body), grid de 12 celdas en el medio, nav abajo (Atrás / Continuar / Reset). Botón Salir absoluto en esquina superior derecha.
+
+**Grid responsive:** 3 columnas en móvil (`<560px`) → 4 columnas en tablet (`≥560px`) → 6 columnas en desktop (`≥960px`). Sin `auto-fit`: las matrices 4×3 y 6×2 son matemáticamente limpias para 12 ítems y evitan columnas huérfanas en anchos intermedios.
+
+**Componente celda de retrato (`.h2-portrait__cell`).** Botón con `role="radio"` dentro de un `radiogroup`. Composición: swatch de color (placeholder HSL hasta H9, expuesto como custom property `--portrait-color`) + label "01"…"12" debajo. Aspect ratio del swatch `1/1`. Borde del swatch en `tinta-tierra-humeda` (mismo color que el fondo de la app) para sangrar visualmente y aislar cada placeholder sin chrome de `corteza-palida`.
+
+Estados con tres ejes ortogonales (los tres pueden coexistir):
+- **Reposo:** fondo `tinta-tierra-baja`, borde `corteza-palida`, label en mono (`hueso-descolorido`).
+- **Hover:** sube un escalón de luminancia, fondo a `tinta-tierra-media`. Solo afordancia visual, no muta estado lógico.
+- **Focus (`:focus-visible`):** outline exterior `2px solid hueso-descolorido` con offset 2px. Mismo patrón que `.h2-flow__nav-button` y `.h2-start__option`.
+- **Selected (`[aria-checked="true"]`):** fondo `tinta-tierra-media` + `box-shadow: inset 0 0 0 2px hueso-descolorido`. Ring interno persistente. NO check decorativo, NO glow violeta, NO drop-shadow. Mismo patrón que `.h2-start__option[aria-pressed="true"]` para coherencia de selección entre pantallas H2.
+
+**Tipografía del label.** El label "01"…"12" va en JetBrains Mono (`Numbers-In-Mono` Rule) y queda fuera del swatch, sobre el fondo neutro de la celda. Esto evita el problema de legibilidad sobre swatches HSL claros (amarillo, cian) sin parchear con backdrop opaco que ensuciaría el placeholder.
+
+**Reglas aplicadas y desviaciones:**
+- Display-Is-Sacred: la instrucción "Elige un retrato." va en body sans, no en Cormorant. Cormorant queda reservada para los momentos narrativos.
+- Arcane Restraint: la marca de selección NO usa violeta. La pantalla no es evento arcano.
+- Flat-By-Default + No-Glow: cero `box-shadow` expansivo. La selección usa `box-shadow inset` (anillo, no aura).
+- Color-Means-Something: los swatches HSL son intencionalmente neutros respecto al sistema semántico del juego (placeholder honesto hasta H9). No se mezclan con tokens semánticos (`verde-pantano`, `ambar-enfermo`, etc.).
+- Motion: transiciones `150ms ease-out` sobre `background-color` y `box-shadow`. El `outline` no se anima (focus debe ser inmediato).
+
+Cuando el resto de pantallas H2 cierren se documentarán aquí en sub-bloques 5.2…5.5. El sidecar DESIGN.json sigue diferido hasta tener componentes transversales reutilizables (botón primario, panel de atributos, tirada en log) más allá del flow de creación.
 
 ## 6. Do's and Don'ts
 

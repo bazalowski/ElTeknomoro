@@ -595,3 +595,123 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
   color: var(--c-rojo-oxido-enfermo);
   text-align: center;
 }
+
+/* ============================================================
+   h2-portrait — selección de retrato (paso 1/7 del flow H2).
+   Grid de 12 placeholders HSL hasta H9. Marca de selección por
+   inset ring (mismo patrón que h2-start), focus por outline
+   exterior, hover por luminancia. Tres ejes ortogonales.
+   ============================================================ */
+
+/* Mismo shell que .h2-flow__step: grid auto/1fr/auto, full-bleed. */
+.h2-portrait {
+  position: fixed;
+  inset: 0;
+  background: var(--c-tinta-tierra-humeda);
+  color: var(--c-hueso-descolorido);
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  align-items: center;
+  justify-items: center;
+  padding: clamp(24px, 6vh, 64px) clamp(16px, 4vw, 48px);
+  gap: clamp(20px, 4vh, 40px);
+  overflow: auto;
+}
+
+.h2-portrait__header {
+  text-align: center;
+  max-width: 60ch;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Body sans, no display: la pantalla no es momento narrativo. */
+.h2-portrait__instruction {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--c-corteza-palida);
+}
+
+/* 3 cols base, 4 en >=560px, 6 en >=960px. Matrices limpias para 12. */
+.h2-portrait__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(10px, 1.5vw, 14px);
+  width: 100%;
+  max-width: 720px;
+  align-self: center;
+}
+
+@media (min-width: 560px) {
+  .h2-portrait__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .h2-portrait__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+/* Celda compacta: swatch arriba, label debajo. Densidad sobre amabilidad. */
+.h2-portrait__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  padding: 8px;
+  font-family: inherit;
+  color: inherit;
+  background: var(--c-tinta-tierra-baja);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 150ms ease-out, box-shadow 150ms ease-out;
+}
+
+/* Hover: subimos un escalón de luminancia (tierra-baja → tierra-media). */
+.h2-portrait__cell:hover {
+  background: var(--c-tinta-tierra-media);
+}
+
+/* Focus exterior, mismo patrón que h2-start y h2-flow__nav-button. */
+.h2-portrait__cell:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+/* Selección: inset ring interno hueso, no glow, no violeta, no check. */
+.h2-portrait__cell[aria-checked="true"] {
+  background: var(--c-tinta-tierra-media);
+  box-shadow: inset 0 0 0 2px var(--c-hueso-descolorido);
+}
+
+/* Selected + focus: inset ring + outline coexisten en ejes distintos. */
+.h2-portrait__cell[aria-checked="true"]:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+/* Swatch HSL aislado del fondo del juego con sangrado del color global. */
+.h2-portrait__cell-swatch {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--portrait-color, var(--c-tinta-tierra-media));
+  border: 1px solid var(--c-tinta-tierra-humeda);
+  border-radius: 2px;
+}
+
+/* Label "01".."12" en mono (Numbers-In-Mono), fuera del swatch. */
+.h2-portrait__cell-label {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.8rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--c-hueso-descolorido);
+}

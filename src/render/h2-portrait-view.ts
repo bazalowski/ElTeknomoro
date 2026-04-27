@@ -1,20 +1,146 @@
 import type { H2StepCtx } from '../state/h2-flow';
+import { PORTRAITS, PORTRAITS_BY_ID } from '../data/portraits';
 
 export function renderH2PortraitView(root: HTMLElement, ctx: H2StepCtx): void {
+  const initialId =
+    ctx.draft.portraitId && ctx.draft.portraitId in PORTRAITS_BY_ID
+      ? ctx.draft.portraitId
+      : null;
+
+  const cellsHtml = PORTRAITS.map((p) => {
+    const isSelected = p.id === initialId;
+    return `
+      <button
+        type="button"
+        class="h2-portrait__cell"
+        role="radio"
+        aria-checked="${isSelected ? 'true' : 'false'}"
+        aria-label="Retrato ${p.label}"
+        data-portrait-id="${p.id}"
+        tabindex="-1"
+        style="--portrait-color: ${p.placeholder_color};"
+      >
+        <span class="h2-portrait__cell-swatch" aria-hidden="true"></span>
+        <span class="h2-portrait__cell-label">${p.label}</span>
+      </button>
+    `;
+  }).join('');
+
   root.innerHTML = `
-    <main class="view h2-flow__step">
+    <main class="view h2-portrait">
       <button type="button" class="h2-flow__exit" data-action="exit">Salir</button>
-      <h1 class="h2-flow__heading">Retrato</h1>
+      <header class="h2-portrait__header">
+        <h1 class="h2-flow__heading">Retrato</h1>
+        <p class="h2-portrait__instruction">Elige un retrato.</p>
+      </header>
+      <div
+        class="h2-portrait__grid"
+        role="radiogroup"
+        aria-label="Retrato del personaje"
+      >
+        ${cellsHtml}
+      </div>
       <nav class="h2-flow__nav" aria-label="Navegación del flujo">
         <button type="button" class="h2-flow__nav-button" data-action="back">Atrás</button>
-        <button type="button" class="h2-flow__nav-button h2-flow__nav-button--primary" data-action="next">Continuar</button>
+        <button
+          type="button"
+          class="h2-flow__nav-button h2-flow__nav-button--primary"
+          data-action="next"
+          ${initialId ? '' : 'disabled'}
+        >Continuar</button>
         <button type="button" class="h2-flow__nav-button" data-action="reset">Reset</button>
       </nav>
     </main>
   `;
 
-  root.querySelector<HTMLButtonElement>('[data-action="exit"]')!.addEventListener('click', () => ctx.exit());
-  root.querySelector<HTMLButtonElement>('[data-action="back"]')!.addEventListener('click', () => ctx.goBack());
-  root.querySelector<HTMLButtonElement>('[data-action="next"]')!.addEventListener('click', () => ctx.goNext());
-  root.querySelector<HTMLButtonElement>('[data-action="reset"]')!.addEventListener('click', () => ctx.reset());
+  const cells = Array.from(
+    root.querySelectorAll<HTMLButtonElement>('.h2-portrait__cell'),
+  );
+  const nextBtn = root.querySelector<HTMLButtonElement>('[data-action="next"]')!;
+
+  let selectedId: string | null = initialId;
+
+  const focusIndexFor = (id: string | null): number => {
+    if (!id) return 0;
+    const idx = cells.findIndex((c) => c.dataset.portraitId === id);
+    return idx >= 0 ? idx : 0;
+  };
+
+  const setRovingTarget = (idx: number) => {
+    for (let i = 0; i < cells.length; i++) {
+      const cell = cells[i];
+      if (!cell) continue;
+      cell.tabIndex = i === idx ? 0 : -1;
+    }
+  };
+
+  const applySelection = (id: string) => {
+    if (!(id in PORTRAITS_BY_ID)) return;
+    selectedId = id;
+    for (const cell of cells) {
+      const isSel = cell.dataset.portraitId === id;
+      cell.setAttribute('aria-checked', isSel ? 'true' : 'false');
+    }
+    ctx.setPortrait(id);
+    nextBtn.disabled = false;
+  };
+
+  setRovingTarget(focusIndexFor(selectedId));
+
+  for (const cell of cells) {
+    cell.addEventListener('click', () => {
+      const id = cell.dataset.portraitId;
+      if (!id) return;
+      applySelection(id);
+      setRovingTarget(cells.indexOf(cell));
+      cell.focus();
+    });
+
+    cell.addEventListener('keydown', (e) => {
+      const idx = cells.indexOf(cell);
+      if (idx < 0) return;
+
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const id = cell.dataset.portraitId;
+        if (!id) return;
+        applySelection(id);
+        return;
+      }
+
+      let nextIdx: number | null = null;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        nextIdx = idx + 1 < cells.length ? idx + 1 : null;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        nextIdx = idx - 1 >= 0 ? idx - 1 : null;
+      }
+
+      if (nextIdx === null) return;
+      e.preventDefault();
+      const target = cells[nextIdx];
+      if (!target) return;
+      setRovingTarget(nextIdx);
+      target.focus();
+    });
+  }
+
+  root.querySelector<HTMLButtonElement>('[data-action="exit"]')!
+    .addEventListener('click', () => ctx.exit());
+  root.querySelector<HTMLButtonElement>('[data-action="back"]')!
+    .addEventListener('click', () => ctx.goBack());
+  nextBtn.addEventListener('click', () => {
+    if (nextBtn.disabled) return;
+    ctx.goNext();
+  });
+  root.querySelector<HTMLButtonElement>('[data-action="reset"]')!
+    .addEventListener('click', () => ctx.reset());
+
+  if (!selectedId) {
+    const first = cells[0];
+    if (first) first.focus();
+  } else {
+    const idx = focusIndexFor(selectedId);
+    const target = cells[idx];
+    if (target) target.focus();
+  }
 }

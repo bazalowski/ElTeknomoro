@@ -876,3 +876,12 @@ Esta versión es la primera en la que **todo el reglamento numérico que el cód
 - Sistema visual provisional documentado en `PRODUCT.md` (register=product, marca, anti-references, principios) y `DESIGN.md` (paleta OKLCH cerrada — Bosque podrido + violeta arcano reverencial ≤5%, tipografía Cormorant Garamond + Inter + JetBrains Mono, escala de spacing/rounded, contrastes WCAG AA, pares prohibidos). Ambos archivos son derivados de la decisión #47, no decisiones independientes.
 - Pipeline obligatorio para crear o modificar UI: Prompt Master → el-teknomoro-director → impeccable. Documentado en `proceso-director.md` v0.3 y enforcado por la skill `.claude/skills/modopipeline/SKILL.md`.
 - Sin cambios en §4 reglamento. Sin cambios en §6 bloqueantes (siguen 0 abiertos). Sin cambios en §7 arquitectura ni §8 flujos.
+
+**v0.10** — Cierre de la **primera pantalla del MVP en navegador** (27/4/2026): pantalla de selección de retrato (H2, paso 1/7 del flow de creación de personaje, scope §1.3 línea 48). Sin nuevas decisiones de reglamento. Cambios:
+
+- §8: ninguna alteración del flujo. La pantalla materializa una pieza ya descrita (12 retratos fijos en grid).
+- `DESIGN.md` §5 sale parcialmente del seed mode: nuevo sub-bloque §5.1 "Pantalla de retrato (H2, paso 1/7)" con shape, grid responsive, componente celda con cuatro estados (reposo / hover / focus / selected) y reglas aplicadas.
+- `scope-mvp-web-v0.1.md` §1.3 línea 48 marcada como cerrada con checkbox `[x]` y fecha. Primer cierre del Hito 2; faltan 4 pantallas (atributos, habilidades, perk, inventario+preview+confirm).
+- Patrón de selección establecido para el resto del flow H2: `box-shadow: inset 0 0 0 2px hueso-descolorido`, mismo principio que `.h2-start__option[aria-pressed="true"]`. Las próximas pantallas heredan este vocabulario salvo justificación.
+- `setPortrait(id)` añadido a `H2StepCtx` como primer setter del flow (la vista no muta el draft directamente). Patrón replicable para `setAttributes`, `setSkills`, `setPerk`.
+- Sin cambios en §4, §6, §7.

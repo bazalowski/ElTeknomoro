@@ -11,6 +11,7 @@ import { createCharacter } from '../rules/character';
 import type { AttributeId } from '../rules/character';
 import { saveCharacter } from '../backend/characters';
 import { buildCreateInputFromDraft } from './h2-defaults';
+import { PORTRAITS_BY_ID } from '../data/portraits';
 
 export type H2Step =
   | 'start'
@@ -39,6 +40,7 @@ export interface H2StepCtx {
   reset: () => void;
   exit: () => void;
   confirmAndPersist: () => Promise<void>;
+  setPortrait: (id: string) => void;
 }
 
 const ORDER: readonly H2Step[] = [
@@ -115,6 +117,13 @@ export function startH2Flow(root: HTMLElement, onExit: () => void): void {
       const character = createCharacter(input);
       await saveCharacter(character);
       exitFlow();
+    },
+    setPortrait: (id: string) => {
+      if (!(id in PORTRAITS_BY_ID)) {
+        console.warn(`h2-flow: portraitId no válido: ${id}`);
+        return;
+      }
+      draft.portraitId = id;
     },
   };
 
