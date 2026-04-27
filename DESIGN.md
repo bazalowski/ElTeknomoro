@@ -328,7 +328,51 @@ Estados (cuatro, ortogonales, idéntico patrón `.h2-portrait__cell`):
 - #53: en H2.4 los 5 perks iniciales están todos disponibles. El gateo por arquetipo del biblia §4.7 línea 253 aplica solo al árbol de progresión post-creación (H7), no a la creación.
 - #54: regla "Numbers-In-Mono" NO aplica a prosa inline (descripciones, tooltips, copy de UI con números embebidos en frase). Aplica solo a bloques tabulares, fichas y stat displays donde los números se alinean para comparar.
 
-Cuando la última pantalla H2 cierre se documentará aquí en sub-bloque 5.5. El sidecar DESIGN.json sigue diferido hasta tener componentes transversales reutilizables (botón primario, panel de atributos en hoja de personaje fuera de creación, tirada en log) más allá del flow de creación.
+### 5.5 Pantalla de inventario inicial (H2, paso 5/7, sub 5a)
+
+Quinta pantalla cerrada del flow, primera de las tres sub-pantallas en que se divide el "paso 5/5" del scope §1.3 (líneas 49-51). Pantalla **100% visual/anticipatoria**: lee `ctx.draft.archetype` y muestra el inventario placeholder correspondiente. No persiste nada en draft. Coherente con que el catálogo real de items se cierra en H5.
+
+**Archivos:** [`src/render/h2-inventory-view.ts`](src/render/h2-inventory-view.ts), bloque `h2-inventory` en [`src/style.css`](src/style.css).
+
+**Shape:** contenedor full-bleed con grid de tres filas (`auto 1fr auto`) idéntico al patrón de `.h2-perk` y `.h2-flow__step`. Cabecera arriba (heading sans + instrucción body) → panel del inventario en el medio → nav abajo. Botón Salir absoluto en esquina superior derecha.
+
+**Componente panel (`.h2-inventory__panel`).** Contenedor del bloque de inventario, ancho de lectura controlado a `max-width: 720px`. **No es card; es panel técnico denso** (referencia Mörk Borg / Mothership). Sin borde exterior, sin fondo propio: la jerarquía la dan la banda informativa con bordes horizontales y los divisores finos entre ítems. Decisión deliberada: cards aquí saturarían la lectura del jugador y romperían la jerarquía "panel > banda > filas".
+
+**Componente banda informativa (`.h2-inventory__band`).** Banda horizontal con `border-top` y `border-bottom` 1px en `corteza-palida`, label izquierda + acción derecha. Clon visual del patrón consolidado en `.h2-attributes__pool` y `.h2-skills__pool`. El label muestra `<Nombre del arquetipo> — 5 ítems base` cuando `draft.archetype` es válido y existe en `ARCHETYPES_BY_ID`, o `Inventario inicial básico — 5 ítems` en estado neutro. La banda completa va en JetBrains Mono con `tabular-nums` (Numbers-In-Mono Rule aplicable: el numeral "5 ítems" es dato comparable, junto con el nombre del arquetipo se lee como entrada de panel técnico, no como prosa).
+
+**Componente botón "Sorpréndeme" (`.h2-inventory__surprise`).** Botón secundario sobrio dentro de la banda, alineado a la derecha. Más compacto que `.h2-flow__nav-button` porque es acción de panel, no de nav.
+
+Estados (cuatro, ortogonales, mismo lenguaje del flow):
+- **Reposo:** fondo `tinta-tierra-baja`, borde `corteza-palida`.
+- **Hover:** sube a `tinta-tierra-media`. Mismo eje que el resto del flow.
+- **Focus (`:focus-visible`):** outline exterior `2px solid hueso-descolorido` con offset 2px.
+- **Pressed (`[aria-pressed="true"]`):** fondo `tinta-tierra-media` + `box-shadow: inset 0 0 0 1px hueso-descolorido`. Inset ring fino (no 2px como en `.h2-portrait[checked]` o `.h2-perk[checked]`: aquí el botón es de acción, no de selección persistente; el ring sutil basta para indicar "el aviso está visible"). Mismo lenguaje, intensidad menor.
+
+**Componente aviso inline (`.h2-inventory__surprise-notice`).** `<p role="status" aria-live="polite">` con texto `"Generación de inventario aleatorio — disponible en H5."`. Aparece cuando se pulsa "Sorpréndeme", se oculta al pulsarlo de nuevo o tras un timeout de 5 s. Animación con `max-height` + `opacity` (no propiedades de layout puro), 200 ms ease-out. **Sin modal, sin glassmorphism, sin glow.** El aviso es prosa pura en sans pleno (decisión #54 aplicada: el "H5" embebido en frase narrativa no rompe a mono).
+
+**Componente fila de ítem (`.h2-inventory__item`).** Grid `28px 1fr` con `align-items: baseline`, divisor inferior fino en `tinta-tierra-baja` (más sutil que `corteza-palida` que se reserva a separadores estructurales del flow). Última fila sin divisor. Los ítems **no son interactivos** en H2: son informativos. Por eso quedan fuera del orden de tabulación, sin trampa de foco. La interactividad real (drag & drop, equipar, comparar) entra en H5.
+
+**Componente glifo (`.h2-inventory__item-glyph`).** Inicial del nombre del ítem en JetBrains Mono, ancla visual fija en columna izquierda. Cumple Numbers-In-Mono por estar en columna tabular alineada (no es prosa inline). Color `corteza-palida` para que el nombre sea el ancla principal y el glifo subordinado.
+
+**Cuerpo de ítem.** Nombre en sans peso 500 sobre `hueso-claro` (ancla de la fila), descripción en sans peso 400 sobre `corteza-palida` con line-height 1.45 para legibilidad de frases cortas. Decisión #54: prosa inline en sans, los ítems llevan números narrativos ("tres jornadas", "1 perk") embebidos en frase, no tabulares.
+
+**Inventario placeholder (5 ítems).** El catálogo real es H5; estos son tokens narrativos genéricos coherentes con el lore (post-humano, naturaleza vencedora, esoterismo demoníaco raro y reverencial). Lista actual: "Cuchillo de hoja recocida", "Odre de agua filtrada", "Hogaza dura y tiras de carne curada", "Capa de fibra trenzada", "Reliquia menor de un nombre olvidado". Tono lore-aware deliberado: nada de "cantimplora", "hatillo" o vocabulario de fantasía rural genérica. Los 5 arquetipos comparten la misma lista placeholder; la diferenciación real entra en H5 con el catálogo cerrado.
+
+**Reglas aplicadas y desviaciones:**
+- Display-Is-Sacred: heading "Inventario inicial" en sans. Instrucción body sans. Cero Cormorant.
+- Numbers-In-Mono: banda informativa en mono (dato tabular: nombre arquetipo + "5 ítems base"); glifos de ítem en mono (columna tabular alineada). Descripciones de ítem en sans (decisión #54: prosa inline).
+- Color-Means-Something + Arcane-Restraint: sin rojo óxido (no hay error posible), sin violeta (no es evento arcano), sin ámbar (no es hallazgo confirmado). Toda la pantalla en escala neutra orgánica.
+- Flat-By-Default + No-Glow: cero `box-shadow` expansivo. La selección del botón "Sorpréndeme" usa `box-shadow inset` 1px (anillo fino, no aura).
+- Densidad sobre amabilidad: 5 filas en pantalla a la vez sin scroll en desktop estándar (1280×800). Las filas son entradas de panel técnico, no cards.
+- Desviación 1: panel sin chrome propio (vs. `.h2-perk__card[]` que sí tiene fondo y borde). Aquí la jerarquía visual la cargan la banda y los divisores; el panel es contenedor lógico, no visual.
+- Desviación 2: ítems sin estados de selección/hover/focus. Son informativos en H2; ningún eje ortogonal aplicable.
+- Desviación 3: la banda informativa va completa en mono (nombre del arquetipo + numeral). En H2.2 y H2.3 la banda separa label-en-sans + valor-en-mono. Razón: aquí el "label" es el propio nombre del arquetipo seguido del numeral; tratar el bloque como una entrada tabular única se lee mejor que partir en dos tipografías.
+
+**API en `H2StepCtx`.** Ninguna nueva. La pantalla es read-only sobre `draft`. No añade setters, no añade tipos al `CharacterDraft`, no añade entradas al `ORDER` (las tres entradas `inventory`/`preview`/`confirm` ya estaban cableadas desde antes en `src/state/h2-flow.ts` líneas 18-26).
+
+**Patrón canónico de nav inferior del flow H2 (decisión operativa del director, v0.14).** **Atrás + Continuar + Reset en TODAS las pantallas del flow.** El Reset es la salida de emergencia desde dentro del flow ("me he equivocado de arquetipo, empiezo de cero") y debe estar disponible en cualquier paso. H2.1 (retrato) lo tiene desde su cierre. H2.2/H2.3/H2.4 lo perdieron por contagio entre cierres y serán uniformadas en commit aparte tras cerrar las sub-pantallas 5b y 5c. H2.5a se hace bien desde el principio: incluye Reset.
+
+Cuando se cierren las sub-pantallas 5b (preview) y 5c (confirm) se documentarán aquí en sub-bloques 5.6 y 5.7. Tras 5.7, se uniformarán las hermanas H2.2/H2.3/H2.4 con Reset y se podrá considerar la extracción del shell común a clases compartidas (decisión #52 sobre el stepper sigue evaluándose en paralelo). El sidecar DESIGN.json sigue diferido hasta tener componentes transversales reutilizables más allá del flow de creación.
 
 ## 6. Do's and Don'ts
 

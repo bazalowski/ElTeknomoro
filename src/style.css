@@ -1250,3 +1250,183 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
   line-height: 1.5;
   color: var(--c-hueso-descolorido);
 }
+
+/* ============================================================
+   h2-inventory — inventario inicial (paso 5/7 del flow H2, sub 5a).
+   Pantalla 100% visual/anticipatoria: lee draft.archetype, muestra
+   placeholder honesto de 5 ítems hasta que H5 cierre el catálogo.
+   Banda informativa + lista densa, sin cards. "Sorpréndeme" es
+   toggle con aviso inline (sin modal, decisión #54: prosa en sans).
+   ============================================================ */
+
+/* Mismo shell que .h2-perk y .h2-flow__step: full-bleed, 3 filas. */
+.h2-inventory {
+  position: fixed;
+  inset: 0;
+  background: var(--c-tinta-tierra-humeda);
+  color: var(--c-hueso-descolorido);
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  align-items: center;
+  justify-items: center;
+  padding: clamp(24px, 6vh, 64px) clamp(16px, 4vw, 48px);
+  gap: clamp(20px, 4vh, 36px);
+  overflow: auto;
+}
+
+.h2-inventory__header {
+  text-align: center;
+  max-width: 60ch;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Body sans, no display: la pantalla no es momento narrativo. */
+.h2-inventory__instruction {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--c-corteza-palida);
+}
+
+/* Panel: contenedor del bloque de inventario, ancho de lectura controlado.
+   No es card; es panel técnico denso (Mörk Borg / Mothership). */
+.h2-inventory__panel {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-self: start;
+}
+
+/* Banda informativa superior: clon visual del patrón .h2-attributes__pool.
+   Label izquierda + acción derecha. Sin caja, sólo bordes horizontales. */
+.h2-inventory__band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid var(--c-corteza-palida);
+  border-bottom: 1px solid var(--c-corteza-palida);
+}
+
+/* Mono solo en el segmento numérico de la banda (Numbers-In-Mono).
+   El nombre del arquetipo va en sans; el "5 ítems base" se lee tabular. */
+.h2-inventory__band-label {
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: var(--c-hueso-claro);
+  font-variant-numeric: tabular-nums;
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+}
+
+/* "Sorpréndeme" como botón secundario sobrio. Mismo eje hover/focus que
+   .h2-flow__nav-button pero más compacto (es acción de panel, no de nav). */
+.h2-inventory__surprise {
+  flex: 0 0 auto;
+  padding: 0.5rem 1rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  background: var(--c-tinta-tierra-baja);
+  color: var(--c-hueso-descolorido);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+
+.h2-inventory__surprise:hover {
+  background: var(--c-tinta-tierra-media);
+}
+
+.h2-inventory__surprise:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+/* Pressed: el aviso está visible. Inset ring sutil, mismo lenguaje
+   de selección que .h2-portrait[checked] pero más fino. */
+.h2-inventory__surprise[aria-pressed="true"] {
+  background: var(--c-tinta-tierra-media);
+  box-shadow: inset 0 0 0 1px var(--c-hueso-descolorido);
+}
+
+/* Aviso inline contenido: ocupa su altura sólo cuando es visible.
+   Sin modal, sin glow, sin animación coreografiada. */
+.h2-inventory__surprise-notice {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--c-corteza-palida);
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 200ms ease-out, opacity 150ms ease-out;
+}
+
+.h2-inventory__surprise-notice[data-visible="true"] {
+  max-height: 4em;
+  opacity: 1;
+}
+
+/* Lista densa, sin cards. Filas separadas por divisores finos.
+   Densidad sobre amabilidad (PRODUCT.md §Design Principles 4). */
+.h2-inventory__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.h2-inventory__item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  align-items: baseline;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--c-tinta-tierra-baja);
+}
+
+.h2-inventory__item:last-child {
+  border-bottom: none;
+}
+
+/* Glifo: inicial en mono, ancla visual del ítem. Cumple Numbers-In-Mono
+   por ser dato tabular alineado a columna fija. */
+.h2-inventory__item-glyph {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--c-corteza-palida);
+}
+
+.h2-inventory__item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* Nombre: peso fuerte sobre hueso-claro, ancla de la fila. */
+.h2-inventory__item-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--c-hueso-claro);
+}
+
+/* Descripción: prosa inline → sans (decisión #54), color subordinado.
+   Line-height más alto para legibilidad de frases cortas. */
+.h2-inventory__item-description {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--c-corteza-palida);
+}
