@@ -1,7 +1,8 @@
 # El Teknomoro — Proceso de dirección
 
 > Documento de ruta. Lo que el director está haciendo, por qué, y en qué paso estamos.
-> **Versión:** v0.3 · **Fecha:** 26 de abril de 2026
+> **Versión:** v0.4 · **Fecha:** 27 de abril de 2026
+> **Cambio v0.3 → v0.4:** sustituidas en el Paso 1 las referencias obsoletas a `ELTEKNOMORODESIGNDIRECTOR.yaml` y `Teknomoro-Assistant-Skill-v01.md` (fuentes que ya no existen en el repo) por `.claude/agents/el-teknomoro-director.md` y `.claude/skills/modopipeline/SKILL.md`. Alineación con la estructura real de `.claude/`.
 > **Cambio v0.2 → v0.3:** añadida sección "Pipeline de UI" (Prompt Master → director → impeccable) como protocolo obligatorio para H2 en adelante. El lore del mundo deja de estar fuera de scope: queda fijado en decisión #47 de la biblia v0.9.
 > Autor: el-teknomoro-director.
 
@@ -52,8 +53,8 @@ Leídos y asimilados:
 
 - `biblia-del-juego.md` v0.3 — reglamento, decisiones cerradas, preguntas abiertas.
 - `test-funcionalidades-mvp.md` — 130 preguntas de UX/funcionalidad del MVP web, ya respondidas por Bazalo.
-- `ELTEKNOMORODESIGNDIRECTOR.yaml` — rol de dirección de diseño.
-- `Teknomoro-Assistant-Skill-v01.md` — contrato del asistente.
+- `.claude/agents/el-teknomoro-director.md` — rol de dirección de diseño.
+- `.claude/skills/modopipeline/SKILL.md` — contrato del pipeline de UI.
 
 **Resultado del diagnóstico**: el test de funcionalidades está **respondido pero no es suficiente para escribir código**. Tiene decisiones a nivel UX pero deja ambigüedades que, si se resuelven mal, condicionan la arquitectura de `rules.ts` durante el resto del proyecto.
 
@@ -198,3 +199,5 @@ Toda creación o modificación de UI en El Teknomoro pasa por una cadena fija de
 **v0.2** — eliminada fase de mesa del proceso activo. El reglamento se valida por simulación numérica y por playtest del propio prototipo web. Añadido Paso 7 (playtest). Ajustada la regla sagrada para centrarla en simulación, no en mesa.
 
 **v0.3** — añadida sección "Pipeline de UI" (Prompt Master → director → impeccable) como protocolo obligatorio desde H2 en adelante, con `PRODUCT.md`, `DESIGN.md` y skill `modopipeline` como prerrequisitos cerrados. El lore del mundo (decisión #47 biblia v0.9) sale de la lista "fuera de scope": el marco está fijado, lo que queda fuera son los catálogos concretos de contenido por hito.
+
+**v0.4** — sustituidas en el Paso 1 las referencias a `ELTEKNOMORODESIGNDIRECTOR.yaml` y `Teknomoro-Assistant-Skill-v01.md` (no existen en el repo) por `.claude/agents/el-teknomoro-director.md` y `.claude/skills/modopipeline/SKILL.md`. Cierra el `[CONFLICTO]` señalado en `flow-trabajo-v1.md` §1.
