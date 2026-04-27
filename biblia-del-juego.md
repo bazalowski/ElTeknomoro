@@ -885,3 +885,13 @@ Esta versión es la primera en la que **todo el reglamento numérico que el cód
 - Patrón de selección establecido para el resto del flow H2: `box-shadow: inset 0 0 0 2px hueso-descolorido`, mismo principio que `.h2-start__option[aria-pressed="true"]`. Las próximas pantallas heredan este vocabulario salvo justificación.
 - `setPortrait(id)` añadido a `H2StepCtx` como primer setter del flow (la vista no muta el draft directamente). Patrón replicable para `setAttributes`, `setSkills`, `setPerk`.
 - Sin cambios en §4, §6, §7.
+
+**v0.11** — Cierre de la **segunda pantalla del MVP en navegador** (27/4/2026): pantalla de asignación de atributos (H2, paso 2/7 del flow de creación, scope §1.3 línea 45). Sin nuevas decisiones de reglamento. Cambios:
+
+- §8: ninguna alteración del flujo. La pantalla materializa el contrato cerrado en biblia §4.2 (12 puntos, mín 1, máx 4 al crear).
+- `DESIGN.md` §5.2 añadido: "Pantalla de atributos (H2, paso 2/7)" con shape, componentes (fila de atributo, banda de pool, botón paso) y cuatro estados explícitos del control (incluye `:disabled` real, novedad respecto a `.h2-portrait`).
+- `scope-mvp-web-v0.1.md` §1.3 línea 45 marcada como cerrada con checkbox `[x]` y fecha. 2/5 pantallas H2 cerradas; faltan 3 (habilidades, perk, inventario+preview+confirm).
+- `setAttribute(id, value)` añadido a `H2StepCtx` como segundo setter del flow. Valida entero + rango `[1, 4]` contra `CREATION_RULES.attributeMinAtCreation` y `attributeMaxAtCreation` antes de mutar `draft.attributes`. Patrón hermano de `setPortrait` (no muta el draft sin validar).
+- Decisión del director (CSS pass): el rojo óxido `--c-rojo-oxido-enfermo` NO aparece en esta pantalla. La UI bloquea el estado inválido por construcción (`disabled` en `+/−` impide suma fuera de `[5, 12]`; `Continuar` disabled impide salir con suma != 12). El pool se mantiene en `--c-hueso-claro` siempre.
+- Patrón "banda de pool" (`.h2-attributes__pool`) reutilizable para la pantalla de habilidades (paso 3/7) que tiene el mismo problema de "10 puntos restantes".
+- Sin cambios en §4, §6, §7.

@@ -178,7 +178,7 @@ Ningún glow. Ningún drop-shadow decorativo. La elevación es información, no 
 
 ## 5. Components
 
-> Seed mode parcial: las pantallas H2 se documentan aquí a medida que cierran (1/5 cerradas: retrato). El resto sigue siendo placeholder hasta su pasada de `$impeccable document` correspondiente.
+> Seed mode parcial: las pantallas H2 se documentan aquí a medida que cierran (2/5 cerradas: retrato, atributos). El resto sigue siendo placeholder hasta su pasada de `$impeccable document` correspondiente.
 
 Los componentes provisionales heredan las reglas anteriores: serif display reservada, mono para números, color-means-something, sin glow, flat-por-defecto, OKLCH como referencia.
 
@@ -209,7 +209,39 @@ Estados con tres ejes ortogonales (los tres pueden coexistir):
 - Color-Means-Something: los swatches HSL son intencionalmente neutros respecto al sistema semántico del juego (placeholder honesto hasta H9). No se mezclan con tokens semánticos (`verde-pantano`, `ambar-enfermo`, etc.).
 - Motion: transiciones `150ms ease-out` sobre `background-color` y `box-shadow`. El `outline` no se anima (focus debe ser inmediato).
 
-Cuando el resto de pantallas H2 cierren se documentarán aquí en sub-bloques 5.2…5.5. El sidecar DESIGN.json sigue diferido hasta tener componentes transversales reutilizables (botón primario, panel de atributos, tirada en log) más allá del flow de creación.
+### 5.2 Pantalla de atributos (H2, paso 2/7)
+
+Segunda pantalla cerrada del flow. Reutiliza el shell común y añade un componente nuevo (la fila de atributo) y un componente reutilizable potencialmente extensible al pool de habilidades (la banda de pool).
+
+**Archivos:** [`src/render/h2-attributes-view.ts`](src/render/h2-attributes-view.ts), bloque `h2-attributes` en [`src/style.css`](src/style.css).
+
+**Shape:** contenedor full-bleed con grid de cuatro filas (`auto auto 1fr auto`): cabecera (heading sans + instrucción body) → banda de pool → lista de 5 filas → nav. Botón Salir absoluto en esquina superior derecha.
+
+**Componente fila de atributo (`.h2-attributes__row`).** Grid `5 columnas × 2 filas`: sigla `FUE` en (col 1, fila 1) como ancla visual fuerte, nombre largo `Fuerza` en (col 1-2, fila 2) subordinado en `corteza-palida`, control numérico (`−` valor `+`) ocupando las dos filas a la derecha como bloque compacto centrado verticalmente. Decisión: la sigla y el nombre quedan apilados sin necesitar wrapper en el HTML (los hijos del row son planos: label, name, dec, value, inc). En móvil estrecho (`<480px`) el nombre largo se oculta (`display: none`); la sigla ya es ancla suficiente y el nombre apretaría el control numérico.
+
+**Componente banda de pool (`.h2-attributes__pool`).** Banda horizontal con `border-top` y `border-bottom` 1px en `corteza-palida`, label izquierda mayúsculas tracking 0.08em (regla "Label"), número derecha en mono `1.25rem` con `tabular-nums` (regla "Numbers-In-Mono"). Sin caja contenedora, sin caer en hero-metric (prohibido por DESIGN.md). El pool es un dato más, no espectáculo. Patrón candidato a reutilizarse en la pantalla de habilidades (paso 3/7) para el "10 puntos restantes".
+
+**Botón paso (`.h2-attributes__step`).** Cuadrado 36px (≥32px hit area), símbolos `−` y `+` en mono 1.1rem para que el grosor case con el número entre ellos. Mismo lenguaje austero que las celdas de retrato.
+
+Estados (cuatro, no tres como en retrato porque aquí hay `:disabled` real):
+- **Reposo:** fondo `tinta-tierra-baja`, borde `corteza-palida`.
+- **Hover:** sube un escalón de luminancia a `tinta-tierra-media` (mismo eje que `.h2-portrait__cell:hover`). Neutralizado en `:disabled`.
+- **Focus (`:focus-visible`):** outline exterior `2px solid hueso-descolorido` con offset 2px. En `:disabled:focus-visible` el outline pasa a `corteza-palida` (más apagado, coherente con el resto de señales del disabled).
+- **Disabled:** tres señales acumulativas: `opacity: 0.4`, `cursor: not-allowed`, fondo congelado en `tinta-tierra-baja` que NO sube en hover. Disabled = inerte, hover normal = vivo. Lectura inmediata.
+
+**Tratamiento del valor inválido.** La UI bloquea el estado inválido por construcción: los `disabled` en `+` (cuando valor == 4 o pool == 0) y `−` (cuando valor == 1) impiden que la suma se desvíe del rango `[5, 12]`; `Continuar` deshabilitado impide salir con suma != 12. Decisión cerrada del director: el rojo óxido `--c-rojo-oxido-enfermo` NO aparece en esta pantalla. El pool se mantiene en `--c-hueso-claro` siempre, sin variante de error. Cuando el pool llega a 0, los `+` se deshabilitan (única señal funcional).
+
+**Reglas aplicadas y desviaciones:**
+- Display-Is-Sacred: la instrucción "Reparte 12 puntos…" va en body sans. Cormorant fuera del shell.
+- Numbers-In-Mono: el valor 1-4 de cada atributo y el pool 0-7 van en mono con `tabular-nums` (1 y 4 ocupan lo mismo, alineación vertical limpia).
+- Color-Means-Something: rojo óxido reservado a peligro/mutación, NO a error de UI dado que la UI evita el estado inválido por construcción.
+- Arcane Restraint: cero violeta. La pantalla no es evento arcano.
+- Densidad sobre amabilidad: 5 filas en pantalla a la vez sin scroll en desktop. Las filas son entradas de panel técnico (Mörk Borg / Mothership), no cards.
+- Desviación de `.h2-portrait`: la fila NO recibe inset ring de selección. Aquí no hay selección persistente, hay valor numérico. El patrón de tres ejes (hover/focus) se aplica al control `+/−`, no a la fila contenedora.
+
+**API en `H2StepCtx`.** `setAttribute(id: AttributeId, value: number): void` añadido al closure de `startH2Flow`. Valida entero + rango `[1, 4]` contra `CREATION_RULES` antes de mutar. Patrón hermano de `setPortrait`. La vista NO muta el draft directamente. La vista llama al setter por cada `+/−` y mantiene su propio `values: AttrValues` local para repintar los disabled y el pool sin reconsultar el draft.
+
+Cuando el resto de pantallas H2 cierren se documentarán aquí en sub-bloques 5.3…5.5. El sidecar DESIGN.json sigue diferido hasta tener componentes transversales reutilizables (botón primario, panel de atributos en hoja de personaje fuera de creación, tirada en log) más allá del flow de creación.
 
 ## 6. Do's and Don'ts
 

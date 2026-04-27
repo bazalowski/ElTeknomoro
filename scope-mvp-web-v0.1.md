@@ -42,7 +42,7 @@ Las secciones §4-§7 son apoyo: bloqueantes, estimación, riesgos, definición 
 ### 1.3 Creación de personaje
 - Pantalla inicial "Empezar de cero" / "Empezar con preset".
 - 5 arquetipos predefinidos (uno por atributo dominante).
-- 12 puntos de atributo, máximo 4 al crear, mínimo 1 por atributo. +/- con preview en tiempo real.
+- [x] 12 puntos de atributo, máximo 4 al crear, mínimo 1 por atributo. +/- con preview en tiempo real. (cerrada en H2.2, 2026-04-27)
 - 10 puntos de habilidad, máximo 3 al crear. Pantalla separada.
 - Elección de 1 perk inicial.
 - [x] Set de 12 retratos fijos en grid. (cerrada en H2.1, 2026-04-27)

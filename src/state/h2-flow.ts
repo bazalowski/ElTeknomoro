@@ -7,7 +7,7 @@ import { renderH2InventoryView } from '../render/h2-inventory-view';
 import { renderH2PreviewView } from '../render/h2-preview-view';
 import { renderH2ConfirmView } from '../render/h2-confirm-view';
 import { showConfirmModal } from '../render/confirm-modal';
-import { createCharacter } from '../rules/character';
+import { createCharacter, CREATION_RULES } from '../rules/character';
 import type { AttributeId } from '../rules/character';
 import { saveCharacter } from '../backend/characters';
 import { buildCreateInputFromDraft } from './h2-defaults';
@@ -41,6 +41,7 @@ export interface H2StepCtx {
   exit: () => void;
   confirmAndPersist: () => Promise<void>;
   setPortrait: (id: string) => void;
+  setAttribute: (id: AttributeId, value: number) => void;
 }
 
 const ORDER: readonly H2Step[] = [
@@ -124,6 +125,23 @@ export function startH2Flow(root: HTMLElement, onExit: () => void): void {
         return;
       }
       draft.portraitId = id;
+    },
+    setAttribute: (id: AttributeId, value: number) => {
+      if (!Number.isInteger(value)) {
+        console.warn(`h2-flow: attributo "${id}" debe ser entero (recibido ${value})`);
+        return;
+      }
+      if (
+        value < CREATION_RULES.attributeMinAtCreation ||
+        value > CREATION_RULES.attributeMaxAtCreation
+      ) {
+        console.warn(
+          `h2-flow: atributo "${id}" fuera de rango [${CREATION_RULES.attributeMinAtCreation}, ${CREATION_RULES.attributeMaxAtCreation}] (recibido ${value})`,
+        );
+        return;
+      }
+      if (!draft.attributes) draft.attributes = {};
+      draft.attributes[id] = value;
     },
   };
 

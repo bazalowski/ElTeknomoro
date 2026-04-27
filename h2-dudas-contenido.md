@@ -191,7 +191,8 @@ Si alguna de estas no te convence, dilo y la subo a "decisión tuya".
 ## Deuda técnica conocida (revisar al cerrar las 5 pantallas H2)
 
 - `src/state/h2-defaults.ts` línea 53: `portraitId` por defecto literal `'placeholder'`. Desde el cierre de la pantalla de retrato (v0.10, 27/4/2026) la vista impide pasar al siguiente paso sin elegir uno de los 12 retratos válidos, por lo que `buildCreateInputFromDraft` ya nunca recibe el draft con `portraitId` vacío en runtime. El default literal queda como código defensivo huérfano.
-  - **Acción:** una vez las 5 pantallas H2 estén cerradas y todos los campos del draft lleguen rellenos, eliminar los defaults literales que ya no se ejercitan en runtime y reemplazar por validación dura (`throw` si el draft no está completo al confirmar). No tocar antes, porque las 6 pantallas restantes siguen siendo stubs y los defaults son lo único que mantiene el confirm operativo end-to-end.
+- `src/state/h2-defaults.ts` líneas 13-19: `DEFAULT_ATTRIBUTES = { fue: 3, des: 3, con: 2, int: 2, vol: 2 }`. Desde el cierre de la pantalla de atributos (v0.11, 27/4/2026) la vista exige suma == 12 y rango `[1, 4]` antes de habilitar Continuar, por lo que `buildCreateInputFromDraft` ya nunca recibe `draft.attributes` parcial o ausente en runtime. El bloque `if (draft.attributes)` y los defaults son código defensivo huérfano.
+  - **Acción común:** una vez las 5 pantallas H2 estén cerradas y todos los campos del draft lleguen rellenos, eliminar los defaults literales que ya no se ejercitan en runtime y reemplazar por validación dura (`throw` si el draft no está completo al confirmar). No tocar antes, porque las 3 pantallas restantes siguen siendo stubs y los defaults son lo único que mantiene el confirm operativo end-to-end.
 
 ---
 

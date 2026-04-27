@@ -715,3 +715,204 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
   text-align: center;
   color: var(--c-hueso-descolorido);
 }
+
+/* ============================================================
+   h2-attributes — asignación de atributos (paso 2/7 del flow H2).
+   5 filas FUE/DES/CON/INT/VOL con +/- y pool de puntos restantes.
+   Panel técnico denso, no cards. Sin rojo (decisión del director).
+   ============================================================ */
+
+/* Mismo shell que .h2-portrait y .h2-flow__step: full-bleed, 3 filas. */
+.h2-attributes {
+  position: fixed;
+  inset: 0;
+  background: var(--c-tinta-tierra-humeda);
+  color: var(--c-hueso-descolorido);
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  align-items: center;
+  justify-items: center;
+  padding: clamp(24px, 6vh, 64px) clamp(16px, 4vw, 48px);
+  gap: clamp(20px, 4vh, 36px);
+  overflow: auto;
+}
+
+.h2-attributes__header {
+  text-align: center;
+  max-width: 60ch;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Body sans, no display: la pantalla no es momento narrativo. */
+.h2-attributes__instruction {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--c-corteza-palida);
+}
+
+/* Pool austero: banda horizontal con bordes finos, no hero-metric. */
+.h2-attributes__pool {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  max-width: 480px;
+  padding: 10px clamp(12px, 2vw, 16px);
+  border-top: 1px solid var(--c-corteza-palida);
+  border-bottom: 1px solid var(--c-corteza-palida);
+}
+
+/* Label sigla del pool, mismo lenguaje que las labels de fila. */
+.h2-attributes__pool-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+/* Mono con tabular-nums para que 0 y 7 ocupen lo mismo. */
+.h2-attributes__pool-value {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--c-hueso-claro);
+  min-width: 1.5ch;
+  text-align: right;
+}
+
+/* Lista vertical sin viñetas, gap controlado para densidad legible. */
+.h2-attributes__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Fila: grid de dos filas (label arriba / name debajo) y bloque-control alineado a la derecha.
+   Hijos del HTML son planos: label, name, dec, value, inc. Los posicionamos explícitamente
+   por grid-area para apilar la sigla sobre el nombre largo sin necesitar wrapper extra. */
+.h2-attributes__row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: clamp(8px, 1.5vw, 14px);
+  row-gap: 2px;
+  padding: 10px clamp(12px, 2vw, 16px);
+  background: var(--c-tinta-tierra-baja);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+}
+
+/* Sigla DOMINANTE arriba a la izquierda, ancla de la fila. */
+.h2-attributes__label {
+  grid-column: 1;
+  grid-row: 1;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  color: var(--c-hueso-descolorido);
+}
+
+/* Nombre largo subordinado debajo de la sigla, abarca dos columnas para no apretar. */
+.h2-attributes__name {
+  grid-column: 1 / 3;
+  grid-row: 2;
+  font-size: 0.8rem;
+  line-height: 1.1;
+  color: var(--c-corteza-palida);
+}
+
+/* Control numérico ocupa las dos filas a la derecha como bloque compacto. */
+.h2-attributes__step[data-action="dec"] {
+  grid-column: 3;
+  grid-row: 1 / 3;
+}
+
+.h2-attributes__value {
+  grid-column: 4;
+  grid-row: 1 / 3;
+}
+
+.h2-attributes__step[data-action="inc"] {
+  grid-column: 5;
+  grid-row: 1 / 3;
+}
+
+/* Botón paso: cuadrado 36px, mismo lenguaje austero que las celdas de retrato. */
+.h2-attributes__step {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 1.1rem;
+  line-height: 1;
+  background: var(--c-tinta-tierra-baja);
+  color: var(--c-hueso-descolorido);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+
+/* Hover: sube un escalón de luminancia, mismo eje que .h2-portrait__cell. */
+.h2-attributes__step:hover:not(:disabled) {
+  background: var(--c-tinta-tierra-media);
+}
+
+/* Focus exterior, mismo patrón heredado del flow. */
+.h2-attributes__step:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+/* Disabled: opacidad real, cursor distinto, hover neutralizado. Tres señales acumulativas. */
+.h2-attributes__step:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: var(--c-tinta-tierra-baja);
+}
+
+.h2-attributes__step:disabled:hover {
+  background: var(--c-tinta-tierra-baja);
+}
+
+.h2-attributes__step:disabled:focus-visible {
+  outline-color: var(--c-corteza-palida);
+}
+
+/* Valor numérico: mono con tabular-nums, ancho fijo, ancla visual de la fila. */
+.h2-attributes__value {
+  margin: 0 8px;
+  min-width: 1.5ch;
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.25rem;
+  line-height: 1;
+  text-align: center;
+  color: var(--c-hueso-claro);
+}
+
+/* Móvil estrecho: el nombre largo aprieta el control, lo ocultamos. La sigla ya es ancla. */
+@media (max-width: 480px) {
+  .h2-attributes__name {
+    display: none;
+  }
+  .h2-attributes__row {
+    gap: clamp(8px, 2vw, 14px);
+  }
+}
