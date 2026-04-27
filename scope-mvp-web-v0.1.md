@@ -47,7 +47,7 @@ Las secciones §4-§7 son apoyo: bloqueantes, estimación, riesgos, definición 
 - [x] Elección de 1 perk inicial. (cerrada en H2.4, 2026-04-27, decisiones #53/#54)
 - [x] Set de 12 retratos fijos en grid. (cerrada en H2.1, 2026-04-27)
 - [x] Inventario inicial fijo por arquetipo + botón "Sorpréndeme" con preview antes de confirmar. (cerrada en H2.5a, 2026-04-27, sub-pantalla 1 de 3 del paso 5/5)
-- Preview del personaje en una pantalla de combate antes de confirmar.
+- [x] Preview del personaje en una pantalla de combate antes de confirmar. (cerrada en H2.5b, 2026-04-27, sub-pantalla 2 de 3 del paso 5/5; mock estático sin lógica de combate, H3 lo cierra)
 - Botón Reset. Tras confirmar, personaje bloqueado.
 
 ### 1.4 Mapa y exploración

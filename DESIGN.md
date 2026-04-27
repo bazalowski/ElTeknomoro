@@ -372,7 +372,40 @@ Estados (cuatro, ortogonales, mismo lenguaje del flow):
 
 **Patrón canónico de nav inferior del flow H2 (decisión operativa del director, v0.14).** **Atrás + Continuar + Reset en TODAS las pantallas del flow.** El Reset es la salida de emergencia desde dentro del flow ("me he equivocado de arquetipo, empiezo de cero") y debe estar disponible en cualquier paso. H2.1 (retrato) lo tiene desde su cierre. H2.2/H2.3/H2.4 lo perdieron por contagio entre cierres y serán uniformadas en commit aparte tras cerrar las sub-pantallas 5b y 5c. H2.5a se hace bien desde el principio: incluye Reset.
 
-Cuando se cierren las sub-pantallas 5b (preview) y 5c (confirm) se documentarán aquí en sub-bloques 5.6 y 5.7. Tras 5.7, se uniformarán las hermanas H2.2/H2.3/H2.4 con Reset y se podrá considerar la extracción del shell común a clases compartidas (decisión #52 sobre el stepper sigue evaluándose en paralelo). El sidecar DESIGN.json sigue diferido hasta tener componentes transversales reutilizables más allá del flow de creación.
+### 5.6 Pantalla de preview del personaje (H2, paso 6/7, sub 5b)
+
+Sexta pantalla cerrada del flow, segunda de las tres sub-pantallas del "paso 5/5" del scope §1.3. **Mock visual estático**: el motor de combate cierra en H3, en H2 la pantalla anticipa la estética sin lógica real. Es el último vistazo al personaje antes de confirmar.
+
+**Archivos:** [`src/render/h2-preview-view.ts`](src/render/h2-preview-view.ts), bloque `h2-preview` en [`src/style.css`](src/style.css).
+
+**Shape:** contenedor full-bleed con grid `auto auto auto auto` (`align-content: start`). Cabecera → arena de dos paneles → bloque de detalles → nav. Padding más comprimido que en hermanas (el contenido es denso). Botón Salir absoluto.
+
+**Componente arena (`.h2-preview__arena`).** Grid `1fr auto 1fr` con un "vs" central. Es la única pantalla del flow con estructura simétrica explícita; refuerza la lectura "personaje vs mundo" que sostiene el juego. Colapsa a una sola columna en `<720px`.
+
+**Componente panel jugador (`.h2-preview__side--player`).** Retrato (swatch HSL + label en mono, heredado de `.h2-portrait__cell-swatch`) → identidad (nombre del arquetipo + tag "Tú") → 4 stats derivados en grid horizontal (HP / DEF / INI / SUE). Los stats van separados por `border-top` 1px en `corteza-palida`, label en mayúsculas tracking 0.08em y valor grande en JetBrains Mono con `tabular-nums`. Cumple Numbers-In-Mono (bloque tabular).
+
+**Componente panel enemigo placeholder (`.h2-preview__side--foe`).** Mismo shape pero con `border-style: dashed` y color subordinado en `corteza-palida`. Silueta `?` en Cormorant Garamond 2.5rem sobre fondo neutro. Copy "Lo que sea que aparezca" + nota inferior "El primer encuentro se decide en el mapa, no aquí." La asimetría visual (dashed vs solid, corteza vs hueso) comunica "esto es placeholder honesto, no diseño definitivo" (PRODUCT.md §Design Principles 5).
+
+**Componente versus central (`.h2-preview__versus`).** "vs" en Cormorant Garamond 1.5rem, color `corteza-palida`. Microuso de la serif display dentro de "Display-Is-Sacred": el preview es momento narrativo (último vistazo antes de cruzar el umbral) y la serif puntúa el corte simbólico entre los dos paneles. Microuso, no expansivo.
+
+**Componente bloque de detalles (`.h2-preview__details`).** Tres tarjetas en `repeat(auto-fit, minmax(240px, 1fr))`: Atributos (5 entradas tabulares densas, valor en mono), Habilidades entrenadas (lista densa, valor a la derecha en mono, divisores `dashed` para diferenciarlos del panel-borde y del divisor sólido de la banda informativa), Perk (nombre + descripción inline).
+
+Estados: la pantalla es enteramente informativa. Sin estados de selección, sin hover, sin focus management. Los únicos elementos focuseables son los botones de nav (Atrás / Continuar / Reset / Salir). Los stats y la información del personaje quedan fuera del orden de tab (son contenido, no controles).
+
+**Reglas aplicadas y desviaciones:**
+- Display-Is-Sacred: Cormorant Garamond aparece en "vs" central y silueta `?` del enemigo. Microuso justificado por momento narrativo. Heading "Antes del primer paso" sigue en sans (Inter), porque el peso narrativo lo carga el componente arena, no el heading.
+- Numbers-In-Mono: stats derivados (4 valores en grid del panel jugador), atributos brutos (5 valores en bloque de detalles), valores de habilidades entrenadas. Todo en mono con tabular-nums.
+- Color-Means-Something + Arcane-Restraint: sin rojo (no hay daño todavía), sin violeta (no es arcano), sin ámbar (no es hallazgo). Toda la pantalla en escala neutra orgánica.
+- Asimetría intencional: el panel enemigo dasheado contradice levemente "Flat-By-Default" (la línea sí transmite estado), pero el dasheado no es decoración — comunica "placeholder, no producción".
+- Densidad sobre amabilidad: 4 stats + 5 atributos + lista de habilidades + perk caben sin scroll en desktop estándar gracias al grid auto-fit.
+
+**Cálculo de stats derivados.** La pantalla consume `rules/character.ts` (módulo SAGRADO) como API:
+- `computeMaxHp(attributes)` → HP máximo (`8 + 2·CON`).
+- `computeDefense(attributes)` → DEF base (`2 + floor(DES/2)`, sin armadura porque el inventario equipado vive en H5).
+- Iniciativa: `attributes.des` bruto (la fórmula completa `DES + 1d20` vive en `combat.ts`, biblia §4.8 / decisión #41; en preview no hay tirada, mostramos solo el modificador base).
+- Suerte: `floor((INT + VOL) / 2)` (decisión #43 sin la decay por nivel, porque el personaje aún no tiene `level` asignado; el nivel se inicializa al confirmar).
+
+**API en `H2StepCtx`.** Ninguna nueva. Lectura pura de `ctx.draft`. No añade setters, no añade tipos al `CharacterDraft`. La pantalla es read-only.
 
 ## 6. Do's and Don'ts
 
