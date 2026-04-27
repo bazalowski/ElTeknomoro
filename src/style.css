@@ -498,52 +498,191 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
 }
 
 /* ============================================================
-   h2-confirm — resumen del personaje + estados de persistencia.
-   Sans body, números en mono (Numbers-In-Mono Rule, DESIGN.md §3).
+   h2-confirm — sellado del personaje (paso 7/7, sub 5c).
+   Último paso del flow H2: panel de resumen denso + modal de
+   confirmación pre-persistencia (permadeath pesa). Heading en
+   serif Cormorant (Display-Is-Sacred: momento narrativo de peso).
+   Sans body, números en mono (Numbers-In-Mono Rule).
    ============================================================ */
 
-.h2-confirm__summary {
-  width: 100%;
-  max-width: 540px;
-  margin: 0 auto;
-  padding: clamp(20px, 3vw, 28px);
-  border: 1px solid var(--c-corteza-palida);
-  border-radius: 2px;
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  column-gap: clamp(16px, 3vw, 32px);
-  row-gap: 14px;
-  align-items: baseline;
+.h2-confirm {
+  position: fixed;
+  inset: 0;
+  background: var(--c-tinta-tierra-humeda);
+  color: var(--c-hueso-descolorido);
   font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  display: grid;
+  grid-template-rows: auto auto auto auto;
+  align-content: start;
+  justify-items: center;
+  padding: clamp(24px, 6vh, 56px) clamp(16px, 4vw, 48px);
+  gap: clamp(20px, 4vh, 32px);
+  overflow: auto;
 }
 
-.h2-confirm__summary dt {
+.h2-confirm__header {
+  text-align: center;
+  max-width: 60ch;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Heading en Cormorant: la pantalla es momento narrativo (Display-Is-Sacred). */
+.h2-confirm__heading {
   margin: 0;
-  font-size: 0.75rem;
+  font-family: 'Cormorant Garamond', 'GT Sectra', 'Source Serif', Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  line-height: 1.05;
+  letter-spacing: 0.005em;
+  color: var(--c-hueso-claro);
+}
+
+.h2-confirm__warning {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--c-corteza-palida);
+}
+
+/* Panel de resumen: contenedor único, denso, con borde sólido.
+   Es el panel principal de la pantalla. */
+.h2-confirm__panel {
+  width: 100%;
+  max-width: 880px;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 2.5vh, 24px);
+  padding: clamp(18px, 2.5vw, 28px);
+  background: var(--c-tinta-tierra-baja);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+}
+
+/* Identidad: retrato + nombre/arquetipo. Cabecera del panel. */
+.h2-confirm__identity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--c-corteza-palida);
+}
+
+.h2-confirm__portrait {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.h2-confirm__portrait-swatch {
+  width: 72px;
+  height: 72px;
+  background: var(--portrait-color, var(--c-tinta-tierra-media));
+  border: 1px solid var(--c-tinta-tierra-humeda);
+  border-radius: 2px;
+}
+
+.h2-confirm__portrait-label {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--c-corteza-palida);
+}
+
+.h2-confirm__identity-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.h2-confirm__name {
+  font-size: 1.1rem;
   font-weight: 500;
-  letter-spacing: 0.08em;
+  line-height: 1.2;
+  color: var(--c-hueso-claro);
+}
+
+.h2-confirm__archetype {
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--c-corteza-palida);
 }
 
-.h2-confirm__summary dd {
+/* Stats derivados grandes: 4 celdas en grid, valores prominentes.
+   Es la información del reglamento que más pesa al confirmar. */
+.h2-confirm__derived {
   margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: var(--c-hueso-descolorido);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 1px solid var(--c-corteza-palida);
+  border-bottom: 1px solid var(--c-corteza-palida);
 }
 
-.h2-confirm__attributes {
+.h2-confirm__derived-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.h2-confirm__derived-stat dt {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+.h2-confirm__derived-stat dd {
+  margin: 0;
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: clamp(1.5rem, 2.5vw, 1.85rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: var(--c-hueso-claro);
+  line-height: 1;
+}
+
+/* Tres columnas: atributos, habilidades, perk. Auto-fit colapsa en pantallas estrechas. */
+.h2-confirm__columns {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: clamp(14px, 2vw, 24px);
+}
+
+.h2-confirm__column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.h2-confirm__column-heading {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+/* Atributos: 5 entradas tabulares densas (no center-aligned: alineadas a baseline). */
+.h2-confirm__attrs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
 }
 
 .h2-confirm__attr {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 
 .h2-confirm__attr-label {
@@ -554,42 +693,81 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
 
 .h2-confirm__attr-value {
   font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
-  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
   color: var(--c-hueso-claro);
   line-height: 1;
 }
 
+/* Habilidades entrenadas: lista densa, divisores dasheados sutiles. */
 .h2-confirm__skills {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
 .h2-confirm__skill {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 16px;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--c-tinta-tierra-media);
+}
+
+.h2-confirm__skill:last-child {
+  border-bottom: none;
 }
 
 .h2-confirm__skill-name {
+  font-size: 0.85rem;
   color: var(--c-hueso-descolorido);
 }
 
 .h2-confirm__skill-value {
   font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
   color: var(--c-hueso-claro);
 }
 
+/* Perk: nombre arriba, descripción debajo. Decisión #54: prosa en sans. */
+.h2-confirm__perk {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.h2-confirm__perk-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--c-hueso-claro);
+}
+
+.h2-confirm__perk-description {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--c-corteza-palida);
+}
+
+/* Estado vacío: solo aparece si el draft está incompleto (caso defensivo). */
+.h2-confirm__empty {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--c-corteza-palida);
+}
+
+/* Mensaje de error al sellar. Color rojo óxido reservado a peligro real
+   (PRODUCT.md §2 Color-Means-Something): aquí el peligro es "no se ha
+   guardado tu personaje". Ratio AA sobre tinta-tierra-humeda. */
 .h2-confirm__error {
+  margin: 0;
   width: 100%;
-  max-width: 540px;
-  margin: 12px auto 0;
+  max-width: 880px;
   min-height: 1.4em;
-  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
   font-size: 0.9rem;
   line-height: 1.4;
   color: var(--c-rojo-oxido-enfermo);

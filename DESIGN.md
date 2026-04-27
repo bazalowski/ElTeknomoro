@@ -407,6 +407,45 @@ Estados: la pantalla es enteramente informativa. Sin estados de selección, sin 
 
 **API en `H2StepCtx`.** Ninguna nueva. Lectura pura de `ctx.draft`. No añade setters, no añade tipos al `CharacterDraft`. La pantalla es read-only.
 
+### 5.7 Pantalla de sellado del personaje (H2, paso 7/7, sub 5c)
+
+Séptima pantalla cerrada del flow, tercera y última de las sub-pantallas del "paso 5/5" del scope §1.3. **Cierra el Hito 2 entero.** Pantalla de momento narrativo de peso: el jugador firma con su personaje y arranca el yermo.
+
+**Archivos:** [`src/render/h2-confirm-view.ts`](src/render/h2-confirm-view.ts), bloque `h2-confirm` en [`src/style.css`](src/style.css).
+
+**Shape:** contenedor full-bleed con grid `auto auto auto auto` (`align-content: start`). Cabecera (heading serif + warning) → panel principal de resumen → mensaje de error (oculto si vacío) → nav. Botón Salir absoluto.
+
+**Componente cabecera (`.h2-confirm__header`).** Heading en **Cormorant Garamond** (microuso de Display-Is-Sacred: la pantalla es uno de los seis u ocho momentos narrativos donde la serif gana peso) con texto `"Sellar al personaje"`. Bajo el heading, párrafo `corteza-palida` con la advertencia `"La muerte es permanente. Lo que confirmes aquí no se reescribe."`. Es la única pantalla del flow H2 con heading en serif (H2.5b usa Cormorant solo en "vs" y silueta `?`, no en heading).
+
+**Componente panel principal (`.h2-confirm__panel`).** Contenedor único de borde sólido `corteza-palida` sobre fondo `tinta-tierra-baja`. Estructura interna en tres bloques verticales:
+
+1. **Identidad (`.h2-confirm__identity`).** Retrato (swatch + label en mono) + nombre del personaje (peso 500, `hueso-claro`) + arquetipo (label mayúsculas tracking 0.06em, `corteza-palida`). Separador `border-bottom` 1px en `corteza-palida`. Es la "ficha" del personaje en horizontal.
+
+2. **Stats derivados grandes (`.h2-confirm__derived`).** Grid de 4 celdas (HP / DEF / INI / SUE), valor en JetBrains Mono peso 500 a `clamp(1.5rem, 2.5vw, 1.85rem)` — más grandes que en H2.5b porque aquí son la información definitiva, no preview. Numbers-In-Mono con tabular-nums. `border-top` y `border-bottom` 1px en `corteza-palida` que enmarca el bloque como banda técnica.
+
+3. **Tres columnas (`.h2-confirm__columns`).** Grid `repeat(auto-fit, minmax(220px, 1fr))`: Atributos (5 entradas tabulares, valor en mono), Habilidades entrenadas (lista densa con divisores `dashed` en `tinta-tierra-media`), Perk (nombre + descripción inline en sans, decisión #54). Cada columna lleva su mini-heading en label mayúsculas tracking 0.12em.
+
+**Modal pre-persistencia.** Al pulsar "Sellar el personaje", la vista invoca `showConfirmModal` con título `"Lo que selles aquí no se reescribe. ¿Confirmas a este personaje para el yermo?"` y botones `"Sellar"` / `"Volver"`. Solo si el usuario confirma se llama a `ctx.confirmAndPersist()`. El modal sigue el patrón sobrio del flow (sin glow, sin glass, sin emoji): una frase, dos botones. Acción irreversible → confirmación obligatoria, según PRODUCT.md §Design Principles 3.
+
+**Estados de persistencia.**
+- **Reposo:** botón "Sellar el personaje" habilitado, mensaje de error vacío.
+- **Loading:** todos los botones disabled, "Sellar el personaje" muestra `"Sellando…"`. Sin spinner; el cambio de label es señal suficiente y mantiene el lenguaje austero del flow.
+- **Error:** mensaje en `rojo-oxido-enfermo` bajo el panel. Color justificado por Color-Means-Something (rojo = peligro/daño): "no se ha guardado tu personaje" es daño narrativo real. Dos textos según error: `CharacterAlreadyAliveError` → "Ya tienes un personaje vivo. Solo se permite uno a la vez." Genérico → "No se ha podido sellar al personaje. Inténtalo de nuevo."
+
+**Reglas aplicadas y desviaciones:**
+- Display-Is-Sacred: heading en Cormorant Garamond `clamp(2rem, 4vw, 2.75rem)`. Único heading del flow H2 en serif. La pantalla es el corte simbólico entre creación y permadeath; merece la jerarquía visual.
+- Numbers-In-Mono: stats derivados grandes (4 celdas), atributos brutos (5 celdas), valores de habilidades. Todo en mono con tabular-nums.
+- Color-Means-Something: rojo `rojo-oxido-enfermo` reservado al mensaje de error (peligro real: pérdida de personaje). Sin violeta, sin ámbar (no hay arcano ni hallazgo). Toda la pantalla en escala neutra orgánica + el rojo solo cuando aplica.
+- Densidad sobre amabilidad: 4 stats + 5 atributos + lista de habilidades + perk + identidad caben en pantalla sin scroll en desktop estándar gracias al panel auto-organizado y al colapso `auto-fit`.
+- Patrón canónico de nav: Atrás + "Sellar el personaje" (botón primario) + Reset. El primary lleva texto narrativo en lugar del genérico "Continuar"; es el único botón del flow que no dice "Continuar" porque el momento es definitivo.
+
+**API en `H2StepCtx`.** Ninguna nueva. La pantalla consume:
+- `ctx.draft` (lectura completa para resumen).
+- `ctx.confirmAndPersist()` (ya existía: persiste en Supabase vía `backend/characters.ts` con `slot_index=0`).
+- `ctx.exit()`, `ctx.goBack()`, `ctx.reset()`.
+
+**Cierre del Hito 2.** Tras esta pantalla, las 7 vistas del flow H2 siguen patrón canónico unificado: shell `.h2-flow__step`, botón Salir top-right cableado localmente, nav Atrás + Continuar + Reset (excepto H2.5c donde "Continuar" es "Sellar el personaje"), tres ejes de estado, inset ring para selección, mono para datos tabulares, Inter para texto, Cormorant Garamond reservada a microusos narrativos. **0 estados inválidos posibles** desde la UI; los defaults defensivos de `h2-defaults.ts` se retiraron en este mismo cierre porque la UI ya garantiza el contrato del draft.
+
 ## 6. Do's and Don'ts
 
 ### Do:

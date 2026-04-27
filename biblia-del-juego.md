@@ -952,3 +952,27 @@ Esta versión es la primera en la que **todo el reglamento numérico que el cód
 - Único uso de la serif Cormorant Garamond en el flow H2 hasta ahora: el "vs" central y la silueta `?` del enemigo. Decisión deliberada del director: la regla "Display-Is-Sacred" reserva la serif a momentos narrativos de peso; el preview es exactamente eso (último vistazo al personaje antes de cruzar el umbral). Microuso, no expansivo.
 - Asimetría visual deliberada: el panel enemigo va con `border-style: dashed` y color subordinado para comunicar "esto es placeholder honesto, no diseño definitivo" (PRODUCT.md §Design Principles 5).
 - Stepper queda en 2 consumidores tras H2.5b (decisión #52 inalterada): la pantalla NO usa stepper. La extracción se decidirá tras H2.5c (confirm).
+
+**v0.16** — Cierre del **Hito 2 completo** (27/4/2026): pantalla de sellado del personaje (H2, paso 7/7 del flow de creación, tercera y última de las sub-pantallas del "paso 5/5" del scope §1.3 — sub 5c) + uniformación de hermanas centrales + cierre de deuda técnica de defaults. Sin nuevas decisiones de reglamento. Sin cambios de §4, §6, §7. Cambios:
+
+- §8: ninguna alteración del flujo. La pantalla materializa el contrato de biblia §4.7 línea 259 ("Una vez confirmado, el personaje queda bloqueado. Permadeath significa que la decisión pesa") añadiendo un **modal de confirmación pre-persistencia** (sigue el patrón sobrio de `confirm-modal.ts`: "Lo que selles aquí no se reescribe. ¿Confirmas a este personaje para el yermo?", botones "Volver" / "Sellar"). El botón principal pasa a llamarse "Sellar el personaje" para cargar el peso narrativo del momento.
+- `DESIGN.md` §5.7 añadido: pantalla de sellado con shape, panel de resumen denso (identidad con retrato + nombre + arquetipo, stats derivados grandes en grid, tres columnas de detalle), heading en serif Cormorant Garamond (Display-Is-Sacred: la pantalla es momento narrativo de peso, último corte antes del juego real). Modal pre-persistencia.
+- `scope-mvp-web-v0.1.md` §1.3 línea 51 marcada como cerrada con checkbox `[x]` y fecha. **7/7 pantallas H2 cerradas. Hito 2 completo.**
+
+**Uniformación de hermanas (resuelve deuda formalizada en v0.14):**
+
+- `src/render/h2-attributes-view.ts`, `src/render/h2-skills-view.ts`, `src/render/h2-perk-view.ts`: añadido botón Reset en la nav inferior + listener `[data-action="reset"]` que delega a `ctx.reset()`. Las 3 hermanas centrales recuperan el patrón canónico que H2.1 y H2.5a ya tenían. **Las 7 pantallas del flow H2 ahora siguen el patrón Atrás + Continuar + Reset.**
+
+**Cierre de deuda técnica de defaults huérfanos (formalizada en h2-dudas-contenido.md desde v0.10):**
+
+- `src/state/h2-defaults.ts` reescrito. Tras cerrar las 7 pantallas, todos los campos del draft (`portraitId`, `attributes`, `skills`, `perks`) llegan rellenos por construcción de UI. Los defaults literales `'placeholder'`, `DEFAULT_ATTRIBUTES`, `defaultSkills()`, `defaultPerk()` se eliminan; `buildCreateInputFromDraft` ahora valida dura con `throw` si algún campo crítico falta. Si esto se dispara en runtime, es bug de orquestación de UI, no caso normal. Coherente con el principio "el reglamento es el héroe, no el adorno" (PRODUCT.md): los defaults de cortesía sobreviven hasta que la UI puede garantizar el contrato; entonces se retiran.
+
+**Estado del Hito 2 al cierre:**
+
+- 7 pantallas del flow H2 cerradas: start, portrait, attributes, skills, perk, inventory (5a), preview (5b), confirm (5c).
+- Patrón visual canónico consolidado en las 7: shell `.h2-flow__step`, botón Salir top-right cableado localmente, nav inferior Atrás + Continuar + Reset, tres ejes ortogonales (hover/focus/selected/disabled), inset ring de selección, JetBrains Mono para datos tabulares, Inter para todo lo demás, Cormorant Garamond reservada a momentos narrativos (un solo uso en H2.5b "vs", un solo uso en H2.5c heading "Sellar al personaje"). Decisiones #50-#54 aplicadas. **0 estados inválidos posibles** desde la UI (cada vista bloquea su propio Continuar hasta que sus invariantes se cumplen); el `throw` defensivo de `buildCreateInputFromDraft` solo dispara si la orquestación se rompe.
+- 193 tests verdes (suite completa).
+- 0 deudas técnicas abiertas en `h2-dudas-contenido.md`.
+- **Bazalo puede crear personaje en navegador, recargar pestaña y ver personaje guardado.** Cumple criterio de §7 ("definición de terminado") punto 3 del scope: el entregable de H2 está jugable extremo a extremo.
+
+Próximo: H3 (combate vertical slice). El motor está listo (`combat.ts`, `dice.ts` con `rollCombatPool`, `iniciativa.ts`, threshold cerrado). Solo falta UI de combate y el primer enemigo.

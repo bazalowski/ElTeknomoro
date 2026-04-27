@@ -48,7 +48,7 @@ Las secciones §4-§7 son apoyo: bloqueantes, estimación, riesgos, definición 
 - [x] Set de 12 retratos fijos en grid. (cerrada en H2.1, 2026-04-27)
 - [x] Inventario inicial fijo por arquetipo + botón "Sorpréndeme" con preview antes de confirmar. (cerrada en H2.5a, 2026-04-27, sub-pantalla 1 de 3 del paso 5/5)
 - [x] Preview del personaje en una pantalla de combate antes de confirmar. (cerrada en H2.5b, 2026-04-27, sub-pantalla 2 de 3 del paso 5/5; mock estático sin lógica de combate, H3 lo cierra)
-- Botón Reset. Tras confirmar, personaje bloqueado.
+- [x] Botón Reset. Tras confirmar, personaje bloqueado. (cerrado en H2.5c, 2026-04-27, sub-pantalla 3 de 3 del paso 5/5; **Hito 2 completo**)
 
 ### 1.4 Mapa y exploración
 - Mapa-mundi con nodos (ciudades, mazmorras, POIs).

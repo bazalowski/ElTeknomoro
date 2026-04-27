@@ -1,42 +1,22 @@
-// Construye un CreateCharacterInput a partir de un CharacterDraft parcial,
-// rellenando con DEFAULTS VÁLIDOS los campos que las pantallas reales todavía
-// no rellenan. Los defaults pasan validateCreation: 12 puntos atributo, 10
-// skill, 1 perk, name no vacío.
+// Construye un CreateCharacterInput a partir de un CharacterDraft completo.
+//
+// Tras el cierre de las 7 pantallas del flow H2 (v0.16, decisión operativa
+// del director), todas las vistas garantizan por construcción que los
+// campos críticos del draft están rellenos antes de permitir avanzar:
+//   - portraitId: H2.1 deshabilita Continuar hasta elegir uno válido.
+//   - attributes: H2.2 exige suma == 12 y rango [1, 4].
+//   - skills: H2.3 exige suma == 10 y rango [0, 3] (decisión #50).
+//   - perks: H2.4 deshabilita Continuar hasta elegir un perk válido (decisión #53).
+//
+// Por tanto, cuando esta función se llama desde renderH2ConfirmView →
+// ctx.confirmAndPersist(), el draft ya pasó las 4 validaciones de UI.
+// Aquí solo construimos el input y validamos dura: si algo falta,
+// es un bug de orquestación y debe romper en runtime, no caer en defaults.
 
 import type { CharacterDraft } from './h2-flow';
 import type { CreateCharacterInput, AttributeId } from '../rules/character';
 import { ATTRIBUTE_IDS } from '../rules/character';
-import { SKILLS } from '../data/skills';
-import { PERKS } from '../data/perks';
 import { ARCHETYPES } from '../data/archetypes';
-
-const DEFAULT_ATTRIBUTES: Record<AttributeId, number> = {
-  fue: 3,
-  des: 3,
-  con: 2,
-  int: 2,
-  vol: 2,
-};
-
-// 4 primeros IDs de SKILLS con valores 3,3,2,2 (suma 10, ninguna >3).
-function defaultSkills(): Record<string, number> {
-  const ids = SKILLS.slice(0, 4).map((s) => s.id);
-  const values = [3, 3, 2, 2];
-  const out: Record<string, number> = {};
-  for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
-    const v = values[i];
-    if (id === undefined || v === undefined) continue;
-    out[id] = v;
-  }
-  return out;
-}
-
-function defaultPerk(): string {
-  const first = PERKS[0];
-  if (!first) throw new Error('PERKS está vacío.');
-  return first.id;
-}
 
 function defaultArchetypeForPreset(): string {
   const first = ARCHETYPES[0];
@@ -50,7 +30,13 @@ export function buildCreateInputFromDraft(
   const id = crypto.randomUUID();
   const shortId = id.slice(0, 8);
   const name = draft.name ?? `Personaje ${shortId}`;
-  const portraitId = draft.portraitId ?? 'placeholder';
+
+  if (!draft.portraitId) {
+    throw new Error(
+      'h2-defaults: draft.portraitId vacío al sellar. La pantalla de retrato (H2.1) debería haberlo bloqueado.',
+    );
+  }
+  const portraitId = draft.portraitId;
 
   const archetype =
     draft.archetype !== undefined
@@ -59,22 +45,42 @@ export function buildCreateInputFromDraft(
         ? defaultArchetypeForPreset()
         : null;
 
-  const attributes: Record<AttributeId, number> = { ...DEFAULT_ATTRIBUTES };
-  if (draft.attributes) {
-    for (const attrId of ATTRIBUTE_IDS) {
-      const v = draft.attributes[attrId];
-      if (typeof v === 'number') attributes[attrId] = v;
+  if (!draft.attributes) {
+    throw new Error(
+      'h2-defaults: draft.attributes vacío al sellar. La pantalla de atributos (H2.2) debería haberlo bloqueado.',
+    );
+  }
+  const attributes: Record<AttributeId, number> = { fue: 0, des: 0, con: 0, int: 0, vol: 0 };
+  for (const attrId of ATTRIBUTE_IDS) {
+    const v = draft.attributes[attrId];
+    if (typeof v !== 'number') {
+      throw new Error(
+        `h2-defaults: atributo "${attrId}" sin valor al sellar. La pantalla de atributos (H2.2) debería haberlo bloqueado.`,
+      );
     }
+    attributes[attrId] = v;
   }
   const sum = ATTRIBUTE_IDS.reduce((acc, k) => acc + attributes[k], 0);
   if (sum !== 12) {
     throw new Error(
-      'Los atributos no suman 12; pendiente de cerrar en la pantalla de atributos.',
+      `h2-defaults: suma de atributos == ${sum}, esperada 12. La pantalla de atributos (H2.2) debería haberlo bloqueado.`,
     );
   }
 
-  const skills = draft.skills ?? defaultSkills();
-  const perks = draft.perks ?? [defaultPerk()];
+  if (!draft.skills) {
+    throw new Error(
+      'h2-defaults: draft.skills vacío al sellar. La pantalla de habilidades (H2.3) debería haberlo bloqueado.',
+    );
+  }
+  const skills = draft.skills;
+
+  if (!draft.perks || draft.perks.length !== 1) {
+    throw new Error(
+      `h2-defaults: draft.perks debe tener exactamente 1 entrada al sellar (recibido ${draft.perks?.length ?? 0}). La pantalla de perk (H2.4) debería haberlo bloqueado.`,
+    );
+  }
+  const perks = draft.perks;
+
   const location = { mapId: 'inicio', x: 0, y: 0 }; // Placeholder hasta H4 (mapa).
 
   return { id, name, portraitId, archetype, attributes, skills, perks, location };

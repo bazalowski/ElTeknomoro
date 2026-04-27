@@ -188,15 +188,12 @@ Si alguna de estas no te convence, dilo y la subo a "decisión tuya".
 
 ---
 
-## Deuda técnica conocida (revisar al cerrar las 5 pantallas H2)
+## Deuda técnica conocida (cerrada al cerrar el Hito 2)
 
-- `src/state/h2-defaults.ts` línea 53: `portraitId` por defecto literal `'placeholder'`. Desde el cierre de la pantalla de retrato (v0.10, 27/4/2026) la vista impide pasar al siguiente paso sin elegir uno de los 12 retratos válidos, por lo que `buildCreateInputFromDraft` ya nunca recibe el draft con `portraitId` vacío en runtime. El default literal queda como código defensivo huérfano.
-- `src/state/h2-defaults.ts` líneas 13-19: `DEFAULT_ATTRIBUTES = { fue: 3, des: 3, con: 2, int: 2, vol: 2 }`. Desde el cierre de la pantalla de atributos (v0.11, 27/4/2026) la vista exige suma == 12 y rango `[1, 4]` antes de habilitar Continuar, por lo que `buildCreateInputFromDraft` ya nunca recibe `draft.attributes` parcial o ausente en runtime. El bloque `if (draft.attributes)` y los defaults son código defensivo huérfano.
-- `src/state/h2-defaults.ts` líneas 22-33: `defaultSkills()` con valores 3-3-2-2 sobre las 4 primeras skills. Desde el cierre de la pantalla de habilidades (v0.12, 27/4/2026, decisión #50) la vista exige suma == 10 y rango `[0, 3]` antes de habilitar Continuar, por lo que `buildCreateInputFromDraft` ya nunca recibe `draft.skills` ausente en runtime. La función `defaultSkills()` queda como código defensivo huérfano.
-- `src/state/h2-defaults.ts` líneas 35-39: `defaultPerk()` retorna `PERKS[0].id`. Desde el cierre de la pantalla de perk (v0.13, 27/4/2026, decisión #53) la vista impide pasar al siguiente paso sin haber elegido un perk válido (Continuar disabled hasta `draft.perks.length === 1`), por lo que `buildCreateInputFromDraft` ya nunca recibe `draft.perks` vacío en runtime. La función `defaultPerk()` queda como código defensivo huérfano.
-  - **Acción común:** una vez las 5 pantallas H2 estén cerradas y todos los campos del draft lleguen rellenos, eliminar los defaults literales que ya no se ejercitan en runtime y reemplazar por validación dura (`throw` si el draft no está completo al confirmar). No tocar antes, porque la pantalla 5/5 (inventario+preview+confirm) sigue siendo stub y los defaults son lo único que mantiene el confirm operativo end-to-end.
+**Histórico, todas las entradas saldadas en v0.16 (cierre de H2 completo, 27/4/2026):**
 
-- `src/render/h2-attributes-view.ts`, `src/render/h2-skills-view.ts`, `src/render/h2-perk-view.ts`: les falta el botón Reset en la nav inferior. La pantalla de retrato (h2-portrait-view.ts L51) lo tiene correctamente; las 3 hermanas centrales lo perdieron por contagio. El patrón canónico del flow H2 es **Atrás + Continuar + Reset en TODAS las pantallas** (el Reset es la salida de emergencia "me he equivocado de arquetipo, empiezo de cero" y debe estar disponible siempre). H2.5a (inventario, v0.14) restaura el patrón correcto. Acción: tras cerrar las 3 sub-pantallas de H2.5 (inventory + preview + confirm), abrir commit aparte que añade Reset a las 3 hermanas centrales y uniforma el flow. No tocar antes para no mezclar cierres.
+- ~~`src/state/h2-defaults.ts`: 4 defaults huérfanos (`portraitId='placeholder'`, `DEFAULT_ATTRIBUTES`, `defaultSkills()`, `defaultPerk()`).~~ **Cerrada en v0.16**: tras cerrar las 7 pantallas del flow, todos los campos del draft llegan rellenos por construcción de UI. `buildCreateInputFromDraft` ahora valida dura con `throw` si algo falta (bug de orquestación, no caso normal).
+- ~~`h2-attributes-view.ts`, `h2-skills-view.ts`, `h2-perk-view.ts`: faltaba botón Reset en nav.~~ **Cerrada en v0.16**: las 7 pantallas del flow H2 ahora siguen el patrón canónico Atrás + Continuar + Reset, con botón Salir top-right.
 
 ---
 
