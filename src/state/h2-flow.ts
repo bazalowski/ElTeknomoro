@@ -12,6 +12,7 @@ import type { AttributeId } from '../rules/character';
 import { saveCharacter } from '../backend/characters';
 import { buildCreateInputFromDraft } from './h2-defaults';
 import { PORTRAITS_BY_ID } from '../data/portraits';
+import { SKILLS_BY_ID } from '../data/skills';
 
 export type H2Step =
   | 'start'
@@ -42,6 +43,7 @@ export interface H2StepCtx {
   confirmAndPersist: () => Promise<void>;
   setPortrait: (id: string) => void;
   setAttribute: (id: AttributeId, value: number) => void;
+  setSkill: (id: string, value: number) => void;
 }
 
 const ORDER: readonly H2Step[] = [
@@ -142,6 +144,24 @@ export function startH2Flow(root: HTMLElement, onExit: () => void): void {
       }
       if (!draft.attributes) draft.attributes = {};
       draft.attributes[id] = value;
+    },
+    setSkill: (id: string, value: number) => {
+      if (!(id in SKILLS_BY_ID)) {
+        console.warn(`h2-flow: skillId no válido: ${id}`);
+        return;
+      }
+      if (!Number.isInteger(value)) {
+        console.warn(`h2-flow: habilidad "${id}" debe ser entera (recibido ${value})`);
+        return;
+      }
+      if (value < 0 || value > CREATION_RULES.skillMaxAtCreation) {
+        console.warn(
+          `h2-flow: habilidad "${id}" fuera de rango [0, ${CREATION_RULES.skillMaxAtCreation}] (recibido ${value})`,
+        );
+        return;
+      }
+      if (!draft.skills) draft.skills = {};
+      draft.skills[id] = value;
     },
   };
 

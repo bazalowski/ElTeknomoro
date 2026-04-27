@@ -178,7 +178,7 @@ Ningún glow. Ningún drop-shadow decorativo. La elevación es información, no 
 
 ## 5. Components
 
-> Seed mode parcial: las pantallas H2 se documentan aquí a medida que cierran (2/5 cerradas: retrato, atributos). El resto sigue siendo placeholder hasta su pasada de `$impeccable document` correspondiente.
+> Seed mode parcial: las pantallas H2 se documentan aquí a medida que cierran (3/5 cerradas: retrato, atributos, habilidades). El resto sigue siendo placeholder hasta su pasada de `$impeccable document` correspondiente.
 
 Los componentes provisionales heredan las reglas anteriores: serif display reservada, mono para números, color-means-something, sin glow, flat-por-defecto, OKLCH como referencia.
 
@@ -241,7 +241,49 @@ Estados (cuatro, no tres como en retrato porque aquí hay `:disabled` real):
 
 **API en `H2StepCtx`.** `setAttribute(id: AttributeId, value: number): void` añadido al closure de `startH2Flow`. Valida entero + rango `[1, 4]` contra `CREATION_RULES` antes de mutar. Patrón hermano de `setPortrait`. La vista NO muta el draft directamente. La vista llama al setter por cada `+/−` y mantiene su propio `values: AttrValues` local para repintar los disabled y el pool sin reconsultar el draft.
 
-Cuando el resto de pantallas H2 cierren se documentarán aquí en sub-bloques 5.3…5.5. El sidecar DESIGN.json sigue diferido hasta tener componentes transversales reutilizables (botón primario, panel de atributos en hoja de personaje fuera de creación, tirada en log) más allá del flow de creación.
+### 5.3 Pantalla de habilidades (H2, paso 3/7)
+
+Tercera pantalla cerrada del flow. Reutiliza el shell común y el patrón "banda de pool" + "botón paso" de H2.2 clonados (decisión #52: clonado en cada pantalla hasta tercer consumidor; entonces se extrae en commit aparte). Introduce un nuevo componente: el grupo por atributo.
+
+**Archivos:** [`src/render/h2-skills-view.ts`](src/render/h2-skills-view.ts), bloque `h2-skills` en [`src/style.css`](src/style.css).
+
+**Shape:** contenedor full-bleed con grid de cuatro filas (`auto auto 1fr auto`). Cabecera (heading sans + instrucción body) → banda de pool → grid de 5 grupos → nav. Botón Salir absoluto en esquina superior derecha.
+
+**Componente grupo por atributo (`.h2-skills__group`).** Sección con cabecera horizontal (sigla + nombre del atributo, separador inferior fino `border-bottom: 1px solid corteza-palida`) seguida de la lista de las 2 habilidades de ese atributo. Las 5 secciones se distribuyen en grid de 2 columnas en desktop (matriz 2-2-1, el último grupo VOL queda solitario en la tercera fila sin estirarse — asimetría honesta de panel técnico, mejor que forzar simetría con un grupo placeholder vacío). Colapsa a 1 columna en `<720px`.
+
+**Componente cabecera de grupo (`.h2-skills__group-header`).** Sigla mayúsculas tracking 0.1em color `hueso-descolorido` + nombre largo body sans color `corteza-palida` subordinado. Tracking más amplio que las filas (0.04em) para jerarquía clara. El `border-bottom` cierra la sección y la separa visualmente de las filas siguientes.
+
+**Componente fila de habilidad (`.h2-skills__row`).** Flex horizontal `justify-content: space-between`. Nombre izquierda (body sans, `text-overflow: ellipsis` si aprieta), cluster `−valor+` derecha. **Sin `border` ni `background`** (desviación deliberada de `.h2-attributes__row`): las 10 filas con bg saturarían visualmente y romperían la jerarquía "grupo > fila". El grupo es el panel; las filas son sus entradas.
+
+**Botón paso (`.h2-skills__step`).** Cuadrado **32px** (vs 36px en H2.2). Razón: 10 filas necesitan más densidad vertical que 5. Hit area sigue ≥32px (mínimo cómodo). Mismo lenguaje visual (símbolos `−` y `+` en mono, hover por luminancia, focus por outline, disabled triple).
+
+**Banda de pool (`.h2-skills__pool`).** Clon literal del patrón de `.h2-attributes__pool`. Banda horizontal con `border-top` y `border-bottom`, label izquierda + número derecha en mono con `tabular-nums`. `max-width: 720px` (vs 480px en H2.2) para alinearse con el grid de grupos.
+
+Estados del control `+/−` (cuatro, idénticos a `.h2-attributes__step`):
+- **Reposo:** fondo `tinta-tierra-baja`, borde `corteza-palida`.
+- **Hover:** sube a `tinta-tierra-media`. Neutralizado en `:disabled`.
+- **Focus (`:focus-visible`):** outline `2px solid hueso-descolorido` con offset 2px. En `:disabled:focus-visible` el outline pasa a `corteza-palida`.
+- **Disabled:** `opacity: 0.4`, `cursor: not-allowed`, fondo congelado. Tres señales acumulativas.
+
+**Tratamiento del valor inválido y del pool a 0.** La UI bloquea el estado inválido por construcción: `−` deshabilitado en valor 0, `+` deshabilitado en valor 3 o pool == 0. `Continuar` deshabilitado hasta suma exactamente igual a 10 (decisión #50). Sin rojo óxido como señal de error (heredado de la decisión cerrada en H2.2). El pool siempre en `--c-hueso-claro`.
+
+**Reglas aplicadas y desviaciones:**
+- Display-Is-Sacred: heading "Habilidades" en sans. Instrucción body sans. Cabeceras de grupo en sans label. Cero Cormorant.
+- Numbers-In-Mono: valor 0-3 de cada habilidad y pool 0-10 en mono con `tabular-nums`. Las siglas FUE/DES/CON/INT/VOL son Label en Inter mayúsculas. El nombre del atributo del grupo y el nombre de la habilidad son body sans.
+- Color-Means-Something + Arcane-Restraint: sin rojo óxido (UI evita estado inválido), sin violeta (no es evento arcano).
+- Densidad sobre amabilidad: 10 habilidades sin scroll en desktop. Las descripciones de habilidad existen en `src/data/skills.ts` pero NO se muestran (decisión #51, reservadas para hoja de personaje H4+).
+- Desviación 1: fila sin `border` ni `background` (vs H2.2). El grupo es el contenedor visual.
+- Desviación 2: botón paso 32px (vs 36px). Densidad vertical justificada.
+- Desviación 3: pool max-width 720px (vs 480px). Alinea con grid de grupos.
+
+**API en `H2StepCtx`.** `setSkill(id: string, value: number): void` añadido al closure de `startH2Flow`. Valida que `id` exista en `SKILLS_BY_ID` + entero + rango `[0, skillMaxAtCreation]` antes de mutar `draft.skills`. Patrón hermano de `setPortrait` y `setAttribute`.
+
+**Decisiones cerradas en este cierre (numeradas para biblia v0.12):**
+- #50: suma == 10 obligatoria al pulsar Continuar (no ≤ 10). Ritual cerrado de creación.
+- #51: descripciones de habilidad NO se muestran en flow de creación; reservadas para hoja de personaje H4+.
+- #52: stepper se clona en cada pantalla del flow hasta tercer consumidor; entonces se extrae a `.h2-stepper-*` en commit aparte que cubre las pantallas afectadas.
+
+Cuando el resto de pantallas H2 cierren se documentarán aquí en sub-bloques 5.4 y 5.5. El sidecar DESIGN.json sigue diferido hasta tener componentes transversales reutilizables (botón primario, panel de atributos en hoja de personaje fuera de creación, tirada en log) más allá del flow de creación.
 
 ## 6. Do's and Don'ts
 

@@ -895,3 +895,20 @@ Esta versión es la primera en la que **todo el reglamento numérico que el cód
 - Decisión del director (CSS pass): el rojo óxido `--c-rojo-oxido-enfermo` NO aparece en esta pantalla. La UI bloquea el estado inválido por construcción (`disabled` en `+/−` impide suma fuera de `[5, 12]`; `Continuar` disabled impide salir con suma != 12). El pool se mantiene en `--c-hueso-claro` siempre.
 - Patrón "banda de pool" (`.h2-attributes__pool`) reutilizable para la pantalla de habilidades (paso 3/7) que tiene el mismo problema de "10 puntos restantes".
 - Sin cambios en §4, §6, §7.
+
+**v0.12** — Cierre de la **tercera pantalla del MVP en navegador** (27/4/2026): pantalla de asignación de habilidades (H2, paso 3/7 del flow de creación, scope §1.3 línea 46). Tres decisiones cerradas. Sin nuevas decisiones de reglamento. Cambios:
+
+- §8: ninguna alteración del flujo. La pantalla materializa el contrato cerrado en biblia §4.2 (10 puntos, mín 0, máx 3 al crear).
+- `DESIGN.md` §5.3 añadido: pantalla de habilidades con shape, componentes (grupo por atributo, cabecera de grupo, fila sin chrome, botón paso 32px, banda de pool 720px), cuatro estados del control y tres desviaciones documentadas respecto a `.h2-attributes`.
+- `scope-mvp-web-v0.1.md` §1.3 línea 46 marcada como cerrada con checkbox `[x]` y fecha. 3/5 pantallas H2 cerradas; faltan 2 (perk, inventario+preview+confirm).
+- `setSkill(id, value)` añadido a `H2StepCtx` como tercer setter del flow. Valida que `id` exista en `SKILLS_BY_ID` + entero + rango `[0, skillMaxAtCreation]` antes de mutar `draft.skills`. Patrón hermano de `setPortrait` y `setAttribute`.
+
+**Decisiones cerradas (nuevas):**
+
+- **#50 — Suma exacta al confirmar habilidades.** El botón Continuar de la pantalla de habilidades se habilita SOLO cuando `sum(skills) == 10`. La validación `validateCreation` (módulo SAGRADO) sigue permitiendo `sum ≤ 10` (no se relaja el reglamento), pero la UI exige distribución completa porque el flow de creación es ritual cerrado: dejar puntos colgando rompe el tono "una vida, un personaje" (PRODUCT.md). Razón: el verbo "repartir" de biblia §4.2 línea 102 implica distribución completa.
+
+- **#51 — Descripciones de habilidad fuera del flow de creación.** Cada habilidad tiene `description` en `src/data/skills.ts`, pero la pantalla de creación de habilidades NO las muestra (ni inline, ni tooltip, ni popover). Razón: las 10 habilidades tienen nombres autoexplicativos para el rolero veterano (Atletismo, Sigilo, Persuasión, Voluntad). Mostrar descripciones aquí mata la densidad y rompe la regla "10 habilidades sin scroll en desktop". Las descripciones se mostrarán en una hipotética pantalla de hoja de personaje en H4+, donde el jugador necesita recordar qué cubre exactamente cada habilidad al tirar.
+
+- **#52 — Política de extracción del stepper.** El componente "stepper" (banda de pool + botón paso + fila con stepper) se clona en cada pantalla del flow de creación hasta el tercer consumidor. Entonces se extrae a clases compartidas `.h2-stepper-*` en commit aparte que cubre todas las pantallas afectadas. Razón: regla "tres similares es mejor que abstracción prematura". H2.2 y H2.3 son los dos primeros consumidores; si H2.4 (perks) o H2.5 (inventario) usan stepper, se ejecuta la extracción. Si no, se queda clonado.
+
+- Sin cambios en §4, §6, §7.
