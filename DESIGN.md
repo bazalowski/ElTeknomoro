@@ -160,7 +160,9 @@ Pares sobre acentos:
 
 ### Named Rules
 
-**The Numbers-In-Mono Rule.** Cualquier valor numérico que pertenezca al reglamento (tiradas, modificadores, daño, threshold, HP, AP, XP, peso de inventario) se renderiza en mono. Letra mono = número del juego. Un jugador escaneando el log identifica de un vistazo qué es texto narrativo y qué es ejecución de regla. No se mezclan dentro de la misma frase salvo cuando el número está envuelto en sintaxis de log (ej: "Tiraste `4d6 4+` → `[6,5,3,4]` → 3 éxitos").
+**The Numbers-In-Mono Rule.** Cualquier valor numérico que pertenezca al reglamento (tiradas, modificadores, daño, threshold, HP, AP, XP, peso de inventario) se renderiza en mono **cuando aparece en bloques tabulares, fichas de personaje o stat displays donde los números se alinean visualmente y la mono ayuda a comparar**. Letra mono = número del juego. Un jugador escaneando el log identifica de un vistazo qué es texto narrativo y qué es ejecución de regla. No se mezclan dentro de la misma frase salvo cuando el número está envuelto en sintaxis de log (ej: "Tiraste `4d6 4+` → `[6,5,3,4]` → 3 éxitos").
+
+**Excepción inline (decisión #54, v0.13):** la regla NO aplica a prosa inline (descripciones de perk, tooltips narrativos, copy de UI con números embebidos en frase: "+1 éxito al primer ataque", "+2 a la iniciativa"). En prosa inline, los números van en sans pleno como el resto de la frase. Romper la línea base con mono dentro de una frase corta daña la lectura sin aportar comparación visual (no hay otro número adyacente con el que comparar). La distinción operativa: ¿el número se compara con otro adyacente (tabla, ficha, log)? mono. ¿El número está embebido en una frase narrativa? sans.
 
 **The Display-Is-Sacred Rule.** La serif display reservada a los seis u ocho momentos donde el juego habla con peso narrativo. Pantalla de muerte, pantalla de creación, momento arcano singular. Si aparece en cada heading menor, deja de pesar y se vuelve decoración.
 
@@ -178,7 +180,7 @@ Ningún glow. Ningún drop-shadow decorativo. La elevación es información, no 
 
 ## 5. Components
 
-> Seed mode parcial: las pantallas H2 se documentan aquí a medida que cierran (3/5 cerradas: retrato, atributos, habilidades). El resto sigue siendo placeholder hasta su pasada de `$impeccable document` correspondiente.
+> Seed mode parcial: las pantallas H2 se documentan aquí a medida que cierran (4/5 cerradas: retrato, atributos, habilidades, perk). El resto sigue siendo placeholder hasta su pasada de `$impeccable document` correspondiente.
 
 Los componentes provisionales heredan las reglas anteriores: serif display reservada, mono para números, color-means-something, sin glow, flat-por-defecto, OKLCH como referencia.
 
@@ -283,7 +285,50 @@ Estados del control `+/−` (cuatro, idénticos a `.h2-attributes__step`):
 - #51: descripciones de habilidad NO se muestran en flow de creación; reservadas para hoja de personaje H4+.
 - #52: stepper se clona en cada pantalla del flow hasta tercer consumidor; entonces se extrae a `.h2-stepper-*` en commit aparte que cubre las pantallas afectadas.
 
-Cuando el resto de pantallas H2 cierren se documentarán aquí en sub-bloques 5.4 y 5.5. El sidecar DESIGN.json sigue diferido hasta tener componentes transversales reutilizables (botón primario, panel de atributos en hoja de personaje fuera de creación, tirada en log) más allá del flow de creación.
+### 5.4 Pantalla de elección de perk (H2, paso 4/7)
+
+Cuarta pantalla cerrada del flow. Reutiliza el shell común y el patrón de selección persistente con inset ring de `.h2-portrait`. Introduce un componente nuevo: la card-radio con cuerpo de texto (cabecera nombre + sigla, descripción inline).
+
+**Archivos:** [`src/render/h2-perk-view.ts`](src/render/h2-perk-view.ts), bloque `h2-perk` en [`src/style.css`](src/style.css).
+
+**Shape:** contenedor full-bleed con grid de tres filas (`auto 1fr auto`) idéntico al patrón de `.h2-portrait` y `.h2-flow__step`. Cabecera arriba, grid de 5 cards en el medio, nav abajo. Botón Salir absoluto.
+
+**Grid responsive:** `repeat(auto-fit, minmax(220px, 1fr))` con `max-width: 960px`. Sin breakpoints fijos: `auto-fit` colapsa naturalmente a 1 col en móvil estrecho, 2 col en tablet, 3 col en desktop. Las 5 cards llenan 2 filas en desktop (3+2). Asimetría heredada del patrón 2-2-1 de H2.3. `grid-auto-rows: 1fr` iguala alturas para que descripciones de longitud variable (8 a 22 palabras) no rompan el grid.
+
+**Componente card-radio (`.h2-perk__card`).** `<button>` con `role="radio"` dentro de un `radiogroup`. Reset de estilos nativos del botón (`font-family: inherit`, `color: inherit`, `text-align: left`, fondo y borde explícitos) para que se vea como panel técnico. Composición interna:
+- **Cabecera (`.h2-perk__card-header`):** flex horizontal `justify-content: space-between`. Nombre del perk izquierda (peso 500, hueso-claro) + sigla del atributo asociado derecha (label mayúsculas tracking 0.08em color corteza-palida). Separador `border-bottom: 1px solid corteza-palida` con `padding-bottom: 8px` y `margin-bottom: 10px`. Establece la jerarquía interna de la card.
+- **Cuerpo (`.h2-perk__card-description`):** descripción mecánica completa, Inter peso 400, ~0.9rem, color hueso-descolorido (NO subordinado a corteza-palida; la descripción ES la información clave de elección, no metadata), line-height 1.5.
+
+Estados (cuatro, ortogonales, idéntico patrón `.h2-portrait__cell`):
+- **Reposo:** fondo `tinta-tierra-baja`, borde `corteza-palida`.
+- **Hover:** sube a `tinta-tierra-media`. Solo afordancia visual.
+- **Focus (`:focus-visible`):** outline exterior `2px solid hueso-descolorido` con offset 2px.
+- **Selected (`[aria-checked="true"]`):** fondo `tinta-tierra-media` + `box-shadow: inset 0 0 0 2px hueso-descolorido`. Inset ring persistente.
+- **Selected + focus:** inset ring + outline exterior coexisten en ejes distintos. Lectura inmediata.
+
+**Tratamiento de la sigla del atributo.** Solo texto color subordinado (`corteza-palida`), sin badge, sin borde, sin fondo. Es peana, no etiqueta competidora con el nombre. Si fuera badge competiría visualmente con el nombre del perk.
+
+**Las descripciones se muestran inline** (decisión cerrada, opuesta a la #51 de habilidades). Razón: los nombres de perk no son autoexplicativos ("Temple", "Ojo Clínico"); el contenido mecánico ES la elección. En habilidades los nombres son terminología D&D/WoD universal y la pantalla es asignación, no elección informada.
+
+**Disponibilidad de los 5 perks** (decisión #53): los 5 están todos disponibles en H2.4. El gateo por arquetipo aplica solo al árbol post-creación (H7), no a la creación. En modo `preset` con `archetype` definido, el `starting_perk_id` del arquetipo aparece preseleccionado como sugerencia visible y ajustable; sin badge "Sugerido" porque el inset ring ya es señal suficiente. En modo `scratch` o sin archetype: sin preselección.
+
+**Mono NO aparece en este bloque** (decisión #54): los números embebidos en las descripciones (`+1 éxito`, `+2 iniciativa`, `+2 HP máximo`) van en sans pleno como el resto de la frase. La regla "Numbers-In-Mono" aplica a bloques tabulares, no a prosa inline.
+
+**Reglas aplicadas y desviaciones:**
+- Display-Is-Sacred: heading "Perk inicial" en sans. Instrucción y descripciones en sans body. Cero Cormorant.
+- Color-Means-Something + Arcane-Restraint: sin rojo óxido (no hay error posible), sin violeta (no es evento arcano).
+- Selección con inset ring (clon literal de `.h2-portrait`).
+- Desviación 1: sigla del atributo dentro de la cabecera de la card vs label "01"-"12" debajo del swatch (la card de perk es texto puro con jerarquía interna; el retrato es visual mudo).
+- Desviación 2: cards de altura igualada con `grid-auto-rows: 1fr` vs `aspect-ratio: 1/1` cuadrado del retrato.
+- Desviación 3: padding generoso vs padding mínimo del retrato (el cuerpo de descripción necesita respirar).
+
+**API en `H2StepCtx`.** `setPerk(id: string): void` añadido al closure de `startH2Flow`. Valida que `id` exista en `PERKS_BY_ID` y **REEMPLAZA** `draft.perks = [id]` (no acumula). El reglamento exige `length === 1` al confirmar.
+
+**Decisiones cerradas en este cierre (numeradas para biblia v0.13):**
+- #53: en H2.4 los 5 perks iniciales están todos disponibles. El gateo por arquetipo del biblia §4.7 línea 253 aplica solo al árbol de progresión post-creación (H7), no a la creación.
+- #54: regla "Numbers-In-Mono" NO aplica a prosa inline (descripciones, tooltips, copy de UI con números embebidos en frase). Aplica solo a bloques tabulares, fichas y stat displays donde los números se alinean para comparar.
+
+Cuando la última pantalla H2 cierre se documentará aquí en sub-bloque 5.5. El sidecar DESIGN.json sigue diferido hasta tener componentes transversales reutilizables (botón primario, panel de atributos en hoja de personaje fuera de creación, tirada en log) más allá del flow de creación.
 
 ## 6. Do's and Don'ts
 

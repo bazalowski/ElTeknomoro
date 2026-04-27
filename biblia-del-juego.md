@@ -250,7 +250,7 @@ Texto exacto de la decisión binaria, enemigo concreto del primer combate y nodo
 
 - **Flujo mixto:** pantalla inicial "Empezar de cero" / "Empezar con preset". Ambas opciones desde el primer momento.
 - **Arquetipos predefinidos:** 5, uno por atributo dominante (FUE, DES, CON, INT, VOL). Nombres y contenido concreto pendientes.
-- **Perks iniciales:** el jugador elige **1 perk al crear**. Los perks del árbol se desbloquean según el arquetipo elegido (o según atributo dominante si empezó libre).
+- **Perks iniciales:** el jugador elige **1 perk al crear**, libremente entre los 5 perks iniciales del catálogo (decisión #53, v0.13). El gateo por arquetipo dominante aplica **solo al árbol de progresión post-creación (H7)**, no a la elección de creación. En modo `preset` con arquetipo definido, el `starting_perk_id` del arquetipo aparece preseleccionado como sugerencia ajustable.
 - **Retratos:** set fijo de 12 retratos, sin categorizar por género/edad/etnia, estilo visual uniforme. El jugador los ojea en grid.
 - **Reparto de atributos:** botones +/- con preview en tiempo real de los stats derivados (HP, DEF, iniciativa). Validación visual cuando el reparto es ilegal. Botón "Reset" disponible.
 - **Reparto de habilidades:** pantalla separada, mismo patrón +/- con preview.
@@ -912,3 +912,19 @@ Esta versión es la primera en la que **todo el reglamento numérico que el cód
 - **#52 — Política de extracción del stepper.** El componente "stepper" (banda de pool + botón paso + fila con stepper) se clona en cada pantalla del flow de creación hasta el tercer consumidor. Entonces se extrae a clases compartidas `.h2-stepper-*` en commit aparte que cubre todas las pantallas afectadas. Razón: regla "tres similares es mejor que abstracción prematura". H2.2 y H2.3 son los dos primeros consumidores; si H2.4 (perks) o H2.5 (inventario) usan stepper, se ejecuta la extracción. Si no, se queda clonado.
 
 - Sin cambios en §4, §6, §7.
+
+**v0.13** — Cierre de la **cuarta pantalla del MVP en navegador** (27/4/2026): pantalla de elección de perk inicial (H2, paso 4/7 del flow de creación, scope §1.3 línea 47). Dos decisiones nuevas. Sin cambios de reglamento. Cambios:
+
+- §8: ninguna alteración del flujo. La pantalla materializa el contrato cerrado en biblia §4.7 (1 perk al crear, elegido entre 5 iniciales).
+- §4.7 línea 253: la frase "Los perks del árbol se desbloquean según el arquetipo elegido" queda **explícitamente acotada al árbol post-creación (H7)**. En la creación de personaje (H2.4) los 5 perks iniciales están todos disponibles para elegir, sin gateo. Aclaración formalizada como decisión #53.
+- §3 (Tipografía) regla "Numbers-In-Mono" matizada en `DESIGN.md` con **excepción inline**: la regla aplica a bloques tabulares y fichas, NO a prosa inline. Formalizado como decisión #54.
+- `DESIGN.md` §5.4 añadido: pantalla de perk con shape, componente card-radio con cabecera de nombre+sigla y cuerpo de descripción, cuatro estados ortogonales y tres desviaciones documentadas respecto a `.h2-portrait`.
+- `scope-mvp-web-v0.1.md` §1.3 línea 47 marcada como cerrada con checkbox `[x]` y fecha. **4/5 pantallas H2 cerradas; falta solo la 5/5 (inventario+preview+confirm).**
+- `setPerk(id)` añadido a `H2StepCtx` como cuarto setter del flow. Valida que `id` exista en `PERKS_BY_ID` y **REEMPLAZA** `draft.perks = [id]` (no acumula). El reglamento exige `length === 1` al confirmar.
+- Stepper queda en 2 consumidores tras H2.4 (decisión #52 inalterada). H2.5 dirá si se ejecuta la extracción a `.h2-stepper-*` o se queda clonado.
+
+**Decisiones cerradas (nuevas):**
+
+- **#53 — Disponibilidad de perks en creación.** En la pantalla H2.4 (paso 4/7 del flow de creación), los 5 perks iniciales están **todos disponibles** para elegir. El gateo por arquetipo dominante mencionado en biblia §4.7 línea 253 ("Los perks del árbol se desbloquean según el arquetipo elegido") aplica **solo al árbol de progresión post-creación (H7)**, no a la creación de personaje. Si el jugador entra en modo `preset` con un arquetipo definido, el `starting_perk_id` del arquetipo aparece preseleccionado como sugerencia (inset ring visible), pero ajustable: el jugador puede cambiar a cualquiera de los otros 4. Razón: el modo `scratch` no pasa por arquetipo y se quedaría sin perks si gateamos; biblia §4.7 línea 253 dice que el jugador puede ajustar todo dentro de las reglas. Acción: documentar la aclaración en biblia §4.7 línea 253 (línea editada en este mismo bump).
+
+- **#54 — Excepción de Numbers-In-Mono para prosa inline.** La regla "Numbers-In-Mono" (DESIGN.md §3) aplica a **bloques tabulares, fichas de personaje y stat displays** donde los números se alinean visualmente y el mono ayuda a comparar. **No aplica a prosa inline** (descripciones de perk/habilidad/ítem, tooltips narrativos, copy de UI con números embebidos en frase: "+1 éxito al primer ataque", "+2 a la iniciativa permanente"). En prosa inline, los números van en sans pleno como el resto de la frase. Razón: romper la línea base con mono dentro de una frase corta daña la lectura sin aportar comparación visual; no hay otro número adyacente con el que comparar. La distinción operativa: ¿el número se compara con otro adyacente (tabla, ficha, log)? mono. ¿El número está embebido en una frase narrativa? sans. Acción: matización aplicada en `DESIGN.md` §3 (regla actualizada en este mismo bump).

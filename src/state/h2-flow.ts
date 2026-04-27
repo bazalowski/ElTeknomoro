@@ -13,6 +13,7 @@ import { saveCharacter } from '../backend/characters';
 import { buildCreateInputFromDraft } from './h2-defaults';
 import { PORTRAITS_BY_ID } from '../data/portraits';
 import { SKILLS_BY_ID } from '../data/skills';
+import { PERKS_BY_ID } from '../data/perks';
 
 export type H2Step =
   | 'start'
@@ -44,6 +45,7 @@ export interface H2StepCtx {
   setPortrait: (id: string) => void;
   setAttribute: (id: AttributeId, value: number) => void;
   setSkill: (id: string, value: number) => void;
+  setPerk: (id: string) => void;
 }
 
 const ORDER: readonly H2Step[] = [
@@ -162,6 +164,13 @@ export function startH2Flow(root: HTMLElement, onExit: () => void): void {
       }
       if (!draft.skills) draft.skills = {};
       draft.skills[id] = value;
+    },
+    setPerk: (id: string) => {
+      if (!(id in PERKS_BY_ID)) {
+        console.warn(`h2-flow: perkId no válido: ${id}`);
+        return;
+      }
+      draft.perks = [id];
     },
   };
 

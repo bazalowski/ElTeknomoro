@@ -44,7 +44,7 @@ Las secciones §4-§7 son apoyo: bloqueantes, estimación, riesgos, definición 
 - 5 arquetipos predefinidos (uno por atributo dominante).
 - [x] 12 puntos de atributo, máximo 4 al crear, mínimo 1 por atributo. +/- con preview en tiempo real. (cerrada en H2.2, 2026-04-27)
 - [x] 10 puntos de habilidad, máximo 3 al crear. Pantalla separada. (cerrada en H2.3, 2026-04-27, decisión #50: suma == 10 obligatoria)
-- Elección de 1 perk inicial.
+- [x] Elección de 1 perk inicial. (cerrada en H2.4, 2026-04-27, decisiones #53/#54)
 - [x] Set de 12 retratos fijos en grid. (cerrada en H2.1, 2026-04-27)
 - Inventario inicial fijo por arquetipo + botón "Sorpréndeme" con preview antes de confirmar.
 - Preview del personaje en una pantalla de combate antes de confirmar.
