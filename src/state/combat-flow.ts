@@ -5,8 +5,8 @@
 // dado a dado o todo de golpe), y resuelve loot al cerrar el combate.
 //
 // Coherente con el patrón de `state/h2-flow.ts`: función con closure que
-// devuelve un objeto-handle de métodos. La persistencia (saveCharacter) la
-// dispara el caller en `onEnd`, igual que `confirmAndPersist` en H2; el
+// devuelve un objeto-handle de métodos. La persistencia (saveCharacterUpdate)
+// la dispara el caller en `onEnd`, igual que `confirmAndPersist` en H2; el
 // orquestador queda puro respecto a Supabase.
 //
 // Decisiones internas (sub-paso 3a, cerradas en este archivo):
@@ -36,8 +36,8 @@
 //     trabajo.
 //   - D-3a-5: `onEnd` se invoca con un `CombatResult` que incluye el Character
 //     final (vivo o con epitafio escrito) y el resumen del loot. El caller
-//     decide si hace `saveCharacter` o navega a una pantalla de muerte; el
-//     orquestador no asume.
+//     decide si hace `saveCharacterUpdate` o navega a una pantalla de muerte;
+//     el orquestador no asume.
 //   - D-3a-6: el resultado del `resolveLoot` se aplica al Character ANTES de
 //     emitir `onEnd`. El Character que recibe el caller es el final, listo
 //     para persistir tal cual. Si no cabe en inventario alguna pila, ese

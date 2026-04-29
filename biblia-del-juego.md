@@ -1032,3 +1032,23 @@ Próximo: H3 (combate vertical slice). El motor está listo (`combat.ts`, `dice.
 - El motor + los datos están listos para que el orquestador de combate H3 los consuma. Falta sólo la UI (PASO 3 en adelante).
 
 Próximo: PASO 3 del Hito 3, primera pantalla de combate por MODOPIPELINE (vista única persistente con timeline, paneles de PJ y enemigo, log lateral, botones de acción, animación de dado).
+
+---
+
+**v0.18** — Cierre del **end-to-end del Hito 3** (29/4/2026): el sub-paso 3e.3 cablea el flow real `home → combate → persistencia → home` y retira el cableado debug provisional de 3b. Junto con 3a (orquestador), 3b (combat-view), 3c (modal de loot), 3d (modal de epitafio) y 3e.1 (backend de persistencia post-combate), el PASO 3 entrega el primer loop completo del juego: el jugador crea un PJ en H2, pulsa "Entrar al yermo" en home, combate al lobo, vence o muere, y el slot 0 refleja el resultado. El rediseño visual de home con lápida del PJ caído (sub-paso 3e.2, MODOPIPELINE) queda diferido sin bloquear el end-to-end: hoy home pinta una línea de estado plana y un botón con texto condicional ("Crear personaje" / "Entrar al yermo" / "Crear nuevo personaje").
+
+**Sin nuevas decisiones de reglamento.** Sin cambios en §4, §6, §7. Cambios:
+
+- `src/backend/characters.ts`: retirada de `loadAliveCharacter` (sin callers). `saveCharacter` (creación inicial con guard `CharacterAlreadyAliveError`), `saveCharacterUpdate` (actualización post-combate sin guard) y `loadLastCharacter` (devuelve PJ vivo o muerto del slot 0) son la superficie definitiva del backend de characters para el end-to-end H3.
+- `src/render/home-view.ts`: home consulta `loadLastCharacter()` al montar y rama el botón principal según el estado del PJ. Tipo `HomeIntent = 'create-character' | 'enter-wilds' | 'create-new-after-death'` exportado para que `main` cablee la navegación. La identidad del PJ caído se muestra como línea de estado plana (nombre · arquetipo · `epitaph.cause.description`); la lápida visual real entra en 3e.2 vía MODOPIPELINE.
+- `src/main.ts`: máquina de estados ampliada con modo `'combat'`. Función `startCombatRun(root, character)` arma `EnemyState` del Lobo, instancia el orquestador con seed aleatorio, monta `renderCombatView` y conecta `saveCharacterUpdate(result.character)` en el `onEnd` del orquestador. El botón "Volver" del modal de loot/epitafio invoca `onEnd` de la vista, que devuelve a home; home reconsulta el slot al remontar y pinta el estado real. `onExit` del combat-view vuelve a home sin tocar el slot (salida de emergencia D-3b-6). Retirado `tryDebugCombat` y el query param `?combat=1`.
+- `src/state/combat-flow.ts`: comentarios actualizados — el caller de `onEnd` invoca `saveCharacterUpdate`, no `saveCharacter`. Sin cambios de lógica.
+
+**Estado al cierre del PASO 3:**
+
+- 257/257 tests verde.
+- `tsc --noEmit` limpio.
+- `vite build` limpio (270 KB JS, 49 KB CSS).
+- 0 deudas técnicas de cableado. El esqueleto del juego (decisión #61) cierra su primer loop completo: crear → combatir → loot/epitafio → persistencia → home → repetir.
+
+Próximo: sub-paso 3e.2 vía MODOPIPELINE (rediseño visual del home con lápida del PJ caído).

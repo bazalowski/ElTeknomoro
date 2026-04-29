@@ -57,24 +57,6 @@ export async function saveCharacter(character: Character): Promise<void> {
   if (error) throw error;
 }
 
-export async function loadAliveCharacter(): Promise<Character | null> {
-  const userId = await getCurrentUserId();
-
-  const { data, error } = await supabase
-    .from('save_slots')
-    .select('character_data')
-    .eq('user_id', userId)
-    .eq('alive', true)
-    .order('slot_index', { ascending: true })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) throw error;
-  if (!data) return null;
-
-  return data.character_data as Character;
-}
-
 // Persiste cambios sobre un PJ que YA existe en el slot 0. A diferencia de
 // `saveCharacter`, no aplica la guard `CharacterAlreadyAliveError`: este
 // camino es el que usa el cierre de combate (3e.3) para guardar el PJ tras

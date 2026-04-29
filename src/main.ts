@@ -1,50 +1,51 @@
 import { getSession, onSessionChange } from './backend/auth';
+import { loadLastCharacter, saveCharacterUpdate } from './backend/characters';
 import { renderLoginView } from './render/login-view';
 import { renderHomeView } from './render/home-view';
-import { startH2Flow } from './state/h2-flow';
-import type { Session } from '@supabase/supabase-js';
-import './style.css';
-
-// DEBUG H3.3b: cableado temporal de la vista de combate. Se activa con
-// `?combat=1` en la URL y bypassa auth/home/h2-flow para mostrar un combate
-// de prueba (PJ build A + lobo del bosque). Se elimina al cerrar 3e cuando
-// el botón "Entrar al yermo" del home cablee combate real con persistencia.
 import { renderCombatView } from './render/combat-view';
+import { startH2Flow } from './state/h2-flow';
 import { startCombatFlow } from './state/combat-flow';
-import { createCharacter } from './rules/character';
 import { createRng } from './rules/dice';
 import { ENEMIES_BY_ID } from './data/enemies';
 import { ITEMS_BY_ID } from './data/items';
 import type { EnemyState } from './rules/combat';
+import type { Character } from './rules/character';
+import type { Session } from '@supabase/supabase-js';
+import './style.css';
 
 const app = document.getElementById('app');
 if (!app) throw new Error('No se encontró #app en el DOM.');
 
-function tryDebugCombat(root: HTMLElement): boolean {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('combat') !== '1') return false;
+type Mode = 'auth' | 'home' | 'h2-flow' | 'combat';
 
-  const character = createCharacter({
-    id: 'pj-debug',
-    name: 'Debug',
-    portraitId: 'portrait-03',
-    archetype: 'guerrero',
-    attributes: { fue: 4, des: 4, con: 2, int: 1, vol: 1 },
-    skills: { armas_cuerpo: 3 },
-    perks: ['perk-golpe-firme'],
-    location: { mapId: 'historia-01', x: 0, y: 0 },
-  });
+let mode: Mode = 'auth';
+let currentSession: Session | null = null;
 
+// Mapa enemy_id → nombre legible para que la combat-view pinte log y paneles
+// sin depender del catálogo (la regla sagrada vive en data/enemies.ts; este
+// derivado es vista).
+const enemyNames: Record<string, string> = Object.fromEntries(
+  Object.values(ENEMIES_BY_ID).map((e) => [e.id, e.name]),
+);
+
+function startCombatRun(root: HTMLElement, character: Character): void {
+  // H3 (esqueleto): un único encuentro tutorial — un Lobo del Bosque. La
+  // selección de enemigos por zona/historia entra en hitos posteriores.
+  const loboTpl = ENEMIES_BY_ID['lobo_del_bosque'];
+  if (loboTpl === undefined) {
+    throw new Error('main: ENEMIES_BY_ID no contiene lobo_del_bosque.');
+  }
   const lobo: EnemyState = {
     enemy_id: 'lobo_del_bosque',
-    instance_id: 'lobo#1',
-    hp: ENEMIES_BY_ID['lobo_del_bosque']!.hp_max,
+    instance_id: 'lobo_del_bosque#1',
+    hp: loboTpl.hp_max,
     alive: true,
     statuses: [],
   };
 
   const seed = Math.floor(Math.random() * 1_000_000);
   let viewHandle: { notifyResult: (r: import('./state/combat-flow').CombatResult) => void } | null = null;
+  let persisting = false;
 
   const handle = startCombatFlow({
     character,
@@ -55,6 +56,19 @@ function tryDebugCombat(root: HTMLElement): boolean {
     nowIso: () => new Date().toISOString(),
     onEnd: (result) => {
       viewHandle?.notifyResult(result);
+      // Persistencia post-combate: el PJ vivo con loot aplicado o el PJ
+      // muerto con epitafio ya escrito. saveCharacterUpdate sobrescribe el
+      // slot 0 sin la guard CharacterAlreadyAliveError. Si la red falla, lo
+      // logueamos: H3 no tiene UI de error de red todavía (entra en hitos
+      // posteriores cuando toque hardening de persistencia).
+      persisting = true;
+      saveCharacterUpdate(result.character)
+        .catch((err) => {
+          console.error('main: saveCharacterUpdate falló al cerrar combate:', err);
+        })
+        .finally(() => {
+          persisting = false;
+        });
     },
   });
 
@@ -62,31 +76,28 @@ function tryDebugCombat(root: HTMLElement): boolean {
   viewHandle = renderCombatView(
     root,
     handle,
-    (result) => {
-      console.info('[DEBUG combat] resultado final:', result);
-      // Recargamos sin el query param para volver al flow normal.
-      window.location.search = '';
+    () => {
+      // Botón "Volver" del modal de loot/epitafio. Si la persistencia aún
+      // está en vuelo, no bloqueamos: home reconsulta loadLastCharacter al
+      // montar y pintará el estado real cuando llegue el commit. El usuario
+      // no percibe la diferencia salvo en redes muy lentas.
+      void persisting;
+      mode = 'home';
+      render();
     },
     {
       itemCatalog: ITEMS_BY_ID,
-      enemyNames: { lobo_del_bosque: 'Lobo del Bosque' },
+      enemyNames,
       onExit: () => {
-        window.location.search = '';
+        // Salir sin guardar: vuelve a home sin tocar el slot. El PJ del slot
+        // queda igual que antes del combate. Es la salida de emergencia
+        // documentada en D-3b-6 de combat-view.
+        mode = 'home';
+        render();
       },
     },
   );
-
-  return true;
 }
-
-if (tryDebugCombat(app)) {
-  // Combate de debug montado; saltamos el flow normal de auth/home/h2-flow.
-} else {
-
-type Mode = 'auth' | 'home' | 'h2-flow';
-
-let mode: Mode = 'auth';
-let currentSession: Session | null = null;
 
 function render(): void {
   if (!app) return;
@@ -103,10 +114,41 @@ function render(): void {
     });
     return;
   }
+  if (mode === 'combat') {
+    // El combate se monta vía startCombatRun antes de llegar aquí; este caso
+    // solo se daría si render() se vuelve a invocar mientras estamos en
+    // combate (p. ej. session change). En esa ventana mantenemos la pantalla
+    // de combate intacta — no remontar es la decisión correcta.
+    return;
+  }
   mode = 'home';
-  renderHomeView(app, currentSession, () => {
-    mode = 'h2-flow';
-    render();
+  renderHomeView(app, currentSession, (intent) => {
+    if (intent === 'create-character' || intent === 'create-new-after-death') {
+      mode = 'h2-flow';
+      render();
+      return;
+    }
+    if (intent === 'enter-wilds') {
+      mode = 'combat';
+      // Recargamos el PJ vivo en el momento de entrar al combate. home ya lo
+      // mostró, pero el slot puede haber cambiado entre tabs; este load es
+      // la fuente de verdad inmediata antes del combate.
+      loadLastCharacter()
+        .then((character) => {
+          if (character === null || !character.alive) {
+            console.warn('main: enter-wilds sin PJ vivo en slot; volviendo a home.');
+            mode = 'home';
+            render();
+            return;
+          }
+          startCombatRun(app, character);
+        })
+        .catch((err) => {
+          console.error('main: loadLastCharacter falló al entrar al yermo:', err);
+          mode = 'home';
+          render();
+        });
+    }
   });
 }
 
@@ -123,10 +165,8 @@ getSession()
 
 onSessionChange((session) => {
   currentSession = session;
-  if (!session && mode === 'h2-flow') {
+  if (!session && (mode === 'h2-flow' || mode === 'combat')) {
     mode = 'auth';
   }
   render();
 });
-
-} // fin del else de tryDebugCombat
