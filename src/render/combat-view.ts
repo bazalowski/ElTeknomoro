@@ -404,6 +404,8 @@ export function renderCombatView(
         // (D-3b-5) hasta que 3d cierre el epitafio de derrota.
         if (entry.status === 'victory' && finalResult !== null) {
           showLootModal(finalResult);
+        } else if (entry.status === 'defeat' && finalResult !== null) {
+          showEpitaphModal(finalResult);
         } else {
           showFinalOverlay(entry.status);
         }
@@ -668,6 +670,46 @@ export function renderCombatView(
     `;
 
     const backBtn = overlayEl.querySelector<HTMLButtonElement>('[data-action="loot-back"]')!;
+    backBtn.addEventListener('click', () => {
+      onEnd(result);
+    });
+    backBtn.focus();
+  };
+
+  // Sub-paso 3d: modal de epitafio post-combate (sólo derrota con
+  // finalResult). Sustituye al overlay placeholder en la rama de derrota.
+  // Display-Is-Sacred: heading en Cormorant — la derrota es el segundo
+  // momento narrativo real del juego (el primero es el sellado en H2.5c),
+  // microuso justificado de la serif. Sin loot (permadeath cierra sin
+  // botín). Sin ámbar/violeta/verde-pantano/rojo-óxido: escala neutra.
+  const showEpitaphModal = (result: CombatResult): void => {
+    const ch = result.character;
+    const archetype = ch.archetype;
+    const archetypeHtml = archetype === null ? '' : `
+      <p class="combat-epitaph-modal__archetype">${escapeHtml(archetype)}</p>
+    `;
+
+    overlayEl.hidden = false;
+    overlayEl.innerHTML = `
+      <div
+        class="combat-view__overlay-panel combat-epitaph-modal"
+        role="dialog"
+        aria-modal="false"
+        aria-labelledby="combat-epitaph-modal-title"
+      >
+        <h2 id="combat-epitaph-modal-title" class="combat-epitaph-modal__heading">El yermo te reclama.</h2>
+        <div class="combat-epitaph-modal__identity">
+          <p class="combat-epitaph-modal__name">${escapeHtml(ch.name)}</p>
+          ${archetypeHtml}
+          <p class="combat-epitaph-modal__level">Nivel ${ch.level}</p>
+        </div>
+        <div class="combat-view__overlay-actions combat-epitaph-modal__actions">
+          <button type="button" class="combat-view__overlay-back" data-action="epitaph-back">Volver</button>
+        </div>
+      </div>
+    `;
+
+    const backBtn = overlayEl.querySelector<HTMLButtonElement>('[data-action="epitaph-back"]')!;
     backBtn.addEventListener('click', () => {
       onEnd(result);
     });
