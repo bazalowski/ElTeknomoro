@@ -2,13 +2,17 @@ import { describe, it, expect } from 'vitest';
 import {
   ATTRIBUTE_IDS,
   CREATION_RULES,
+  addGold,
   computeDefense,
   computeMaxHp,
   createCharacter,
+  spendGold,
   validateCreation,
   type AttributeBlock,
   type CreateCharacterInput,
 } from './character';
+import { applyDamageToCharacter } from './combat';
+import { deathByEnemy, killCharacter } from './death';
 
 // Plantilla válida mínima. Cada test la clona y muta el campo a probar.
 function baseInput(overrides: Partial<CreateCharacterInput> = {}): CreateCharacterInput {
@@ -210,5 +214,93 @@ describe('CREATION_RULES y ATTRIBUTE_IDS (sanity)', () => {
 
   it('los 5 atributos son fue, des, con, int, vol y nada más', () => {
     expect([...ATTRIBUTE_IDS].sort()).toEqual(['con', 'des', 'fue', 'int', 'vol']);
+  });
+});
+
+describe('gold (recurso del personaje)', () => {
+  it('createCharacter inicializa gold a CREATION_RULES.startingGold (= 0)', () => {
+    const c = createCharacter(baseInput());
+    expect(CREATION_RULES.startingGold).toBe(0);
+    expect(c.gold).toBe(CREATION_RULES.startingGold);
+  });
+
+  it('addGold suma y devuelve nuevo Character (no muta el original)', () => {
+    const c = createCharacter(baseInput());
+    const c2 = addGold(c, 25);
+    expect(c2).not.toBe(c);
+    expect(c2.gold).toBe(25);
+    expect(c.gold).toBe(0); // original intacto
+  });
+
+  it('addGold con amount = 0 es no-op válido', () => {
+    const c = createCharacter(baseInput());
+    const c2 = addGold(c, 0);
+    expect(c2.gold).toBe(c.gold);
+  });
+
+  it('addGold con amount negativo lanza RangeError', () => {
+    const c = createCharacter(baseInput());
+    expect(() => addGold(c, -1)).toThrow(RangeError);
+  });
+
+  it('addGold con amount no entero lanza RangeError', () => {
+    const c = createCharacter(baseInput());
+    expect(() => addGold(c, 1.5)).toThrow(RangeError);
+    expect(() => addGold(c, Number.NaN)).toThrow(RangeError);
+  });
+
+  it('spendGold resta correctamente', () => {
+    const c = addGold(createCharacter(baseInput()), 50);
+    const c2 = spendGold(c, 20);
+    expect(c2.gold).toBe(30);
+    expect(c.gold).toBe(50); // original intacto
+  });
+
+  it('spendGold con amount = 0 es no-op válido', () => {
+    const c = addGold(createCharacter(baseInput()), 10);
+    const c2 = spendGold(c, 0);
+    expect(c2.gold).toBe(10);
+  });
+
+  it('spendGold con saldo insuficiente lanza RangeError', () => {
+    const c = addGold(createCharacter(baseInput()), 5);
+    expect(() => spendGold(c, 6)).toThrow(RangeError);
+  });
+
+  it('spendGold con saldo exacto deja gold = 0', () => {
+    const c = addGold(createCharacter(baseInput()), 17);
+    const c2 = spendGold(c, 17);
+    expect(c2.gold).toBe(0);
+  });
+
+  it('spendGold con amount negativo o no entero lanza RangeError', () => {
+    const c = addGold(createCharacter(baseInput()), 100);
+    expect(() => spendGold(c, -1)).toThrow(RangeError);
+    expect(() => spendGold(c, 2.5)).toThrow(RangeError);
+    expect(() => spendGold(c, Number.NaN)).toThrow(RangeError);
+  });
+
+  it('gold persiste tras crear, sumar, restar (cadena)', () => {
+    let c = createCharacter(baseInput());
+    expect(c.gold).toBe(0);
+    c = addGold(c, 100);
+    expect(c.gold).toBe(100);
+    c = spendGold(c, 30);
+    expect(c.gold).toBe(70);
+    c = addGold(c, 5);
+    expect(c.gold).toBe(75);
+    c = spendGold(c, 75);
+    expect(c.gold).toBe(0);
+  });
+
+  it('el epitafio incluye el oro final', () => {
+    let c = addGold(createCharacter(baseInput()), 50);
+    // Aplicamos daño hasta dejar HP a 0 (sin matar todavía: applyDamageToCharacter
+    // baja HP, killCharacter rellena el epitafio).
+    c = applyDamageToCharacter(c, c.hp.max);
+    expect(c.hp.current).toBe(0);
+    const dead = killCharacter(c, deathByEnemy('lobo-01', 'Lobo hambriento'), '2026-04-29T12:00:00Z');
+    expect(dead.epitaph).not.toBeNull();
+    expect(dead.epitaph!.final_character.gold).toBe(50);
   });
 });

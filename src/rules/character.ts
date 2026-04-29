@@ -23,6 +23,10 @@ export const CREATION_RULES = {
   skillMaxAtCreation: 3,
   // Perks: exactamente 1 al crear.
   perksAtCreation: 1,
+  // Oro inicial al crear personaje. Sin economía aún (H2 cierra creación);
+  // el valor se mantiene como propiedad explícita para que H5 (mercaderes) y
+  // H4 (loot) lo puedan reescalar sin tocar createCharacter.
+  startingGold: 0,
 } as const;
 
 // Flags narrativos reservados por el sistema. Decisión #45: el onboarding
@@ -81,6 +85,8 @@ export interface Character {
   perks: readonly string[];
   level: number;
   xp: number;
+  // Oro disponible. Entero >= 0. Se manipula con addGold/spendGold (puros).
+  gold: number;
   hp: HpBlock;
   inventory: Inventory;
   location: LocationBlock;
@@ -277,6 +283,7 @@ export function createCharacter(input: CreateCharacterInput): Character {
     perks: [...input.perks],
     level: 1,
     xp: 0,
+    gold: CREATION_RULES.startingGold,
     hp: { current: maxHp, max: maxHp },
     inventory: createEmptyInventory(),
     location: { ...input.location },
@@ -287,4 +294,39 @@ export function createCharacter(input: CreateCharacterInput): Character {
     epitaph: null,
     pending: { skill: 0, attribute: 0, perk: 0 },
   };
+}
+
+// -----------------------------------------------------------------------------
+// Oro (recurso del personaje, biblia §4.7)
+// -----------------------------------------------------------------------------
+
+// Suma `amount` al oro del personaje. Puro: devuelve un nuevo Character.
+// `amount = 0` es no-op válido (devuelve un Character con el mismo gold).
+// Lanza RangeError si `amount` no es entero o es negativo.
+export function addGold(character: Character, amount: number): Character {
+  if (!Number.isInteger(amount)) {
+    throw new RangeError(`addGold: amount debe ser entero (recibido ${amount}).`);
+  }
+  if (amount < 0) {
+    throw new RangeError(`addGold: amount no puede ser negativo (recibido ${amount}).`);
+  }
+  return { ...character, gold: character.gold + amount };
+}
+
+// Resta `amount` al oro del personaje. Puro: devuelve un nuevo Character.
+// `amount = 0` es no-op válido. Lanza RangeError si `amount` no es entero,
+// es negativo, o supera el saldo actual (no se permite gold negativo).
+export function spendGold(character: Character, amount: number): Character {
+  if (!Number.isInteger(amount)) {
+    throw new RangeError(`spendGold: amount debe ser entero (recibido ${amount}).`);
+  }
+  if (amount < 0) {
+    throw new RangeError(`spendGold: amount no puede ser negativo (recibido ${amount}).`);
+  }
+  if (amount > character.gold) {
+    throw new RangeError(
+      `spendGold: saldo insuficiente (gold=${character.gold}, amount=${amount}).`,
+    );
+  }
+  return { ...character, gold: character.gold - amount };
 }
