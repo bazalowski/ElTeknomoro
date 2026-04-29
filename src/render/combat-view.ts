@@ -399,7 +399,14 @@ export function renderCombatView(
         // El orquestador ya invocó su `onEnd` con el CombatResult al cerrar
         // (D-3a-5). Aquí no lo tenemos accesible salvo capturándolo en el
         // wrapper de inicialización (más abajo). Lo pintamos en overlay.
-        showFinalOverlay(entry.status);
+        // Sub-paso 3c: la rama de victoria con finalResult disponible salta al
+        // modal de loot real; el resto cae al overlay placeholder honesto
+        // (D-3b-5) hasta que 3d cierre el epitafio de derrota.
+        if (entry.status === 'victory' && finalResult !== null) {
+          showLootModal(finalResult);
+        } else {
+          showFinalOverlay(entry.status);
+        }
       }
     }
     logRenderedCount += entries.length;
@@ -579,12 +586,103 @@ export function renderCombatView(
     if (buttons.length > 0) buttons[0]!.focus();
   };
 
+  // Sub-paso 3c: modal de loot post-combate (sólo victoria con finalResult).
+  // Sustituye al overlay placeholder en la rama de victoria. El log lateral
+  // sigue mostrando las líneas planas de loot_resolved/loot_dropped: el modal
+  // añade una capa visual sobre el cierre, no elimina entradas del log.
+  // Reglas DESIGN respetadas: Inverted-Amber sólo en el badge de oro;
+  // Color-Means-Something (ámbar = hallazgo); Numbers-In-Mono (cantidades en
+  // tabular-nums); Display-Is-Sacred (heading en sans Inter — la serif queda
+  // reservada al epitafio narrativo de 3d).
+  const showLootModal = (result: CombatResult): void => {
+    const items = result.loot.items;
+    const dropped = result.loot.dropped;
+    const gold = result.loot.gold;
+    const isEmpty = gold === 0 && items.length === 0 && dropped.length === 0;
+
+    const goldHtml = gold === 0 ? '' : `
+      <div class="combat-loot-modal__gold" aria-label="Oro ganado">
+        <span class="combat-loot-modal__gold-badge">
+          <span class="combat-loot-modal__gold-value">${gold}</span>
+        </span>
+        <span class="combat-loot-modal__gold-label">Oro</span>
+      </div>
+    `;
+
+    const itemsHtml = items.length === 0 ? '' : `
+      <ul class="combat-loot-modal__items" aria-label="Items conseguidos">
+        ${items.map((it) => {
+          const def = options.itemCatalog[it.item_id];
+          const name = def?.name ?? it.item_id;
+          const glyph = (name.charAt(0) || '?').toUpperCase();
+          return `
+            <li class="combat-loot-modal__item">
+              <span class="combat-loot-modal__item-glyph" aria-hidden="true">${escapeHtml(glyph)}</span>
+              <span class="combat-loot-modal__item-name">${escapeHtml(name)}</span>
+              <span class="combat-loot-modal__item-qty">×${it.quantity}</span>
+            </li>
+          `;
+        }).join('')}
+      </ul>
+    `;
+
+    const droppedHtml = dropped.length === 0 ? '' : `
+      <section class="combat-loot-modal__dropped" aria-label="Drops perdidos por inventario lleno">
+        <h3 class="combat-loot-modal__dropped-title">Drops perdidos (inventario lleno)</h3>
+        <ul class="combat-loot-modal__dropped-list">
+          ${dropped.map((it) => {
+            const def = options.itemCatalog[it.item_id];
+            const name = def?.name ?? it.item_id;
+            return `
+              <li class="combat-loot-modal__dropped-item">
+                <span class="combat-loot-modal__dropped-name">${escapeHtml(name)}</span>
+                <span class="combat-loot-modal__dropped-qty">×${it.quantity}</span>
+              </li>
+            `;
+          }).join('')}
+        </ul>
+      </section>
+    `;
+
+    const emptyHtml = isEmpty
+      ? `<p class="combat-loot-modal__empty">Sin botín.</p>`
+      : '';
+
+    overlayEl.hidden = false;
+    overlayEl.innerHTML = `
+      <div
+        class="combat-view__overlay-panel combat-loot-modal"
+        role="dialog"
+        aria-modal="false"
+        aria-labelledby="combat-loot-modal-title"
+      >
+        <h2 id="combat-loot-modal-title" class="combat-loot-modal__title">Botín</h2>
+        ${emptyHtml}
+        ${goldHtml}
+        ${itemsHtml}
+        ${droppedHtml}
+        <div class="combat-view__overlay-actions combat-loot-modal__actions">
+          <button type="button" class="combat-view__overlay-back" data-action="loot-back">Volver</button>
+        </div>
+      </div>
+    `;
+
+    const backBtn = overlayEl.querySelector<HTMLButtonElement>('[data-action="loot-back"]')!;
+    backBtn.addEventListener('click', () => {
+      onEnd(result);
+    });
+    backBtn.focus();
+  };
+
   const showFinalOverlay = (status: 'victory' | 'defeat'): void => {
     const isWin = status === 'victory';
     overlayEl.hidden = false;
     // Copy provisional honesto. PRODUCT §Design Principles 5: placeholder, no
-    // narrativa final. El epitafio real (3d) vendrá luego.
-    const title = isWin ? 'Has matado al enemigo.' : 'Has caído.';
+    // narrativa final. El epitafio real (3d) vendrá luego. En victoria sólo
+    // entra aquí si finalResult === null (caso patológico: 3c salta al modal
+    // de loot cuando hay datos); por eso el copy de victoria es "Botín no
+    // disponible.", no narrativa de combate.
+    const title = isWin ? 'Botín no disponible.' : 'Has caído.';
     overlayEl.innerHTML = `
       <div class="combat-view__overlay-panel combat-view__overlay-panel--final" role="dialog" aria-modal="false" aria-label="Resultado del combate">
         <p class="combat-view__overlay-title combat-view__overlay-title--final">${escapeHtml(title)}</p>

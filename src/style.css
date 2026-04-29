@@ -2783,3 +2783,199 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
 .combat-view__overlay-panel--final {
   align-items: stretch;
 }
+
+/* ============================================================
+   combat-loot-modal — modal de botín post-combate (sub-paso 3c).
+   Hereda el chasis del .combat-view__overlay-panel; este bloque
+   sólo añade lo propio del cuerpo del modal: heading, badge de
+   oro (Inverted-Amber), filas de items densas con glifo mono, y
+   sección sobria de drops perdidos. El fade y el botón Volver
+   los provee el overlay padre y .combat-view__overlay-back.
+   Reglas: Inverted-Amber sólo en el badge de oro;
+   Color-Means-Something (ámbar = hallazgo, no decoración); resto
+   en escala neutra; Numbers-In-Mono en cantidades; Flat-By-Default
+   y No-Glow (sin sombras, sin gradientes, sin blur).
+   ============================================================ */
+
+.combat-loot-modal {
+  /* Hereda del .combat-view__overlay-panel: tinta-tierra-baja sobre
+     borde corteza-palida, Inter, gap 14px. Ajustamos sólo la anchura
+     para que la lista de items respire sin desbordar el texto. */
+  max-width: 28rem;
+}
+
+.combat-loot-modal__title {
+  margin: 0;
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-hueso-claro);
+  text-align: center;
+}
+
+/* Estado vacío: una línea, centrada, color subordinado. */
+.combat-loot-modal__empty {
+  margin: 4px 0;
+  font-size: 0.95rem;
+  color: var(--c-corteza-palida);
+  text-align: center;
+}
+
+/* ---------- Oro ---------- */
+
+.combat-loot-modal__gold {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 6px 0 2px;
+}
+
+/* Badge ámbar: único uso de --c-ambar-enfermo en el modal. Inverted-Amber:
+   color de fondo + texto sobre tinta oscura, no como destaque tipográfico.
+   Sin sombras, sin glow. */
+.combat-loot-modal__gold-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.5rem;
+  padding: 0.35rem 0.75rem;
+  background: var(--c-ambar-enfermo);
+  color: var(--c-tinta-tierra-humeda);
+  border-radius: 2px;
+}
+
+.combat-loot-modal__gold-value {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.combat-loot-modal__gold-label {
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+/* ---------- Items conseguidos ---------- */
+
+.combat-loot-modal__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Misma rejilla densa que .h2-inventory__item (DESIGN §5.5): glifo mono
+   28px, nombre 1fr, cantidad auto. Borde inferior en tinta-tierra-baja
+   para separación sin línea visualmente cargada. */
+.combat-loot-modal__item {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--c-tinta-tierra-baja);
+}
+
+.combat-loot-modal__item:last-child {
+  border-bottom: none;
+}
+
+.combat-loot-modal__item-glyph {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--c-corteza-palida);
+}
+
+.combat-loot-modal__item-name {
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--c-hueso-claro);
+}
+
+.combat-loot-modal__item-qty {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--c-hueso-descolorido);
+}
+
+/* ---------- Drops perdidos ---------- */
+
+/* Decisión visual: SIN tachado. El tachado añadiría un segundo eje
+   tipográfico (línea sobre texto) que en una lista corta sobre fondo
+   oscuro pesa más que un cambio de color, y compite con la jerarquía
+   ya establecida por el badge ámbar. Sólo color subordinado en
+   --c-corteza-palida + heading explícito "Drops perdidos (inventario
+   lleno)" hace el trabajo semántico sin ruido visual extra. */
+.combat-loot-modal__dropped {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--c-tinta-tierra-baja);
+}
+
+.combat-loot-modal__dropped-title {
+  margin: 0;
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+.combat-loot-modal__dropped-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.combat-loot-modal__dropped-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: baseline;
+  padding: 4px 0;
+}
+
+.combat-loot-modal__dropped-name {
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  font-size: 0.9rem;
+  color: var(--c-corteza-palida);
+}
+
+.combat-loot-modal__dropped-qty {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-corteza-palida);
+}
+
+/* ---------- Acciones ---------- */
+
+.combat-loot-modal__actions {
+  /* El .combat-view__overlay-actions base alinea a flex-end; aquí queremos
+     el botón Volver centrado, igual que el final overlay. El propio
+     .combat-view__overlay-back ya trae margin: 0 auto, sólo neutralizamos
+     el justify-content del contenedor. */
+  justify-content: center;
+}
