@@ -1925,3 +1925,861 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
   line-height: 1.45;
   color: var(--c-corteza-palida);
 }
+
+/* ============================================================
+   combat-view — pantalla de combate H3 (sub-paso 3b).
+   Vista única persistente. Panel técnico de operador denso:
+   timeline arriba, paneles PJ/enemigo y log central, acciones
+   abajo. DOM puro + SVG inline para dados. Cero Canvas.
+   Heredamos shell del flow H2 (fondo tinta-tierra-humeda,
+   sans body, mono para todo número) pero con layout propio:
+   no es flow lineal, es vista que muta turno a turno.
+   Tokens DESIGN.md §2-5; reglas Numbers-In-Mono / Color-Means-
+   Something / Flat-By-Default / No-Glow / Arcane-Restraint
+   aplicadas.
+   ============================================================ */
+
+.combat-view {
+  position: fixed;
+  inset: 0;
+  background: var(--c-tinta-tierra-humeda);
+  color: var(--c-hueso-descolorido);
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) 1fr;
+  grid-template-rows: auto auto 1fr auto;
+  grid-template-areas:
+    'timeline timeline'
+    'pj       foes'
+    'pj       log'
+    'actions  actions';
+  gap: clamp(12px, 2vw, 20px);
+  padding: clamp(16px, 3vh, 28px) clamp(16px, 3vw, 36px);
+  overflow: hidden;
+}
+
+@media (max-width: 960px) {
+  .combat-view {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto 1fr auto;
+    grid-template-areas:
+      'timeline'
+      'pj'
+      'foes'
+      'log'
+      'actions';
+    overflow: auto;
+  }
+}
+
+/* Botón Salir top-right: clon del patrón h2-flow__exit, sin contagio. */
+.combat-view__exit {
+  position: absolute;
+  top: clamp(12px, 2vh, 20px);
+  right: clamp(12px, 2vw, 20px);
+  z-index: 5;
+}
+
+.combat-view__exit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ----------------- timeline (próximos 8 turnos) ----------------- */
+
+.combat-view__timeline {
+  grid-area: timeline;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px clamp(12px, 2vw, 16px);
+  border-top: 1px solid var(--c-corteza-palida);
+  border-bottom: 1px solid var(--c-corteza-palida);
+  /* Hueco para el botón Salir absoluto. */
+  padding-right: clamp(80px, 8vw, 120px);
+}
+
+.combat-view__timeline-label {
+  flex: 0 0 auto;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+.combat-view__timeline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.combat-view__timeline-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 26px;
+  padding: 0 8px;
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--c-corteza-palida);
+  background: var(--c-tinta-tierra-baja);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+}
+
+/* PJ vs enemigo: distinción por luminancia, no por hue (Color-Means-Something
+   reserva los hues semánticos). El PJ usa hueso-claro como ancla; el foe
+   queda en corteza-palida más apagada. */
+.combat-view__timeline-slot--pj {
+  color: var(--c-hueso-claro);
+  border-color: var(--c-hueso-descolorido);
+}
+
+.combat-view__timeline-slot--foe {
+  color: var(--c-corteza-palida);
+}
+
+/* Turno actual: inset ring patrón consolidado del flow H2. */
+.combat-view__timeline-slot--current {
+  background: var(--c-tinta-tierra-media);
+  box-shadow: inset 0 0 0 2px var(--c-hueso-descolorido);
+  color: var(--c-hueso-claro);
+}
+
+/* ----------------- panel PJ (izquierda) ----------------- */
+
+.combat-view__pj {
+  grid-area: pj;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: clamp(14px, 2vw, 20px);
+  background: var(--c-tinta-tierra-baja);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  min-width: 0;
+}
+
+.combat-view__pj-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Retrato placeholder austero, mismo lenguaje que h2-portrait sin sprite. */
+.combat-view__pj-portrait {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  background: var(--c-tinta-tierra-media);
+  border: 1px solid var(--c-tinta-tierra-humeda);
+  border-radius: 2px;
+}
+
+.combat-view__pj-id {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.combat-view__pj-name {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--c-hueso-claro);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.combat-view__pj-tag {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+/* HP / oro: dos celdas tabulares, números en mono con tabular-nums. */
+.combat-view__pj-stats {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 10px 0;
+  border-top: 1px solid var(--c-corteza-palida);
+  border-bottom: 1px solid var(--c-corteza-palida);
+}
+
+.combat-view__pj-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.combat-view__pj-stat dt {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+.combat-view__pj-stat dd {
+  margin: 0;
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: var(--c-hueso-claro);
+  line-height: 1;
+}
+
+.combat-view__pj-stat-sep {
+  color: var(--c-corteza-palida);
+  margin: 0 2px;
+}
+
+/* Arma equipada: una línea, label sigla + nombre + dmg. */
+.combat-view__pj-weapon {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: baseline;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--c-corteza-palida);
+}
+
+.combat-view__pj-weapon-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+.combat-view__pj-weapon-name {
+  font-size: 0.95rem;
+  color: var(--c-hueso-claro);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.combat-view__pj-weapon-dmg {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-hueso-descolorido);
+}
+
+/* Statuses del PJ: chips densos. Mono + label, sin hue dedicado
+   (Color-Means-Something: verde-pantano queda reservado al swatch del
+   enemigo; aquí los statuses se distinguen por luminancia y label). */
+.combat-view__pj-statuses {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.combat-view__pj-statuses-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+.combat-view__statuses {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.combat-view__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  background: var(--c-tinta-tierra-media);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  color: var(--c-hueso-claro);
+}
+
+.combat-view__status-label {
+  letter-spacing: 0.04em;
+}
+
+.combat-view__status-value {
+  color: var(--c-hueso-descolorido);
+}
+
+.combat-view__status--empty {
+  font-style: normal;
+  background: transparent;
+  border: 1px dashed var(--c-tinta-tierra-media);
+  color: var(--c-corteza-palida);
+}
+
+/* ----------------- main (foes arriba, log debajo) ----------------- */
+
+.combat-view__foes {
+  grid-area: foes;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+@media (min-width: 961px) {
+  .combat-view__foes {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+/* Card de enemigo: borde sólido, fondo tinta-tierra-baja, swatch verde-
+   pantano (Color-Means-Something: el verde es mundo orgánico hostil; el
+   enemigo ES eso). */
+.combat-view__foe {
+  flex: 1 1 240px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: clamp(12px, 1.6vw, 16px);
+  background: var(--c-tinta-tierra-baja);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  transition: opacity 150ms ease-out, border-color 150ms ease-out;
+}
+
+.combat-view__foe-portrait {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  background: var(--c-verde-pantano);
+  border: 1px solid var(--c-tinta-tierra-humeda);
+  border-radius: 2px;
+}
+
+.combat-view__foe--turn {
+  border-color: var(--c-hueso-descolorido);
+  box-shadow: inset 0 0 0 1px var(--c-hueso-descolorido);
+}
+
+.combat-view__foe--dead {
+  opacity: 0.4;
+}
+
+.combat-view__foe-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.combat-view__foe-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.combat-view__foe-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--c-hueso-claro);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.combat-view__foe-id {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--c-corteza-palida);
+}
+
+.combat-view__foe-hp {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.combat-view__foe-hp-label {
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+.combat-view__foe-hp-cur {
+  font-size: 1.1rem;
+  color: var(--c-hueso-claro);
+}
+
+.combat-view__foe-hp-sep {
+  color: var(--c-corteza-palida);
+}
+
+.combat-view__foe-hp-max {
+  font-size: 0.95rem;
+  color: var(--c-corteza-palida);
+}
+
+/* ----------------- log lateral persistente ----------------- */
+
+.combat-view__log-wrap {
+  grid-area: log;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.combat-view__log-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--c-corteza-palida);
+}
+
+.combat-view__log-head-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+.combat-view__log-copy {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  background: transparent;
+  color: var(--c-corteza-palida);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+
+.combat-view__log-copy:not(:disabled):hover {
+  background: var(--c-tinta-tierra-baja);
+  color: var(--c-hueso-descolorido);
+}
+
+.combat-view__log-copy:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+.combat-view__log-copy:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.combat-view__log {
+  flex: 1 1 auto;
+  list-style: none;
+  margin: 0;
+  padding: 4px 12px 4px 4px;
+  background: var(--c-tinta-tierra-baja);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 200px;
+  max-height: 100%;
+}
+
+.combat-view__log-entry {
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--c-hueso-descolorido);
+  border-left: 1px solid var(--c-tinta-tierra-media);
+  /* Nota: borde izquierdo 1px es marca técnica de panel densificado, no
+     "side-stripe" decorativo de >1px en color de acento (banned). Aquí es
+     1px en tinta-tierra-media, función de ritmo lateral. */
+}
+
+.combat-view__log-prefix {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--c-corteza-palida);
+  margin-right: 4px;
+}
+
+.combat-view__log-entry--combat_start {
+  border-left-color: var(--c-corteza-palida);
+}
+
+.combat-view__log-entry--turn_start {
+  color: var(--c-corteza-palida);
+}
+
+.combat-view__log-entry--critical {
+  border-left-color: var(--c-rojo-oxido-enfermo);
+  color: var(--c-hueso-claro);
+}
+
+.combat-view__log-entry--combat_end {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--c-corteza-palida);
+  border-left-color: var(--c-corteza-palida);
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: var(--c-hueso-claro);
+}
+
+/* Números embebidos del log en mono inline (Numbers-In-Mono Rule en
+   contexto de log: el log ES bloque tabular de regla ejecutándose). */
+.combat-view__num,
+.combat-view__roll {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-hueso-claro);
+}
+
+.combat-view__rolls {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-hueso-descolorido);
+}
+
+.combat-view__roll-sep {
+  color: var(--c-corteza-palida);
+  margin: 0 2px;
+}
+
+.combat-view__roll--success {
+  color: var(--c-hueso-claro);
+  font-weight: 500;
+}
+
+.combat-view__roll--six {
+  /* Seises bajo crítico se diferencian por luminancia (más claro), no por
+     hue. Hue en log queda reservado al rojo del crítico. */
+  color: var(--c-hueso-claro);
+  text-decoration: underline;
+  text-decoration-color: var(--c-corteza-palida);
+  text-underline-offset: 2px;
+}
+
+.combat-view__verdict {
+  font-weight: 500;
+}
+
+.combat-view__verdict--miss {
+  color: var(--c-corteza-palida);
+}
+
+.combat-view__verdict--hit {
+  color: var(--c-hueso-claro);
+}
+
+.combat-view__verdict--crit {
+  color: var(--c-rojo-oxido-enfermo);
+}
+
+/* Animación de dado: SVG renderizado en una entrada del log. Stagger por
+   dado para PJ; fade-in colectivo para enemigo. */
+
+.combat-view__log-entry--dice {
+  border-left-color: transparent;
+  padding: 6px 10px;
+}
+
+.combat-view__dice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.combat-view__die {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  color: var(--c-corteza-palida);
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.combat-view__die--enter {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.combat-view__die--success {
+  color: var(--c-hueso-claro);
+}
+
+.combat-view__die--six {
+  color: var(--c-hueso-claro);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .combat-view__die {
+    transition: opacity 100ms ease-out;
+    transform: none;
+  }
+  .combat-view__die--enter {
+    transform: none;
+  }
+}
+
+/* Shake del panel afectado por crítico enemigo. ≤500ms ease-out, sin bounce. */
+
+.combat-view__shake {
+  animation: combat-shake 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes combat-shake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-4px); }
+  40%  { transform: translateX(3px); }
+  60%  { transform: translateX(-2px); }
+  80%  { transform: translateX(1px); }
+  100% { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .combat-view__shake {
+    animation: none;
+  }
+}
+
+/* ----------------- acciones (footer) ----------------- */
+
+.combat-view__actions {
+  grid-area: actions;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-top: 6px;
+}
+
+.combat-view__action {
+  flex: 0 1 auto;
+  min-width: 132px;
+  padding: 0.7rem 1.1rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  background: var(--c-tinta-tierra-baja);
+  color: var(--c-hueso-descolorido);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+
+.combat-view__action:not(:disabled):hover {
+  background: var(--c-tinta-tierra-media);
+}
+
+.combat-view__action:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+.combat-view__action:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Atacar primario: fondo un escalón más alto para diferenciarlo sin caer en
+   color de acento (Restrained color strategy). */
+.combat-view__action[data-action="attack"]:not(:disabled) {
+  background: var(--c-tinta-tierra-media);
+  color: var(--c-hueso-claro);
+}
+
+.combat-view__action[data-action="attack"]:not(:disabled):hover {
+  background: oklch(34% 0.018 145);
+}
+
+/* ----------------- overlay (selección target/item + final) ----------------- */
+
+.combat-view__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 3vw, 32px);
+  background: oklch(14% 0.012 145 / 0.72);
+  animation: confirm-modal-fade 120ms ease-out both;
+}
+
+.combat-view__overlay[hidden] {
+  display: none;
+}
+
+.combat-view__overlay-panel {
+  width: 100%;
+  max-width: 32rem;
+  padding: clamp(20px, 3vw, 28px);
+  background: var(--c-tinta-tierra-baja);
+  color: var(--c-hueso-descolorido);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.combat-view__overlay-title {
+  margin: 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+.combat-view__overlay-title--final {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--c-hueso-claro);
+  text-align: center;
+}
+
+.combat-view__target-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.combat-view__target {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 10px 12px;
+  font-family: inherit;
+  text-align: left;
+  background: var(--c-tinta-tierra-humeda);
+  color: var(--c-hueso-descolorido);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.combat-view__target:hover {
+  background: var(--c-tinta-tierra-media);
+}
+
+.combat-view__target:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+.combat-view__target-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--c-hueso-claro);
+}
+
+.combat-view__target-id {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--c-corteza-palida);
+}
+
+.combat-view__target-hp {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-hueso-descolorido);
+}
+
+.combat-view__overlay-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.combat-view__overlay-cancel,
+.combat-view__overlay-back {
+  flex: 0 0 auto;
+  min-width: 132px;
+  padding: 0.6rem 1.1rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  background: transparent;
+  color: var(--c-hueso-descolorido);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.combat-view__overlay-cancel:hover,
+.combat-view__overlay-back:hover {
+  background: var(--c-tinta-tierra-media);
+}
+
+.combat-view__overlay-cancel:focus-visible,
+.combat-view__overlay-back:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+.combat-view__overlay-back {
+  background: var(--c-tinta-tierra-media);
+  border-color: var(--c-hueso-descolorido);
+  color: var(--c-hueso-claro);
+  margin: 0 auto;
+}
+
+.combat-view__overlay-back:hover {
+  background: oklch(34% 0.018 145);
+}
+
+.combat-view__overlay-panel--final {
+  align-items: stretch;
+}
