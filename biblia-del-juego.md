@@ -976,3 +976,59 @@ Esta versión es la primera en la que **todo el reglamento numérico que el cód
 - **Bazalo puede crear personaje en navegador, recargar pestaña y ver personaje guardado.** Cumple criterio de §7 ("definición de terminado") punto 3 del scope: el entregable de H2 está jugable extremo a extremo.
 
 Próximo: H3 (combate vertical slice). El motor está listo (`combat.ts`, `dice.ts` con `rollCombatPool`, `iniciativa.ts`, threshold cerrado). Solo falta UI de combate y el primer enemigo.
+
+**v0.17** — Cierre del **PASO 2 del Hito 3** (29/4/2026): preparación de motor y datos para el primer combate jugable. Sin UI todavía. El PASO 2 son cuatro sub-pasos comiteados sin push (oro, simulación del lobo, arma Daga + auto-equip, catálogo de enemigos + loot). Este bump cierra el paso y registra las decisiones arquitectónicas + numéricas para que la UI del PASO 3 se construya sobre cimientos firmes.
+
+**Decisiones de reglamento y arquitectura:**
+
+- **Decisión #55 — Oro como recurso del personaje, no item:** `Character.gold: number` entero ≥ 0, hermano de `xp`, inicializado a 0 vía `CREATION_RULES.startingGold` (gancho para perks futuros que den oro inicial sin reescribir `createCharacter`). Helpers puros `addGold` / `spendGold` con validación dura (entero, no negativo, saldo suficiente al gastar; `amount === 0` es no-op válido para que loot tables no envuelvan con `if positive`). El oro entra en el snapshot del epitafio gratis vía spread, sin tocar `death.ts`. Coherente con el principio "un personaje, un mundo, una vida": el oro acumulado al caer queda registrado en el epitafio.
+
+- **Decisión #56 — Inventario y equipo separados ya en módulo sagrado (confirmación):** `Inventory.slots` (mochila 5×4 = 20 huecos) e `Inventory.equipped` (mapa por slot anatómico: head / torso / hands / main_hand / off_hand / accessory) llevan separados desde el cierre del esqueleto en H1. Se confirma como contrato definitivo. `equippedWeapon` y `totalDefenseBonus` leen sólo del equipo, no de la mochila. La pantalla H2.5a queda como placeholder narrativo honesto (PRODUCT §Design Principles 5); el `Character` que persiste no necesita reflejar exactamente la pantalla, pero **necesita ser jugable**.
+
+- **Decisión #57 — Auto-equip de la Daga al crear personaje:** `createCharacter` arranca al PJ con la Daga ya equipada en `inventory.equipped.main_hand`. Encapsulado en `buildStartingInventory()` dentro de `data/items.ts` para que H5 amplíe a starter packs por arquetipo sin tocar `character.ts`. La mochila sigue con 20 huecos vacíos. Antes del cambio, el PJ nacía con puños (FUE + 0, daño 1) → 8% victoria contra el lobo, injugable. Con la Daga, 33.4% victoria, dentro del target tutorial.
+
+- **Decisión #58 — Loot vive en `data/`, no en módulo sagrado:** los tipos `LootDrop` y `LootTable` viven en `data/enemies.ts`. `combat.ts` (sagrado) NO conoce loot — el loot se aplica al cierre del combate, no durante. La estructura `LOOT_TABLES_BY_ENEMY_ID` es paralela al catálogo de enemigos, no propiedad del `Enemy` interface. Promoción a `rules/loot.ts` se evalúa cuando H5/H6 escalen a varios sistemas de loot. `LootDrop` discriminado por `kind: 'item' | 'gold'`; el oro nunca lleva `item_id` porque es recurso del Character, no Item.
+
+- **Decisión #59 — Stat-line del Lobo del Bosque validada:** primer enemigo del juego, calibrado en `simulaciones/lobo-v0.1.md` con 720.000 combates simulados (12 iteraciones del motor real, seed determinista por celda). Contrato narrativo: el primer combate es **tutorial scripteado donde es probable que el jugador muera**. El primer epitafio que aparece en la pantalla de Cargar Partida es esperado, no accidente. La permadeath se enseña cumpliéndose. Targets: 25-40% victoria build A × arma media, HP%win 30-60%, mediana 4-7 turnos, 0-5% muerte por crítico turno 1. Stat-line:
+
+  ```
+  attack_pool: 3
+  defense_threshold: 3
+  weapon_damage: 2
+  initiative_base: 4
+  hp_max: 16
+  ```
+
+  Métricas finales (iteración 3c): 33.4% victoria, HP%win 31.5%, 5 turnos mediana, 0% muertes turno 1. Build B (build pobre) sale 0-0.1% victoria — la permadeath educativa cumpliéndose, no se cose en la stat-line. El crítico del PJ con pool grande satura ~26-28%, hallazgo conocido de `simulaciones/dado-combate-v0.2.md`; en H3 no es problema, en H6+ pedirá vigilancia.
+
+- **Decisión #60 — `computeDefense` queda intocada:** la fórmula `2 + floor(DES/2)` da DEF 3 a un PJ con DES 2, no 4. El threshold del lobo contra el PJ es 1 → impacta el 87% de los turnos. La sensación "PJ de papel" es correcta para tutorial scripteado de muerte probable. Si en H6-H7 con armaduras mejores la sensación persiste, se reabre ahí; ahora no.
+
+- **Decisión #61 — Principio operativo macro: esqueleto > contenido > pulido:** prioridad estricta hasta v1. Fase 1 (hasta cerrar H4): esqueleto jugable end-to-end con cantidad mínima de contenido. Fase 2 (H5-H7): ampliar catálogos y escribir copy narrativo. Fase 3 (H9): pulir sprites, animaciones, audio. Implicación operativa: cada item/NPC/enemigo nuevo en fase 1 se crea con stat-line/datos provisional honesto, sin narrativa final. Si un sub-paso introduce dependencia hacia un item que aún no existe, se crea inline (no se difiere): loot que apunta a item huérfano contradice "esqueleto jugable end-to-end". Refuerza PRODUCT.md §Design Principles 5 (placeholder honesto).
+
+**Cambios de archivos (sin tocar §4 reglamento ni §6 abiertas):**
+
+- `src/rules/character.ts`: campo `gold` añadido bajo `xp`. `CREATION_RULES.startingGold = 0`. Helpers `addGold` / `spendGold` puros con RangeError. `createCharacter` llama `buildStartingInventory()` en lugar de `createEmptyInventory()`.
+- `src/data/items.ts` (nuevo): catálogo provisional fase 1 con 3 entradas — Daga (`weapon_damage 2, fue, armas_cuerpo, main_hand`), Diente de Lobo (`material, stack_size 10, sin durabilidad`), Poción de curación menor (`consumable, stack_size 5`). Constantes `ITEMS`, `ITEMS_BY_ID`, `STARTING_WEAPON_ID`, `buildStartingInventory()`.
+- `src/data/enemies.ts` (nuevo): catálogo provisional fase 1 con 1 entrada (Lobo del Bosque). Tipos `LootDrop` / `LootTable`. `ENEMIES`, `ENEMIES_BY_ID`, `LOOT_TABLES_BY_ENEMY_ID`, helper `getLootTableForEnemy`. Validación referencial en import time: si una tabla apunta a item huérfano, el módulo lanza al cargarse.
+- `simulaciones/lobo-v0.1.md` (nuevo): análisis completo de 12 iteraciones, formato canónico de `simulaciones/dado-combate-v0.2.md`. Contexto narrativo (tutorial scripteado), metodología, tabla de iteraciones, stat-line final, hallazgos no anticipados.
+- `simulaciones/lobo-v0.1.sim.ts` (nuevo): script reproducible bit-a-bit, importa el motor real, determinista. Correr con `npx tsx simulaciones/lobo-v0.1.sim.ts`.
+- `src/rules/character.test.ts`: 12 tests de oro + 3 tests de Daga equipada al crear + 1 aserción ajustada al nuevo contrato (Character nace con Daga en main_hand).
+- `src/data/items.test.ts` (nuevo): 20 tests del catálogo (3 ítems + builder + integridad).
+- `src/data/enemies.test.ts` (nuevo): 17 tests (lobo con stat-line exacta + validación universal de tablas + loot del lobo).
+
+**Tabla de loot del Lobo del Bosque (decisión D4 cerrada en arranque H3):**
+
+- Diente de Lobo: probabilidad 1, cantidad 1 (siempre).
+- Oro: probabilidad 1, rango 5-15 uniforme (variable corto).
+- Poción de curación menor: probabilidad ~0.5, cantidad 1.
+
+`resolveLootTable` (lógica de tirar la tabla y devolver drops concretos) queda diferida al sub-paso del orquestador de combate, donde se consumirá. En PASO 2 sólo se declaran TIPO + TABLA + auditoría estructural.
+
+**Estado al cierre del PASO 2:**
+
+- 245/245 tests verde (193 H2 + 52 PASO 2).
+- `tsc --noEmit` limpio.
+- 0 deudas técnicas en motor o datos.
+- El motor + los datos están listos para que el orquestador de combate H3 los consuma. Falta sólo la UI (PASO 3 en adelante).
+
+Próximo: PASO 3 del Hito 3, primera pantalla de combate por MODOPIPELINE (vista única persistente con timeline, paneles de PJ y enemigo, log lateral, botones de acción, animación de dado).

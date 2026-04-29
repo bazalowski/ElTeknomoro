@@ -179,7 +179,7 @@ A·alta queda por encima del target. El briefing especifica el target sobre **ar
 // (target 25-40%), HP%win 31.5% (target 30-60%), 5 turnos mediana,
 // 0% muertes turno 1 por crítico.
 {
-  id: 'lobo_bosque',
+  id: 'lobo_del_bosque',
   name: 'Lobo del Bosque',
   level: 1,
   attack_pool: 3,
