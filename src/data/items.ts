@@ -1,12 +1,17 @@
-// Catálogo de items. PROVISIONAL H3: contiene UN único item, la Daga inicial,
-// que el flujo H2.5a entrega como arma equipada por defecto a todo personaje
-// recién creado (decisión D-2b-1 / D-equip-2c). El catálogo completo (~50
-// items) se cierra en H5 cuando entren mercaderes, loot y crafteo de fin a fin.
+// PROVISIONAL FASE 1 (esqueleto jugable end-to-end > contenido > pulido):
+// catálogo con tres items mínimos viables. El catálogo completo (~50 items)
+// se cierra en H5 cuando entren mercaderes, loot y crafteo de fin a fin.
+//
+//   1. Daga (sub-paso H3.2c): arma inicial equipada por defecto (D-equip-2c).
+//   2. Diente de Lobo (sub-paso H3.2d): material de loot del lobo.
+//   3. Poción de curación menor (sub-paso H3.2d): consumible de loot del lobo.
 //
 // Razón de existir hoy: el motor de combate (rules/combat.ts) consume
 // `equippedWeapon(inventory, catalog)` y necesita un catálogo real al que
 // apuntar; la pantalla H2.5a sigue mostrando placeholder narrativo, pero el
 // Character persistido debe ser jugable de verdad desde el primer ladrillo.
+// Las tablas de loot del primer enemigo (data/enemies.ts) referencian items
+// reales (sin huérfanos) — los dos consumibles/materiales están aquí.
 //
 // Stat-line de la Daga validada en simulaciones/lobo-v0.1.md (build A):
 // pool 6 (FUE 3 + armas_cuerpo 3) contra lobo, 33.4% victoria con weapon_damage 2.
@@ -70,6 +75,39 @@ export const ITEMS: readonly Item[] = [
       // 'armas_cuerpo' está definida en data/skills.ts (atributo FUE).
       weapon_skill: 'armas_cuerpo',
     },
+  },
+  // PROVISIONAL FASE 1: futuro material de craft H6. En fase actual sólo
+  // existe como trofeo de loot del Lobo del Bosque (data/enemies.ts). No
+  // aporta stats, no se equipa, no se consume. Apilable hasta 10 por slot
+  // para que tras varios combates no sature el inventario.
+  {
+    id: 'diente_de_lobo',
+    name: 'Diente de Lobo',
+    category: 'material',
+    rarity: 'common',
+    slot: null,
+    stack_size: 10,
+    max_durability: null,
+    weight: 0.1,
+    stats: {},
+  },
+  // PROVISIONAL FASE 1. Efecto al consumir (heal +N HP) se cabla cuando el
+  // orquestador de combate H3 implemente use_item: la lógica vivirá en
+  // state/ con un map hardcoded `{ pocion_curacion_menor: { kind: 'heal',
+  // amount: N } }` hasta que H5 cierre el sistema de consumibles formal.
+  // No extendemos `ItemStats` con `consumable_effect` aún (D-2d-4): la
+  // declaración del item es suficiente; el efecto es responsabilidad del
+  // orquestador. Apilable hasta 5 (curaciones son recurso escaso).
+  {
+    id: 'pocion_curacion_menor',
+    name: 'Poción de curación menor',
+    category: 'consumable',
+    rarity: 'common',
+    slot: null,
+    stack_size: 5,
+    max_durability: null,
+    weight: 0.2,
+    stats: {},
   },
 ] as const;
 

@@ -14,6 +14,12 @@ describe('catálogo de items', () => {
     expect(ITEMS.length).toBeGreaterThanOrEqual(1);
   });
 
+  it('tiene exactamente 3 items en fase 1 (Daga + Diente de Lobo + Poción)', () => {
+    // PROVISIONAL FASE 1. Cuando se añadan más items en H5 este número crece;
+    // mientras tanto, blindamos contra adiciones accidentales no documentadas.
+    expect(ITEMS.length).toBe(3);
+  });
+
   it('cada item tiene id no vacío', () => {
     for (const item of ITEMS) {
       expect(typeof item.id).toBe('string');
@@ -87,6 +93,40 @@ describe('Daga inicial (sub-paso H3.2c)', () => {
 
   it('STARTING_WEAPON_ID resuelve a un Item del catálogo', () => {
     expect(ITEMS_BY_ID[STARTING_WEAPON_ID]).toBeDefined();
+  });
+});
+
+describe('Diente de Lobo (sub-paso H3.2d)', () => {
+  it('existe en el catálogo', () => {
+    expect(ITEMS_BY_ID['diente_de_lobo']).toBeDefined();
+  });
+
+  it('tiene las specs declaradas (material, no equipable, apilable, sin durabilidad)', () => {
+    const diente = ITEMS_BY_ID['diente_de_lobo']!;
+    expect(diente.category).toBe('material');
+    expect(diente.rarity).toBe('common');
+    expect(diente.slot).toBeNull();
+    expect(diente.stack_size).toBe(10);
+    expect(diente.max_durability).toBeNull();
+    expect(diente.stats).toEqual({});
+  });
+});
+
+describe('Poción de curación menor (sub-paso H3.2d)', () => {
+  it('existe en el catálogo', () => {
+    expect(ITEMS_BY_ID['pocion_curacion_menor']).toBeDefined();
+  });
+
+  it('tiene las specs declaradas (consumible, no equipable, apilable hasta 5, sin durabilidad)', () => {
+    const pocion = ITEMS_BY_ID['pocion_curacion_menor']!;
+    expect(pocion.category).toBe('consumable');
+    expect(pocion.rarity).toBe('common');
+    expect(pocion.slot).toBeNull();
+    expect(pocion.stack_size).toBe(5);
+    expect(pocion.max_durability).toBeNull();
+    // El efecto de curación NO vive en stats (D-2d-4): se cablará en el
+    // orquestador de combate. Aquí sólo verificamos que stats está vacío.
+    expect(pocion.stats).toEqual({});
   });
 });
 
