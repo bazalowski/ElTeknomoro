@@ -2,7 +2,7 @@
 // Biblia §4.1, §4.2, §4.4, §4.7 y §7 (modelo de datos). H1.
 
 import type { Inventory } from './inventory';
-import { createEmptyInventory } from './inventory';
+import { buildStartingInventory } from '../data/items';
 import type { Epitaph } from './death';
 
 // -----------------------------------------------------------------------------
@@ -285,7 +285,12 @@ export function createCharacter(input: CreateCharacterInput): Character {
     xp: 0,
     gold: CREATION_RULES.startingGold,
     hp: { current: maxHp, max: maxHp },
-    inventory: createEmptyInventory(),
+    // Decisión D-2b-1 / D-equip-2c: el Character recién creado arranca con la
+    // Daga inicial equipada en main_hand. La pantalla H2.5a muestra placeholder
+    // narrativo, pero el Character persistido es jugable (combat.ts consume
+    // equippedWeapon). El detalle del catálogo vive en data/items.ts para no
+    // acoplar este módulo al contenido.
+    inventory: buildStartingInventory(),
     location: { ...input.location },
     faction_reputation: {},
     achievements: [],

@@ -11,8 +11,10 @@ import {
   type AttributeBlock,
   type CreateCharacterInput,
 } from './character';
-import { applyDamageToCharacter } from './combat';
+import { applyDamageToCharacter, buildAttackInputFromCharacter } from './combat';
 import { deathByEnemy, killCharacter } from './death';
+import { equippedWeapon } from './inventory';
+import { ITEMS_BY_ID, STARTING_WEAPON_ID } from '../data/items';
 
 // Plantilla válida mínima. Cada test la clona y muta el campo a probar.
 function baseInput(overrides: Partial<CreateCharacterInput> = {}): CreateCharacterInput {
@@ -178,10 +180,14 @@ describe('createCharacter', () => {
     // Perks, location, inventory se reflejan
     expect(c.perks).toEqual(['perk-golpe-firme']);
     expect(c.location).toEqual({ mapId: 'historia-01', x: 0, y: 0 });
-    // Cuadrícula 5×4 = 20 slots fijos, todos vacíos al crear (biblia §4.12).
+    // Cuadrícula 5×4 = 20 slots fijos. Decisión D-2b-1 / D-equip-2c: el
+    // Character recién creado arranca con la Daga ya equipada en main_hand,
+    // NO en mochila (los 20 slots de mochila siguen todos vacíos). La
+    // pantalla H2.5a muestra placeholder narrativo, pero el Character
+    // persistido es jugable.
     expect(c.inventory.slots).toHaveLength(20);
     expect(c.inventory.slots.every((s) => s === null)).toBe(true);
-    expect(c.inventory.equipped).toEqual({});
+    expect(c.inventory.equipped.main_hand?.item_id).toBe(STARTING_WEAPON_ID);
 
     // Inicialización limpia
     expect(c.faction_reputation).toEqual({});
@@ -198,6 +204,44 @@ describe('createCharacter', () => {
     const c = createCharacter(input);
     expect(c.attributes).not.toBe(input.attributes);
     expect(c.location).not.toBe(input.location);
+  });
+
+  // Decisión D-2b-1 / D-equip-2c: el Character recién creado arranca con la
+  // Daga equipada. Los siguientes tests blindan ese contrato.
+  it('arranca con la Daga equipada en main_hand y NO en la mochila', () => {
+    const c = createCharacter(baseInput());
+    const equipped = c.inventory.equipped.main_hand;
+    expect(equipped).toBeDefined();
+    expect(equipped!.item_id).toBe(STARTING_WEAPON_ID);
+    expect(equipped!.quantity).toBe(1);
+    expect(equipped!.durability).toBe(ITEMS_BY_ID[STARTING_WEAPON_ID]!.max_durability);
+
+    // 20 slots, todos null: la Daga va al equipo, no a la mochila.
+    expect(c.inventory.slots).toHaveLength(20);
+    expect(c.inventory.slots.every((s) => s === null)).toBe(true);
+  });
+
+  it('equippedWeapon resuelve al item Daga del catálogo', () => {
+    const c = createCharacter(baseInput());
+    const weapon = equippedWeapon(c.inventory, ITEMS_BY_ID);
+    expect(weapon).not.toBeNull();
+    expect(weapon!.id).toBe(STARTING_WEAPON_ID);
+    expect(weapon!.stats.weapon_damage).toBe(2);
+    expect(weapon!.stats.weapon_attribute).toBe('fue');
+    expect(weapon!.stats.weapon_skill).toBe('armas_cuerpo');
+  });
+
+  it('buildAttackInputFromCharacter usa la Daga: pool = FUE + armas_cuerpo, daño = 2 (build A simulación lobo)', () => {
+    // Build A de simulaciones/lobo-v0.1.md: FUE 3, armas_cuerpo 3 → pool 6.
+    const input = baseInput({
+      attributes: { fue: 3, des: 3, con: 3, int: 2, vol: 1 },
+      skills: { armas_cuerpo: 3 },
+    });
+    const c = createCharacter(input);
+    // Defensa arbitraria; sólo nos interesa el pool y el daño aquí.
+    const attackInput = buildAttackInputFromCharacter(c, 4, ITEMS_BY_ID);
+    expect(attackInput.attacker_pool).toBe(6);
+    expect(attackInput.weapon_damage).toBe(2);
   });
 });
 
