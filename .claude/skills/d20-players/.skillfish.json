@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "d20-players",
+  "owner": "rjroy",
+  "repo": "adventure-engine-corvran",
+  "path": "plugins/d20-system/skills/d20-players",
+  "branch": "master",
+  "sha": "d2586583d09fb313f0f3026b79c47775ad7e57f0",
+  "source": "manual"
+}

@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "d20-monsters",
+  "owner": "rjroy",
+  "repo": "adventure-engine-corvran",
+  "path": "plugins/d20-system/skills/d20-monsters",
+  "branch": "master",
+  "sha": "3fb35de67dafcbd998a129832d2fde7a2f8d05b3",
+  "source": "manual"
+}

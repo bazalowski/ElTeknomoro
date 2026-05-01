@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "d20-magic",
+  "owner": "rjroy",
+  "repo": "adventure-engine-corvran",
+  "path": "plugins/d20-system/skills/d20-magic",
+  "branch": "master",
+  "sha": "4237105e4c7838014ed6b4fa77dfb7f631797f2d",
+  "source": "manual"
+}

@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "play-open-rpg",
+  "owner": "reach0908",
+  "repo": "open-rpg-player",
+  "path": "plugins/open-rpg-player/skills/play-open-rpg",
+  "branch": "main",
+  "sha": "ec070d31ecff40cae8b32cba3d100bec0674f40d",
+  "source": "manual"
+}

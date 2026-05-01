@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "game-design",
+  "owner": "rbergman",
+  "repo": "dark-matter-marketplace",
+  "path": "plugins/game-dev/skills/game-design",
+  "branch": "main",
+  "sha": "e4b635c06916f8713478d3c5fb73945a4e3380a2",
+  "source": "manual"
+}

@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "gm-craft",
+  "owner": "rjroy",
+  "repo": "adventure-engine-corvran",
+  "path": "plugins/corvran/skills/gm-craft",
+  "branch": "master",
+  "sha": "20c55eb00455b4407f7bf4dbfd8d8614699c7041",
+  "source": "manual"
+}

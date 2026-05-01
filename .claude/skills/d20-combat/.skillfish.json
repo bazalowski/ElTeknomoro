@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "d20-combat",
+  "owner": "rjroy",
+  "repo": "adventure-engine-corvran",
+  "path": "plugins/d20-system/skills/d20-combat",
+  "branch": "master",
+  "sha": "35a5929764ed8b25d1cf99db09a9e41b83664203",
+  "source": "manual"
+}
