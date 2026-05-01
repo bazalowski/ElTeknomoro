@@ -65,7 +65,7 @@ Cinco principios estratégicos. No son reglas visuales (el color, el tamaño, la
 
 4. **Densidad sobre amabilidad.** El público objetivo prefiere una hoja de personaje densa y legible a una "amigable" con espacios vacíos. Cuando hay que elegir entre comprimir información útil o estirar con aire decorativo, comprimir gana — pero respetando legibilidad (ratio de contraste, jerarquía tipográfica, line-length 65–75ch en cuerpo).
 
-5. **Placeholder honesto, no simulación de pulido.** El scope marca explícitamente que la estética visual definitiva se decide en H9. Hasta entonces, lo que diseñemos es **un sistema visual provisional coherente** que prioriza claridad y carácter sobre acabado final. No se simulan pantallas falsas-pulidas; se construye una versión austera que comunique correctamente y que pueda escalar a la versión definitiva sin reescribirse desde cero.
+5. **Placeholder honesto, no simulación de pulido.** El scope marca explícitamente que la estética visual definitiva se decide en H10 (renumerado en biblia v0.19; era H9). Hasta entonces, lo que diseñemos es **un sistema visual provisional coherente** que prioriza claridad y carácter sobre acabado final. No se simulan pantallas falsas-pulidas; se construye una versión austera que comunique correctamente y que pueda escalar a la versión definitiva sin reescribirse desde cero.
 
 ## Accessibility & Inclusion
 

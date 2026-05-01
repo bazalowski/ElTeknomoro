@@ -79,7 +79,7 @@ El sistema rechaza explícitamente el cliché RPG digital actual (Diablo IV / Pa
 **Key Characteristics:**
 - Densidad sobre amabilidad: el jugador objetivo lee hojas de personaje densas y lo prefiere así.
 - Mostrar el dado: cada tirada y cada modificador queda expuesto en pantalla, nunca oculto.
-- Placeholder honesto: lo que diseñamos es provisional coherente hasta H9 (estética definitiva), nunca falsa-pulido.
+- Placeholder honesto: lo que diseñamos es provisional coherente hasta H10 (estética definitiva, renumerada en biblia v0.19; era H9), nunca falsa-pulido.
 - Paleta orgánica con acento arcano controlado a ≤5% de pantalla.
 - Motion responsive (feedback + transiciones), nunca coreografiado, nunca bouncy.
 - OKLCH canónico: la coherencia perceptual es invariante; ajustar lightness o chroma se hace en un eje predecible.
@@ -194,7 +194,7 @@ Primera pantalla cerrada del flow de creación. Marca cómo se ve una vista inte
 
 **Grid responsive:** 3 columnas en móvil (`<560px`) → 4 columnas en tablet (`≥560px`) → 6 columnas en desktop (`≥960px`). Sin `auto-fit`: las matrices 4×3 y 6×2 son matemáticamente limpias para 12 ítems y evitan columnas huérfanas en anchos intermedios.
 
-**Componente celda de retrato (`.h2-portrait__cell`).** Botón con `role="radio"` dentro de un `radiogroup`. Composición: swatch de color (placeholder HSL hasta H9, expuesto como custom property `--portrait-color`) + label "01"…"12" debajo. Aspect ratio del swatch `1/1`. Borde del swatch en `tinta-tierra-humeda` (mismo color que el fondo de la app) para sangrar visualmente y aislar cada placeholder sin chrome de `corteza-palida`.
+**Componente celda de retrato (`.h2-portrait__cell`).** Botón con `role="radio"` dentro de un `radiogroup`. Composición: swatch de color (placeholder HSL hasta H10, renumerado en biblia v0.19; era H9, expuesto como custom property `--portrait-color`) + label "01"…"12" debajo. Aspect ratio del swatch `1/1`. Borde del swatch en `tinta-tierra-humeda` (mismo color que el fondo de la app) para sangrar visualmente y aislar cada placeholder sin chrome de `corteza-palida`.
 
 Estados con tres ejes ortogonales (los tres pueden coexistir):
 - **Reposo:** fondo `tinta-tierra-baja`, borde `corteza-palida`, label en mono (`hueso-descolorido`).
@@ -208,7 +208,7 @@ Estados con tres ejes ortogonales (los tres pueden coexistir):
 - Display-Is-Sacred: la instrucción "Elige un retrato." va en body sans, no en Cormorant. Cormorant queda reservada para los momentos narrativos.
 - Arcane Restraint: la marca de selección NO usa violeta. La pantalla no es evento arcano.
 - Flat-By-Default + No-Glow: cero `box-shadow` expansivo. La selección usa `box-shadow inset` (anillo, no aura).
-- Color-Means-Something: los swatches HSL son intencionalmente neutros respecto al sistema semántico del juego (placeholder honesto hasta H9). No se mezclan con tokens semánticos (`verde-pantano`, `ambar-enfermo`, etc.).
+- Color-Means-Something: los swatches HSL son intencionalmente neutros respecto al sistema semántico del juego (placeholder honesto hasta H10, renumerado en biblia v0.19; era H9). No se mezclan con tokens semánticos (`verde-pantano`, `ambar-enfermo`, etc.).
 - Motion: transiciones `150ms ease-out` sobre `background-color` y `box-shadow`. El `outline` no se anima (focus debe ser inmediato).
 
 ### 5.2 Pantalla de atributos (H2, paso 2/7)
@@ -310,7 +310,7 @@ Estados (cuatro, ortogonales, idéntico patrón `.h2-portrait__cell`):
 
 **Las descripciones se muestran inline** (decisión cerrada, opuesta a la #51 de habilidades). Razón: los nombres de perk no son autoexplicativos ("Temple", "Ojo Clínico"); el contenido mecánico ES la elección. En habilidades los nombres son terminología D&D/WoD universal y la pantalla es asignación, no elección informada.
 
-**Disponibilidad de los 5 perks** (decisión #53): los 5 están todos disponibles en H2.4. El gateo por arquetipo aplica solo al árbol post-creación (H7), no a la creación. En modo `preset` con `archetype` definido, el `starting_perk_id` del arquetipo aparece preseleccionado como sugerencia visible y ajustable; sin badge "Sugerido" porque el inset ring ya es señal suficiente. En modo `scratch` o sin archetype: sin preselección.
+**Disponibilidad de los 5 perks** (decisión #53): los 5 están todos disponibles en H2.4. El gateo por arquetipo aplica solo al árbol post-creación (H8 tras renumeración v0.19; era H7), no a la creación. En modo `preset` con `archetype` definido, el `starting_perk_id` del arquetipo aparece preseleccionado como sugerencia visible y ajustable; sin badge "Sugerido" porque el inset ring ya es señal suficiente. En modo `scratch` o sin archetype: sin preselección.
 
 **Mono NO aparece en este bloque** (decisión #54): los números embebidos en las descripciones (`+1 éxito`, `+2 iniciativa`, `+2 HP máximo`) van en sans pleno como el resto de la frase. La regla "Numbers-In-Mono" aplica a bloques tabulares, no a prosa inline.
 
@@ -325,12 +325,12 @@ Estados (cuatro, ortogonales, idéntico patrón `.h2-portrait__cell`):
 **API en `H2StepCtx`.** `setPerk(id: string): void` añadido al closure de `startH2Flow`. Valida que `id` exista en `PERKS_BY_ID` y **REEMPLAZA** `draft.perks = [id]` (no acumula). El reglamento exige `length === 1` al confirmar.
 
 **Decisiones cerradas en este cierre (numeradas para biblia v0.13):**
-- #53: en H2.4 los 5 perks iniciales están todos disponibles. El gateo por arquetipo del biblia §4.7 línea 253 aplica solo al árbol de progresión post-creación (H7), no a la creación.
+- #53: en H2.4 los 5 perks iniciales están todos disponibles. El gateo por arquetipo del biblia §4.7 línea 253 aplica solo al árbol de progresión post-creación (H8 tras renumeración v0.19; era H7), no a la creación.
 - #54: regla "Numbers-In-Mono" NO aplica a prosa inline (descripciones, tooltips, copy de UI con números embebidos en frase). Aplica solo a bloques tabulares, fichas y stat displays donde los números se alinean para comparar.
 
 ### 5.5 Pantalla de inventario inicial (H2, paso 5/7, sub 5a)
 
-Quinta pantalla cerrada del flow, primera de las tres sub-pantallas en que se divide el "paso 5/5" del scope §1.3 (líneas 49-51). Pantalla **100% visual/anticipatoria**: lee `ctx.draft.archetype` y muestra el inventario placeholder correspondiente. No persiste nada en draft. Coherente con que el catálogo real de items se cierra en H5.
+Quinta pantalla cerrada del flow, primera de las tres sub-pantallas en que se divide el "paso 5/5" del scope §1.3 (líneas 49-51). Pantalla **100% visual/anticipatoria**: lee `ctx.draft.archetype` y muestra el inventario placeholder correspondiente. No persiste nada en draft. Coherente con que el catálogo real de items se cierra en H6 (renumerado en biblia v0.19; era H5).
 
 **Archivos:** [`src/render/h2-inventory-view.ts`](src/render/h2-inventory-view.ts), bloque `h2-inventory` en [`src/style.css`](src/style.css).
 
@@ -348,15 +348,15 @@ Estados (cuatro, ortogonales, mismo lenguaje del flow):
 - **Focus (`:focus-visible`):** outline exterior `2px solid hueso-descolorido` con offset 2px.
 - **Pressed (`[aria-pressed="true"]`):** fondo `tinta-tierra-media` + `box-shadow: inset 0 0 0 1px hueso-descolorido`. Inset ring fino (no 2px como en `.h2-portrait[checked]` o `.h2-perk[checked]`: aquí el botón es de acción, no de selección persistente; el ring sutil basta para indicar "el aviso está visible"). Mismo lenguaje, intensidad menor.
 
-**Componente aviso inline (`.h2-inventory__surprise-notice`).** `<p role="status" aria-live="polite">` con texto `"Generación de inventario aleatorio — disponible en H5."`. Aparece cuando se pulsa "Sorpréndeme", se oculta al pulsarlo de nuevo o tras un timeout de 5 s. Animación con `max-height` + `opacity` (no propiedades de layout puro), 200 ms ease-out. **Sin modal, sin glassmorphism, sin glow.** El aviso es prosa pura en sans pleno (decisión #54 aplicada: el "H5" embebido en frase narrativa no rompe a mono).
+**Componente aviso inline (`.h2-inventory__surprise-notice`).** `<p role="status" aria-live="polite">` con texto `"Generación de inventario aleatorio — disponible en H6."` (renumerado en biblia v0.19; antes "H5"). Aparece cuando se pulsa "Sorpréndeme", se oculta al pulsarlo de nuevo o tras un timeout de 5 s. Animación con `max-height` + `opacity` (no propiedades de layout puro), 200 ms ease-out. **Sin modal, sin glassmorphism, sin glow.** El aviso es prosa pura en sans pleno (decisión #54 aplicada: el "H6" embebido en frase narrativa no rompe a mono).
 
-**Componente fila de ítem (`.h2-inventory__item`).** Grid `28px 1fr` con `align-items: baseline`, divisor inferior fino en `tinta-tierra-baja` (más sutil que `corteza-palida` que se reserva a separadores estructurales del flow). Última fila sin divisor. Los ítems **no son interactivos** en H2: son informativos. Por eso quedan fuera del orden de tabulación, sin trampa de foco. La interactividad real (drag & drop, equipar, comparar) entra en H5.
+**Componente fila de ítem (`.h2-inventory__item`).** Grid `28px 1fr` con `align-items: baseline`, divisor inferior fino en `tinta-tierra-baja` (más sutil que `corteza-palida` que se reserva a separadores estructurales del flow). Última fila sin divisor. Los ítems **no son interactivos** en H2: son informativos. Por eso quedan fuera del orden de tabulación, sin trampa de foco. La interactividad real (drag & drop, equipar, comparar) entra en H6 (renumerado en biblia v0.19; era H5).
 
 **Componente glifo (`.h2-inventory__item-glyph`).** Inicial del nombre del ítem en JetBrains Mono, ancla visual fija en columna izquierda. Cumple Numbers-In-Mono por estar en columna tabular alineada (no es prosa inline). Color `corteza-palida` para que el nombre sea el ancla principal y el glifo subordinado.
 
 **Cuerpo de ítem.** Nombre en sans peso 500 sobre `hueso-claro` (ancla de la fila), descripción en sans peso 400 sobre `corteza-palida` con line-height 1.45 para legibilidad de frases cortas. Decisión #54: prosa inline en sans, los ítems llevan números narrativos ("tres jornadas", "1 perk") embebidos en frase, no tabulares.
 
-**Inventario placeholder (5 ítems).** El catálogo real es H5; estos son tokens narrativos genéricos coherentes con el lore (post-humano, naturaleza vencedora, esoterismo demoníaco raro y reverencial). Lista actual: "Cuchillo de hoja recocida", "Odre de agua filtrada", "Hogaza dura y tiras de carne curada", "Capa de fibra trenzada", "Reliquia menor de un nombre olvidado". Tono lore-aware deliberado: nada de "cantimplora", "hatillo" o vocabulario de fantasía rural genérica. Los 5 arquetipos comparten la misma lista placeholder; la diferenciación real entra en H5 con el catálogo cerrado.
+**Inventario placeholder (5 ítems).** El catálogo real es H6 (renumerado en biblia v0.19; era H5); estos son tokens narrativos genéricos coherentes con el lore (post-humano, naturaleza vencedora, esoterismo demoníaco raro y reverencial). Lista actual: "Cuchillo de hoja recocida", "Odre de agua filtrada", "Hogaza dura y tiras de carne curada", "Capa de fibra trenzada", "Reliquia menor de un nombre olvidado". Tono lore-aware deliberado: nada de "cantimplora", "hatillo" o vocabulario de fantasía rural genérica. Los 5 arquetipos comparten la misma lista placeholder; la diferenciación real entra en H6 con el catálogo cerrado.
 
 **Reglas aplicadas y desviaciones:**
 - Display-Is-Sacred: heading "Inventario inicial" en sans. Instrucción body sans. Cero Cormorant.
@@ -401,7 +401,7 @@ Estados: la pantalla es enteramente informativa. Sin estados de selección, sin 
 
 **Cálculo de stats derivados.** La pantalla consume `rules/character.ts` (módulo SAGRADO) como API:
 - `computeMaxHp(attributes)` → HP máximo (`8 + 2·CON`).
-- `computeDefense(attributes)` → DEF base (`2 + floor(DES/2)`, sin armadura porque el inventario equipado vive en H5).
+- `computeDefense(attributes)` → DEF base (`2 + floor(DES/2)`, sin armadura porque el inventario equipado vive en H6 tras renumeración v0.19; era H5).
 - Iniciativa: `attributes.des` bruto (la fórmula completa `DES + 1d20` vive en `combat.ts`, biblia §4.8 / decisión #41; en preview no hay tirada, mostramos solo el modificador base).
 - Suerte: `floor((INT + VOL) / 2)` (decisión #43 sin la decay por nivel, porque el personaje aún no tiene `level` asignado; el nivel se inicializa al confirmar).
 

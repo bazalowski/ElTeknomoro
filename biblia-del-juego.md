@@ -141,7 +141,7 @@ Tiradas que `usage` debe acumular para que `value` pase de v a v+1:
 
 Cada tirada reactiva (decisión #30) suma 1 a `usage` ganes o pierdas. La curva exponencial garantiza que habilidades nuevas suben rápido (premia probar verbos) y habilidades dominantes se vuelven caras (empuja a diversificar el build).
 
-**Lista concreta de habilidades:** pendiente. Se redacta cuando el catálogo de enemigos y la lista de perks entren en scope (H7 según `scope-mvp-web-v0.1.md` §3).
+**Lista concreta de habilidades:** pendiente. Se redacta cuando el catálogo de enemigos y la lista de perks entren en scope (H8 según `scope-mvp-web-v0.1.md` §3).
 
 ### 4.3 Sistema de tiradas
 
@@ -164,7 +164,7 @@ Razones del cierre (validadas en `simulaciones/dado-combate-v0.2.md`):
 
 Limitaciones conocidas, asumidas:
 
-- En niveles altos el experto satura P(impactar) cerca del 100%. El crecimiento se canaliza vía daño y críticos, no consistencia. Si en H3-H7 esto se siente plano, se introducirá una mecánica de techo (DEF crece más rápido o defensa con dados); no se decide ahora.
+- En niveles altos el experto satura P(impactar) cerca del 100%. El crecimiento se canaliza vía daño y críticos, no consistencia. Si en H3-H8 esto se siente plano, se introducirá una mecánica de techo (DEF crece más rápido o defensa con dados); no se decide ahora.
 - Render de pools grandes (hasta 17 dados con builds extremos) es problema de UX, se resuelve en H3 con animación agregada.
 
 El dado de **exploración** sigue siendo **1d20** (decisión #26, §4.15.4), independiente y separado del de combate por arquitectura (decisión #20).
@@ -226,7 +226,7 @@ Reglas del sistema de crafteo:
 
 ### 4.6 Turno cero de sesión
 
-**Estado: estructura cerrada (decisión #45). Texto y enemigo concretos pendientes de H9.**
+**Estado: estructura cerrada (decisión #45). Texto y enemigo concretos pendientes de H10.**
 
 La semilla del mundo sigue siendo la base: una frase que tiñe la partida procedural y genera el `seed` del PRNG. Ejemplo: *"una tormenta mágica ha despertado algo bajo el glaciar"*.
 
@@ -242,7 +242,7 @@ En web, el onboarding queda así:
 
 El tutorial es **escena guiada**, no tooltips contextuales ni "aprender jugando". Decisión cerrada.
 
-Texto exacto de la decisión binaria, enemigo concreto del primer combate y nodo destino de cada rama: se redactan en H9 con el mapa de historia ya construido.
+Texto exacto de la decisión binaria, enemigo concreto del primer combate y nodo destino de cada rama: se redactan en H10 con el mapa de historia ya construido.
 
 ### 4.7 Creación de personaje
 
@@ -250,7 +250,7 @@ Texto exacto de la decisión binaria, enemigo concreto del primer combate y nodo
 
 - **Flujo mixto:** pantalla inicial "Empezar de cero" / "Empezar con preset". Ambas opciones desde el primer momento.
 - **Arquetipos predefinidos:** 5, uno por atributo dominante (FUE, DES, CON, INT, VOL). Nombres y contenido concreto pendientes.
-- **Perks iniciales:** el jugador elige **1 perk al crear**, libremente entre los 5 perks iniciales del catálogo (decisión #53, v0.13). El gateo por arquetipo dominante aplica **solo al árbol de progresión post-creación (H7)**, no a la elección de creación. En modo `preset` con arquetipo definido, el `starting_perk_id` del arquetipo aparece preseleccionado como sugerencia ajustable.
+- **Perks iniciales:** el jugador elige **1 perk al crear**, libremente entre los 5 perks iniciales del catálogo (decisión #53, v0.13). El gateo por arquetipo dominante aplica **solo al árbol de progresión post-creación (H8)**, no a la elección de creación. En modo `preset` con arquetipo definido, el `starting_perk_id` del arquetipo aparece preseleccionado como sugerencia ajustable.
 - **Retratos:** set fijo de 12 retratos, sin categorizar por género/edad/etnia, estilo visual uniforme. El jugador los ojea en grid.
 - **Reparto de atributos:** botones +/- con preview en tiempo real de los stats derivados (HP, DEF, iniciativa). Validación visual cuando el reparto es ilegal. Botón "Reset" disponible.
 - **Reparto de habilidades:** pantalla separada, mismo patrón +/- con preview.
@@ -479,7 +479,7 @@ Durante el tick: **toda entrada de la tabla declara una tirada reactiva `evade_c
 
 #### 4.15.7 Tabla de tiradas reactivas por tipo de evento
 
-Catálogo cerrado v0.5. Las DIF son orientativas y se ajustarán con simulación en H8.
+Catálogo cerrado v0.5. Las DIF son orientativas y se ajustarán con simulación en H9.
 
 | Tipo | Habilidad | DIF | Coste | Éxito | Crítico | Fracaso | Pifia | Modo |
 |---|---|---|---|---|---|---|---|---|
@@ -611,10 +611,11 @@ Estas no se reabren sin motivo fuerte. Si Bazalo las cuestiona, la dirección le
 | 41 | Iniciativa de combate: `DES + 1d20` (PJ) y `initiative_base + 1d20` (enemigo). Desempate: mayor DES bruto, luego PJ sobre enemigo. Validado en `simulaciones/iniciativa-v0.1.md` tras descartar 3 iteraciones de pool d6. El d20 se reutiliza como primitiva ordenadora; no viola decisión #20. | v0.8 |
 | 42 | Día/noche, clima y terreno modulan elegibilidad y pesos de tablas de exploración (vías ya cerradas en §4.15.2 y §4.15.6). **No tienen impacto numérico directo** sobre tiradas de combate, exploración o crafteo en v1. Diferido a v1.1. | v0.8 |
 | 43 | Suerte como atributo derivado: `luck = floor((INT + VOL) / 2) - floor(level / 10)`. Calculada al construir cada `WorldState`. No es ítem ni consumible en v1. | v0.8 |
-| 44 | Condición de fin de partida: muerte (cualquier causa) o quest principal del mapa de historia (Modo Historia). Modo Libre solo cierra por muerte. La pantalla de victoria reutiliza el formato de epitafio con `cause.kind = 'victory'`. La quest principal se diseña en H4 con el contenido del mapa. | v0.8 |
-| 45 | Onboarding: tras tutorial, decisión binaria que escribe bandera narrativa (`viajero_audaz` o `viajero_cauto`), combate forzado contra enemigo tier "lobo" sin posibilidad de huir ni evitar, apertura del mapa-mundi en el nodo de la rama elegida. Texto y enemigo concretos en H9. Morir en el combate forzado activa epitafio normal sin red de seguridad. | v0.8 |
+| 44 | Condición de fin de partida: muerte (cualquier causa) o quest principal del mapa de historia (Modo Historia). Modo Libre solo cierra por muerte. La pantalla de victoria reutiliza el formato de epitafio con `cause.kind = 'victory'`. La quest principal se diseña en H5 (aclarado en v0.19 con el reordenamiento de hitos, decisión #62). | v0.8 |
+| 45 | Onboarding: tras tutorial, decisión binaria que escribe bandera narrativa (`viajero_audaz` o `viajero_cauto`), combate forzado contra enemigo tier "lobo" sin posibilidad de huir ni evitar, apertura del mapa-mundi en el nodo de la rama elegida. Texto y enemigo concretos en H10. Morir en el combate forzado activa epitafio normal sin red de seguridad. | v0.8 |
 | 46 | Umbral de éxitos para impactar: `threshold = ceil(DEF / 3)`. Promovida a decisión propia desde la simulación implícita del dado v0.2 (era la fórmula que validó P(impacto) en cada perfil). DEF 4 → 2, DEF 8 → 3, DEF 12 → 4. | v0.8 |
 | 47 | **Marco lore del mundo:** post-humano, naturaleza vencedora, mutaciones orgánicas, esoterismo/demoníaco **raro y reverencial**. La humanidad se extinguió y la vegetación creció encima — no es ruina seca, es bosque hostil vivo. La grieta arcana aparece como evento singular, nunca como atmósfera de fondo permanente. De este marco derivan paleta, copy, iconografía y contenido. Sustituye cualquier lectura previa tipo "tierra desértica fracturada" o "manuscrito viejo seco". El sistema visual concreto vive en `DESIGN.md` y la marca/anti-references en `PRODUCT.md`. | v0.9 |
+| 62 | **Reordenamiento de hitos: modo Historia separado a H5.** El antiguo H4 (mapa + exploración + quest principal) se divide en dos: H4 nuevo = mapa + exploración con cierre por muerte (sin victoria); H5 nuevo = modo Historia, quest principal del mapa, quests secundarias, sistema de eventos narrativos, pantalla de victoria, selector Historia/Libre. Los hitos antiguos H5-H9 (Inventario, Crafteo, Progresión, Modo Privado, Pulido) se renumeran a H6-H10. El total de hitos pasa de 9 a 10 sin cambiar el inventario del MVP — sólo el orden de construcción. Razón: dos sistemas grandes (mapa y quest) en un mismo hito violaban "un hito entregable por bloque" (scope §0); separar permite que H4 cierre como demo jugable sin victoria y que H5 acumule todo lo narrativo en un sistema coherente. Implica: aclaración de #44 (quest principal en H5, no H4) y actualización de #61 (fase 1 cierra en H5, no H4). | v0.19 |
 
 ---
 
@@ -626,7 +627,7 @@ Estas no se reabren sin motivo fuerte. Si Bazalo las cuestiona, la dirección le
 
 Las dos provisionales que sobreviven (en código, etiquetadas) están vinculadas a contenido que se construye en su hito, no a decisiones de diseño:
 
-- Daño base por arma sin arma equipada (puños = 1): se cierra al poblar el catálogo de armas en H5.
+- Daño base por arma sin arma equipada (puños = 1): se cierra al poblar el catálogo de armas en H6.
 - Duración del día (240 ticks): se cierra en H4 cuando se ajuste el ritmo de exploración con tablas reales.
 
 Ninguna bloquea código que no le toque.
@@ -862,7 +863,7 @@ Sin cambios al reglamento. Los bloqueantes de §6 siguen abiertos tal cual estab
 - **Decisión #42 — Día/noche, clima, terreno:** sin impacto numérico directo en v1. Modulan elegibilidad y pesos de tablas de exploración (vías ya cerradas en §4.15.2 y §4.15.6). Diferido a v1.1.
 - **Decisión #43 — Suerte:** atributo derivado `floor((INT+VOL)/2) - floor(level/10)`. INT/VOL como base por ser atributos "mentales"; decrece con nivel para que el late-game dependa menos del azar.
 - **Decisión #44 — Fin de partida:** muerte o quest principal del mapa de historia. Modo Libre solo cierra por muerte. Pantalla de victoria reutiliza formato del epitafio. Internamente `EndOfRunCause` engloba muerte y victoria; `DeathCause` queda como alias retro.
-- **Decisión #45 — Onboarding:** estructura cerrada (decisión binaria con bandera narrativa + combate forzado tier "lobo" sin red de seguridad + apertura de mapa). Texto y enemigo concretos en H9. Flags `viajero_audaz` / `viajero_cauto` reservadas.
+- **Decisión #45 — Onboarding:** estructura cerrada (decisión binaria con bandera narrativa + combate forzado tier "lobo" sin red de seguridad + apertura de mapa). Texto y enemigo concretos en H10 (renumerado en v0.19). Flags `viajero_audaz` / `viajero_cauto` reservadas.
 - **Decisión #46 — Threshold de impacto:** `ceil(DEF/3)`. Promovida a decisión propia desde la simulación implícita del dado v0.2 para que la fórmula sea explícita y no implícita en el script.
 - §6 bloqueantes: **0 restantes**. Las provisionales que sobreviven en código (daño puños, duración del día) están vinculadas a contenido de hito, no a diseño abierto.
 - §4.3, §4.4, §4.6, §4.8, §4.9, §4.15.2 reescritas con las decisiones cerradas.
@@ -916,7 +917,7 @@ Esta versión es la primera en la que **todo el reglamento numérico que el cód
 **v0.13** — Cierre de la **cuarta pantalla del MVP en navegador** (27/4/2026): pantalla de elección de perk inicial (H2, paso 4/7 del flow de creación, scope §1.3 línea 47). Dos decisiones nuevas. Sin cambios de reglamento. Cambios:
 
 - §8: ninguna alteración del flujo. La pantalla materializa el contrato cerrado en biblia §4.7 (1 perk al crear, elegido entre 5 iniciales).
-- §4.7 línea 253: la frase "Los perks del árbol se desbloquean según el arquetipo elegido" queda **explícitamente acotada al árbol post-creación (H7)**. En la creación de personaje (H2.4) los 5 perks iniciales están todos disponibles para elegir, sin gateo. Aclaración formalizada como decisión #53.
+- §4.7 línea 253: la frase "Los perks del árbol se desbloquean según el arquetipo elegido" queda **explícitamente acotada al árbol post-creación (H8 tras renumeración v0.19; era H7)**. En la creación de personaje (H2.4) los 5 perks iniciales están todos disponibles para elegir, sin gateo. Aclaración formalizada como decisión #53.
 - §3 (Tipografía) regla "Numbers-In-Mono" matizada en `DESIGN.md` con **excepción inline**: la regla aplica a bloques tabulares y fichas, NO a prosa inline. Formalizado como decisión #54.
 - `DESIGN.md` §5.4 añadido: pantalla de perk con shape, componente card-radio con cabecera de nombre+sigla y cuerpo de descripción, cuatro estados ortogonales y tres desviaciones documentadas respecto a `.h2-portrait`.
 - `scope-mvp-web-v0.1.md` §1.3 línea 47 marcada como cerrada con checkbox `[x]` y fecha. **4/5 pantallas H2 cerradas; falta solo la 5/5 (inventario+preview+confirm).**
@@ -925,18 +926,18 @@ Esta versión es la primera en la que **todo el reglamento numérico que el cód
 
 **Decisiones cerradas (nuevas):**
 
-- **#53 — Disponibilidad de perks en creación.** En la pantalla H2.4 (paso 4/7 del flow de creación), los 5 perks iniciales están **todos disponibles** para elegir. El gateo por arquetipo dominante mencionado en biblia §4.7 línea 253 ("Los perks del árbol se desbloquean según el arquetipo elegido") aplica **solo al árbol de progresión post-creación (H7)**, no a la creación de personaje. Si el jugador entra en modo `preset` con un arquetipo definido, el `starting_perk_id` del arquetipo aparece preseleccionado como sugerencia (inset ring visible), pero ajustable: el jugador puede cambiar a cualquiera de los otros 4. Razón: el modo `scratch` no pasa por arquetipo y se quedaría sin perks si gateamos; biblia §4.7 línea 253 dice que el jugador puede ajustar todo dentro de las reglas. Acción: documentar la aclaración en biblia §4.7 línea 253 (línea editada en este mismo bump).
+- **#53 — Disponibilidad de perks en creación.** En la pantalla H2.4 (paso 4/7 del flow de creación), los 5 perks iniciales están **todos disponibles** para elegir. El gateo por arquetipo dominante mencionado en biblia §4.7 línea 253 ("Los perks del árbol se desbloquean según el arquetipo elegido") aplica **solo al árbol de progresión post-creación (H8 tras renumeración v0.19; era H7)**, no a la creación de personaje. Si el jugador entra en modo `preset` con un arquetipo definido, el `starting_perk_id` del arquetipo aparece preseleccionado como sugerencia (inset ring visible), pero ajustable: el jugador puede cambiar a cualquiera de los otros 4. Razón: el modo `scratch` no pasa por arquetipo y se quedaría sin perks si gateamos; biblia §4.7 línea 253 dice que el jugador puede ajustar todo dentro de las reglas. Acción: documentar la aclaración en biblia §4.7 línea 253 (línea editada en este mismo bump).
 
 - **#54 — Excepción de Numbers-In-Mono para prosa inline.** La regla "Numbers-In-Mono" (DESIGN.md §3) aplica a **bloques tabulares, fichas de personaje y stat displays** donde los números se alinean visualmente y el mono ayuda a comparar. **No aplica a prosa inline** (descripciones de perk/habilidad/ítem, tooltips narrativos, copy de UI con números embebidos en frase: "+1 éxito al primer ataque", "+2 a la iniciativa permanente"). En prosa inline, los números van en sans pleno como el resto de la frase. Razón: romper la línea base con mono dentro de una frase corta daña la lectura sin aportar comparación visual; no hay otro número adyacente con el que comparar. La distinción operativa: ¿el número se compara con otro adyacente (tabla, ficha, log)? mono. ¿El número está embebido en una frase narrativa? sans. Acción: matización aplicada en `DESIGN.md` §3 (regla actualizada en este mismo bump).
 
 **v0.14** — Cierre de la **quinta pantalla del MVP en navegador** (27/4/2026): pantalla de inventario inicial (H2, paso 5/7 del flow de creación, primera de las tres sub-pantallas en que se divide el "paso 5/5" del scope §1.3 — sub 5a). Sin nuevas decisiones de reglamento ni de diseño numérico. Sin cambios de §4, §6, §7. Cambios:
 
-- §8: ninguna alteración del flujo. La pantalla materializa el contrato cerrado en biblia §4.7 línea 258 (inventario inicial fijo por arquetipo, botón "Sorpréndeme", lista visible antes de confirmar) en formato anticipatorio coherente con que el catálogo de items real cierra en H5.
+- §8: ninguna alteración del flujo. La pantalla materializa el contrato cerrado en biblia §4.7 línea 258 (inventario inicial fijo por arquetipo, botón "Sorpréndeme", lista visible antes de confirmar) en formato anticipatorio coherente con que el catálogo de items real cierra en H6 (era H5 antes de v0.19).
 - `DESIGN.md` §5.5 añadido: pantalla de inventario con shape, panel técnico denso, banda informativa (clon visual del patrón `.h2-attributes__pool`), lista sin cards con divisores finos, botón "Sorpréndeme" como toggle con aviso inline y timeout suave. Decisión #54 aplicada (descripciones de ítem en sans pleno).
 - `scope-mvp-web-v0.1.md` §1.3 línea 49 marcada como cerrada con checkbox `[x]` y fecha. **5/7 pantallas H2 cerradas; faltan 2 (preview, confirm) para terminar las 3 sub-pantallas del paso 5/5.**
 - Confirmación arquitectónica del director: el "paso 5/5" del scope §1.3 (líneas 49-51) se ejecuta como **3 sub-pantallas distintas** (5a inventario, 5b preview, 5c confirm), no como un único bloque. Las tres entradas ya estaban separadas en `src/state/h2-flow.ts` líneas 18-26 desde antes; este cierre confirma que se mantienen como pantallas independientes con un MODOPIPELINE por cada una.
-- Pantalla 100% read-only sobre el draft: lee `ctx.draft.archetype` y muestra el inventario placeholder correspondiente (5 ítems narrativos genéricos con tono lore-aware: "Cuchillo de hoja recocida", "Odre de agua filtrada", "Hogaza dura y tiras de carne curada", "Capa de fibra trenzada", "Reliquia menor de un nombre olvidado"). Si `archetype` es null/undefined o no se encuentra en `ARCHETYPES_BY_ID`, banda neutra "Inventario inicial básico — 5 ítems". No añade setters al `H2StepCtx`. No persiste nada en draft. Esto es coherente con que el catálogo real es H5.
-- "Sorpréndeme" en H2 muestra aviso inline "Generación de inventario aleatorio — disponible en H5." (toggle con `aria-pressed` + timeout 5 s). Sin modal, sin lógica de generación real. La lógica completa entra en H5.
+- Pantalla 100% read-only sobre el draft: lee `ctx.draft.archetype` y muestra el inventario placeholder correspondiente (5 ítems narrativos genéricos con tono lore-aware: "Cuchillo de hoja recocida", "Odre de agua filtrada", "Hogaza dura y tiras de carne curada", "Capa de fibra trenzada", "Reliquia menor de un nombre olvidado"). Si `archetype` es null/undefined o no se encuentra en `ARCHETYPES_BY_ID`, banda neutra "Inventario inicial básico — 5 ítems". No añade setters al `H2StepCtx`. No persiste nada en draft. Esto es coherente con que el catálogo real es H6 (renumerado en v0.19; era H5).
+- "Sorpréndeme" en H2 muestra aviso inline "Generación de inventario aleatorio — disponible en H6." (toggle con `aria-pressed` + timeout 5 s). Sin modal, sin lógica de generación real. La lógica completa entra en H6 (renumerado en v0.19).
 - Stepper queda en 2 consumidores tras H2.5a (decisión #52 inalterada): la pantalla NO usa stepper. El plazo se mantiene abierto hasta el cierre de la sub-pantalla 5/5 (H2.5c confirm) por si emerge un tercer consumidor.
 
 **Decisión operativa del director (sin numeración formal de reglamento):**
@@ -985,9 +986,9 @@ Próximo: H3 (combate vertical slice). El motor está listo (`combat.ts`, `dice.
 
 - **Decisión #56 — Inventario y equipo separados ya en módulo sagrado (confirmación):** `Inventory.slots` (mochila 5×4 = 20 huecos) e `Inventory.equipped` (mapa por slot anatómico: head / torso / hands / main_hand / off_hand / accessory) llevan separados desde el cierre del esqueleto en H1. Se confirma como contrato definitivo. `equippedWeapon` y `totalDefenseBonus` leen sólo del equipo, no de la mochila. La pantalla H2.5a queda como placeholder narrativo honesto (PRODUCT §Design Principles 5); el `Character` que persiste no necesita reflejar exactamente la pantalla, pero **necesita ser jugable**.
 
-- **Decisión #57 — Auto-equip de la Daga al crear personaje:** `createCharacter` arranca al PJ con la Daga ya equipada en `inventory.equipped.main_hand`. Encapsulado en `buildStartingInventory()` dentro de `data/items.ts` para que H5 amplíe a starter packs por arquetipo sin tocar `character.ts`. La mochila sigue con 20 huecos vacíos. Antes del cambio, el PJ nacía con puños (FUE + 0, daño 1) → 8% victoria contra el lobo, injugable. Con la Daga, 33.4% victoria, dentro del target tutorial.
+- **Decisión #57 — Auto-equip de la Daga al crear personaje:** `createCharacter` arranca al PJ con la Daga ya equipada en `inventory.equipped.main_hand`. Encapsulado en `buildStartingInventory()` dentro de `data/items.ts` para que H6 amplíe a starter packs por arquetipo sin tocar `character.ts` (era H5 antes de v0.19). La mochila sigue con 20 huecos vacíos. Antes del cambio, el PJ nacía con puños (FUE + 0, daño 1) → 8% victoria contra el lobo, injugable. Con la Daga, 33.4% victoria, dentro del target tutorial.
 
-- **Decisión #58 — Loot vive en `data/`, no en módulo sagrado:** los tipos `LootDrop` y `LootTable` viven en `data/enemies.ts`. `combat.ts` (sagrado) NO conoce loot — el loot se aplica al cierre del combate, no durante. La estructura `LOOT_TABLES_BY_ENEMY_ID` es paralela al catálogo de enemigos, no propiedad del `Enemy` interface. Promoción a `rules/loot.ts` se evalúa cuando H5/H6 escalen a varios sistemas de loot. `LootDrop` discriminado por `kind: 'item' | 'gold'`; el oro nunca lleva `item_id` porque es recurso del Character, no Item.
+- **Decisión #58 — Loot vive en `data/`, no en módulo sagrado:** los tipos `LootDrop` y `LootTable` viven en `data/enemies.ts`. `combat.ts` (sagrado) NO conoce loot — el loot se aplica al cierre del combate, no durante. La estructura `LOOT_TABLES_BY_ENEMY_ID` es paralela al catálogo de enemigos, no propiedad del `Enemy` interface. Promoción a `rules/loot.ts` se evalúa cuando H6/H7 escalen a varios sistemas de loot (era H5/H6 antes de v0.19). `LootDrop` discriminado por `kind: 'item' | 'gold'`; el oro nunca lleva `item_id` porque es recurso del Character, no Item.
 
 - **Decisión #59 — Stat-line del Lobo del Bosque validada:** primer enemigo del juego, calibrado en `simulaciones/lobo-v0.1.md` con 720.000 combates simulados (12 iteraciones del motor real, seed determinista por celda). Contrato narrativo: el primer combate es **tutorial scripteado donde es probable que el jugador muera**. El primer epitafio que aparece en la pantalla de Cargar Partida es esperado, no accidente. La permadeath se enseña cumpliéndose. Targets: 25-40% victoria build A × arma media, HP%win 30-60%, mediana 4-7 turnos, 0-5% muerte por crítico turno 1. Stat-line:
 
@@ -999,11 +1000,11 @@ Próximo: H3 (combate vertical slice). El motor está listo (`combat.ts`, `dice.
   hp_max: 16
   ```
 
-  Métricas finales (iteración 3c): 33.4% victoria, HP%win 31.5%, 5 turnos mediana, 0% muertes turno 1. Build B (build pobre) sale 0-0.1% victoria — la permadeath educativa cumpliéndose, no se cose en la stat-line. El crítico del PJ con pool grande satura ~26-28%, hallazgo conocido de `simulaciones/dado-combate-v0.2.md`; en H3 no es problema, en H6+ pedirá vigilancia.
+  Métricas finales (iteración 3c): 33.4% victoria, HP%win 31.5%, 5 turnos mediana, 0% muertes turno 1. Build B (build pobre) sale 0-0.1% victoria — la permadeath educativa cumpliéndose, no se cose en la stat-line. El crítico del PJ con pool grande satura ~26-28%, hallazgo conocido de `simulaciones/dado-combate-v0.2.md`; en H3 no es problema, en H7+ pedirá vigilancia (renumerado en v0.19; era H6+).
 
-- **Decisión #60 — `computeDefense` queda intocada:** la fórmula `2 + floor(DES/2)` da DEF 3 a un PJ con DES 2, no 4. El threshold del lobo contra el PJ es 1 → impacta el 87% de los turnos. La sensación "PJ de papel" es correcta para tutorial scripteado de muerte probable. Si en H6-H7 con armaduras mejores la sensación persiste, se reabre ahí; ahora no.
+- **Decisión #60 — `computeDefense` queda intocada:** la fórmula `2 + floor(DES/2)` da DEF 3 a un PJ con DES 2, no 4. El threshold del lobo contra el PJ es 1 → impacta el 87% de los turnos. La sensación "PJ de papel" es correcta para tutorial scripteado de muerte probable. Si en H7-H8 con armaduras mejores la sensación persiste, se reabre ahí; ahora no (renumerado en v0.19; era H6-H7).
 
-- **Decisión #61 — Principio operativo macro: esqueleto > contenido > pulido:** prioridad estricta hasta v1. Fase 1 (hasta cerrar H4): esqueleto jugable end-to-end con cantidad mínima de contenido. Fase 2 (H5-H7): ampliar catálogos y escribir copy narrativo. Fase 3 (H9): pulir sprites, animaciones, audio. Implicación operativa: cada item/NPC/enemigo nuevo en fase 1 se crea con stat-line/datos provisional honesto, sin narrativa final. Si un sub-paso introduce dependencia hacia un item que aún no existe, se crea inline (no se difiere): loot que apunta a item huérfano contradice "esqueleto jugable end-to-end". Refuerza PRODUCT.md §Design Principles 5 (placeholder honesto).
+- **Decisión #61 — Principio operativo macro: esqueleto > contenido > pulido:** prioridad estricta hasta v1. Fase 1 (hasta cerrar **H5**, actualizado en v0.19; era H4): esqueleto jugable end-to-end con cantidad mínima de contenido **y condición de victoria** (sin victoria no hay juego completable). Fase 2 (**H6-H8**, actualizado en v0.19; era H5-H7): ampliar catálogos y escribir copy narrativo. Fase 3 (**H10**, actualizado en v0.19; era H9): pulir sprites, animaciones, audio. Implicación operativa: cada item/NPC/enemigo nuevo en fase 1 se crea con stat-line/datos provisional honesto, sin narrativa final. Si un sub-paso introduce dependencia hacia un item que aún no existe, se crea inline (no se difiere): loot que apunta a item huérfano contradice "esqueleto jugable end-to-end". Refuerza PRODUCT.md §Design Principles 5 (placeholder honesto).
 
 **Cambios de archivos (sin tocar §4 reglamento ni §6 abiertas):**
 
@@ -1052,3 +1053,46 @@ Próximo: PASO 3 del Hito 3, primera pantalla de combate por MODOPIPELINE (vista
 - 0 deudas técnicas de cableado. El esqueleto del juego (decisión #61) cierra su primer loop completo: crear → combatir → loot/epitafio → persistencia → home → repetir.
 
 Próximo: sub-paso 3e.2 vía MODOPIPELINE (rediseño visual del home con lápida del PJ caído).
+
+---
+
+**v0.19** — Cierre del **Hito 3 completo** (1/5/2026) + **reordenamiento de hitos**: el modo Historia, las quests y el sistema de eventos narrativos se separan del antiguo H4 y forman un H5 nuevo propio. Tres movimientos en este bump.
+
+**Movimiento 1 — Cierre formal del Hito 3.** El sub-paso 3e.2 (rediseño visual de home en tres ramas + lápida del PJ caído, vía MODOPIPELINE) cerró tras v0.18. Con 2c62c47 en `main`, el PASO 3 entrega de verdad el primer loop completo del juego: PJ creado en H2 → home con tres ramas (vacío / vivo / caído) → "Entrar al yermo" → combate al Lobo del Bosque → modal de loot o epitafio → persistencia en Supabase → home reflejando el resultado real. La línea de estado plana provisional de v0.18 quedó sustituida por la lápida visual con el epitafio narrativo. Estado al cierre de PASO 3: 257/257 tests verde, `tsc --noEmit` limpio, `vite build` limpio. La decisión #61 (esqueleto > contenido > pulido) cierra su primer loop completo.
+
+**Movimiento 2 — Reordenamiento de hitos (decisión #62).** El antiguo Hito 4 ("Mapa y exploración") salía demasiado cargado al embeber la quest principal del modo Historia: 14-20 sesiones para mapa-mundi + sub-mapas + niebla + viaje rápido + tirada de exploración + biomas + Historia + Libre + quest principal + condición de victoria. Dos sistemas grandes en un mismo hito violaban "un hito entregable por bloque" (scope §0). Solución:
+
+- **H4 nuevo** = mapa + exploración + cierre por muerte (sin condición de victoria). Entregable: explorar y morir.
+- **H5 nuevo** = modo Historia + quest principal + quests secundarias + sistema de eventos narrativos + pantalla de victoria + selector Historia/Libre. Entregable: partida completable extremo a extremo.
+- Los antiguos H5-H9 (Inventario, Crafteo, Progresión, Modo Privado, Pulido) se renumeran a H6-H10.
+
+El inventario del MVP no cambia: el mismo juego se entrega en otro orden. La estimación total sube de 72-106 a 78-114 sesiones (H4 baja a 12-16 al liberarse de quest, H5 nuevo entra con 8-12).
+
+**Movimiento 3 — Reabrir decisión #61 (esqueleto > contenido > pulido).** La fase 1 ya no cierra en H4, cierra en **H5**: sin condición de victoria el juego no es completable, y "esqueleto jugable end-to-end" significa juego completable, no juego explorable sin cierre. Ver decisión #61 actualizada en su entrada original.
+
+**Decisiones nuevas o aclaradas:**
+
+- **Decisión #44 (aclarada)** — La quest principal del modo Historia se diseña en **H5** (antes "H4 con el contenido del mapa"). El motor (`endRunWithVictory` en `death.ts`) ya está implementado desde H1; el caller del modo Historia y el contenido de quest llegan en H5. Marca actualizada en su entrada original.
+
+- **Decisión #61 (actualizada)** — Fase 1 del principio "esqueleto > contenido > pulido" se extiende hasta cerrar **H5** (antes H4). Fase 2 (contenido) cubre H6-H8 (antes H5-H7). Fase 3 (pulido) sin cambios estructurales: H10 (antes H9). Marca actualizada en su entrada original.
+
+- **Decisión #62 (nueva)** — Reordenamiento de hitos: modo Historia se separa a H5. Ver decisión #62 en la tabla de §10.
+
+**Cambios:**
+
+- `scope-mvp-web-v0.1.md`: bump a v0.8. §3 reescrita con 10 hitos. §4 línea 324 actualizada (quest principal → H5). §5 tabla con 11 filas + total 78-114. §6 línea 368 (H8 → H9). §8 decisiones diferidas renumeradas (perks H7 → H8, estética H9 → H10, identidad mapa H4 → H5, items H5 → H6, recetas H6 → H7).
+- `biblia-del-juego.md`: este bump. Tabla de decisiones §10 con #62 nuevo. Decisiones #44 y #61 actualizadas en sitio con marca de v0.19. Renumeración coherente de menciones a H5-H9 en §3, §4 y §9 (entradas históricas con nota "renumerado en v0.19; era HX").
+- `DESIGN.md`: 7 menciones a H5/H7/H9 renumeradas a H6/H8/H10 con marca explícita de v0.19.
+- `PRODUCT.md`: 1 mención (H9 estética → H10) renumerada con marca de v0.19.
+- `src/render/h2-inventory-view.ts`: string visible al usuario en aviso de "Sorpréndeme" actualizado de "disponible en H5" a "disponible en H6".
+
+**Deuda técnica reconocida:** los comentarios internos en módulos sagrados (`src/rules/inventory.ts`, `crafting.ts`, `dialog.ts`, `faction.ts`, `character.ts`, `progression.ts`, `src/data/portraits.ts`, `src/state/combat-flow.ts`) y módulos de UI no tocados en este bump conservan etiquetas "PROVISIONAL H5/H6/H7/H9" con la numeración pre-v0.19. Se renumeran de forma oportunista cuando se toque cada módulo. No afecta a ejecución; sólo a legibilidad de comentarios para nuevos lectores. La autoridad sobre numeración es scope §3 + esta tabla de decisiones.
+
+**Estado al cierre de v0.19:**
+
+- 257/257 tests verde.
+- `tsc --noEmit` limpio.
+- `vite build` limpio.
+- 0 deudas técnicas de cableado. PASO 3 archivado como completo. Hitos del MVP: 10 (antes 9), inventario del producto inalterado.
+
+Próximo: arrancar **H4** (mapa + exploración, sin quest). Cuestionario de scope con Bazalo antes del sub-paso 4a.

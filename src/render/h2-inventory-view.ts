@@ -38,7 +38,7 @@ const PLACEHOLDER_ITEMS: readonly PlaceholderItem[] = [
 const ITEM_COUNT_LABEL = '5 ítems base';
 const NEUTRAL_BAND_LABEL = 'Inventario inicial básico — 5 ítems';
 const SURPRISE_DEFERRED_NOTICE =
-  'Generación de inventario aleatorio — disponible en H5.';
+  'Generación de inventario aleatorio — disponible en H6.';
 const SURPRISE_NOTICE_TIMEOUT_MS = 5000;
 
 function bandLabelFor(ctx: H2StepCtx): string {

@@ -1,7 +1,7 @@
 # El Teknomoro — Scope del MVP web
 
 > Contrato de alcance. Qué entra en v1 del navegador, qué no entra, en qué orden se construye y qué lo bloquea.
-> **Versión:** v0.7 · **Fecha:** 26 de abril de 2026 (esqueleto del motor cerrado, 0 bloqueantes de diseño)
+> **Versión:** v0.8 · **Fecha:** 1 de mayo de 2026 (cierre H3 + reordenamiento de hitos: modo Historia separado a H5 nuevo)
 > **Autor:** el-teknomoro-director
 > **Destino:** referencia firme del equipo (Bazalo + dirección) durante toda la construcción del MVP. Si algo no está aquí, no se construye en v1.
 
@@ -243,7 +243,7 @@ Nueve hitos. Cada uno termina en un estado jugable concreto y testeable. No se a
 
 ### Hito 4 — Mapa y exploración
 - `rules/world-gen.ts` con generación de mapa-mundi y sub-mapas en grid.
-- Mapa de historia hardcodeado (versión mínima, 1 ciudad + 2 mazmorras + zona exterior).
+- Mapa de historia hardcodeado (versión mínima, 1 ciudad + 2 mazmorras + zona exterior). **Geografía sin contenido narrativo de quest** — el contenido de quest llega en H5.
 - Generación procedural para modo Libre con frase-semilla hasheada (misma semilla alimenta mapa y sucesión de tiradas de exploración).
 - Movimiento por puntos de acción, niebla de guerra.
 - **Integración de la tirada de exploración:**
@@ -252,11 +252,22 @@ Nueve hitos. Cada uno termina en un estado jugable concreto y testeable. No se a
   - Dado de exploración visible en HUD con cada tirada.
   - Presentación de eventos: modal para eventos de peso, banner para ligeros.
   - Resolución de tirada reactiva de mitigación cuando corresponda.
+  - Eventos `narrativo` y `NPC` resuelven con placeholders en H4; el enganche con sistema de quest llega en H5.
 - **Viaje rápido híbrido:** grafo de nodos marca tramos como seguro/arriesgado según bioma y reputación. Arriesgado dispara tiradas condensadas y muestra resumen al llegar.
 - Combate se dispara por evento de exploración tipo `combat`, ya no por colisión directa en mapa.
-- **Entregable:** jugar una partida corta extremo a extremo. Crear → explorar con tiradas visibles → evento → combate o evitación → morir → epitafio.
+- **Entregable:** jugar una partida corta extremo a extremo. Crear → explorar con tiradas visibles → evento → combate o evitación → morir → epitafio. **Cierre por muerte únicamente; la condición de victoria llega en H5.**
 
-### Hito 5 — Inventario, equipo y loot
+### Hito 5 — Modo Historia: quest principal, secundarias y eventos narrativos
+- `rules/quest.ts` puro y determinista: tipos `Quest`, `QuestStep`, `QuestProgress`, primitivas para avance, completion y persistencia. Sin imports de UI/Supabase.
+- **Quest principal del mapa de historia:** cadena de hitos narrativos sobre el mapa hardcodeado de H4, condición de cierre, disparo de `endRunWithVictory` (decisión #44).
+- **Quests secundarias:** catálogo provisional (3-5 quests opcionales), recompensas, banderas de estado, sin árbol de dependencias en MVP.
+- **Sistema de eventos narrativos:** enganche con eventos `narrativo` y `NPC` de la tirada de exploración (§4.15 biblia). Modal para eventos de peso, banner para ligeros. Decisiones de evento avanzan quests cuando corresponde.
+- **Selector Historia/Libre activo en home** (biblia §4.6 paso 2). Modo Libre no instancia quest principal — sólo cierra por muerte.
+- **Pantalla de victoria:** modal sobre home, hermano del modal de epitafio. Reutiliza formato de epitafio con `cause.kind = 'victory'`.
+- **Estado de quest persistido en `Character.quest_progress`** vía `saveCharacterUpdate` en backend.
+- **Entregable:** partida completable extremo a extremo en Historia. Crear → mapa → quest activa → cumplir hitos → victoria → epitafio de victoria → home con slot de solo-lectura.
+
+### Hito 6 — Inventario, equipo y loot
 - Sistema de inventario (5×4 slots) con drag & drop.
 - Slots de equipo con tooltip comparativo.
 - Durabilidad funcionando (ítem inservible al 0).
@@ -264,14 +275,14 @@ Nueve hitos. Cada uno termina en un estado jugable concreto y testeable. No se a
 - Tirar ítems al suelo con recogida posterior.
 - **Entregable:** personaje combate → loot → equipar → mejor stats → combate con equipo mejor.
 
-### Hito 6 — Crafteo
+### Hito 7 — Crafteo
 - `rules/crafting.ts` completo: combinación, descubrimiento, outputs ramificados, batch, station.
 - UI de crafteo con porcentajes visibles y encadenamiento x3.
 - Catálogo de 30-50 recetas en `data/recipes.json`.
 - Libros de recetas como ítems que desbloquean entradas.
 - **Entregable:** recoger materiales → craftear → craft falla → craft crítico → nueva receta descubierta.
 
-### Hito 7 — Progresión, NPCs y facciones
+### Hito 8 — Progresión, NPCs y facciones
 - Subida de nivel manual con pantalla pausada.
 - Re-spec con coste de recurso.
 - 15 logros con triggers implementados.
@@ -281,7 +292,7 @@ Nueve hitos. Cada uno termina en un estado jugable concreto y testeable. No se a
 - NPCs mínimos en mapa de historia y en ciudades procedurales.
 - **Entregable:** partida completa que toca todos los sistemas en 30-45 min.
 
-### Hito 8 — Modo Privado
+### Hito 9 — Modo Privado
 - Banco (CRUD + filtros + favoritos + import/export).
 - Campo de pruebas (spawn, edición HP/recursos, cola de tiradas forzadas, editor de recetas por form).
 - Simulación masiva IA vs IA ≤ 5 s / 1.000 combates.
@@ -295,7 +306,7 @@ Nueve hitos. Cada uno termina en un estado jugable concreto y testeable. No se a
 - Gateado por flag + credenciales admin.
 - **Entregable:** Bazalo crea 3 ítems en el Banco, los prueba en Campo, publica uno, aparece en juego base. Edita una tabla de exploración, simula 1.000 tiradas, ajusta pesos, re-simula.
 
-### Hito 9 — Onboarding, tutorial y pulido
+### Hito 10 — Onboarding, tutorial y pulido
 - Escena tutorial guiada de ~5 min.
 - Decisión inmediata + combate forzado post-tutorial.
 - Música y SFX integrados.
@@ -317,15 +328,15 @@ Estos no son "trabajo del MVP", son pre-requisitos. Sin cerrarlos, los hitos cor
 | Dado de exploración | H1, H4 | **Cerrado (1d20, decisión #26)** | — |
 | Fórmula de iniciativa | H3 | **Cerrado (DES + 1d20, decisión #41)** | Validado en `simulaciones/iniciativa-v0.1.md` |
 | Threshold de impacto (DEF → éxitos) | H3 | **Cerrado (`ceil(DEF/3)`, decisión #46)** | Promovida desde simulación implícita del dado v0.2 |
-| Curva de XP al nivel 50 | H7 | **Cerrada (lineal `100·n`, decisión #37)** | — |
+| Curva de XP al nivel 50 | H8 | **Cerrada (lineal `100·n`, decisión #37)** | — |
 | Definición de "Suerte" como variable de exploración | H1 | **Cerrado (atributo derivado, decisión #43)** | — |
 | Diseño de la tirada reactiva por tipo de evento | H1, H4 | **Cerrado (v0.5 biblia §4.15.6–§4.15.9)** | — |
 | Efectos numéricos de día/noche, clima y terreno | H4 | **Cerrado: diferido a v1.1 (decisión #42)** | — |
-| Condición de fin de partida en modo Historia | H3 | **Cerrado (decisión #44)** | Quest principal del mapa de historia (se diseña en H4) |
-| Contenido concreto del onboarding (decisión + combate forzado) | H9 | **Cerrado: estructura, decisión #45** | Texto y enemigo concreto pendientes de H9 (no son bloqueantes de código) |
+| Condición de fin de partida en modo Historia | H3 | **Cerrado (decisión #44, aclarada en v0.19)** | Quest principal del mapa de historia (se diseña en H5; ver decisión #62) |
+| Contenido concreto del onboarding (decisión + combate forzado) | H10 | **Cerrado: estructura, decisión #45** | Texto y enemigo concreto pendientes de H10 (no son bloqueantes de código) |
 | Stat-lines definitivas de los 5 arquetipos | H2 | Abierto | Se deriva del dado de combate; redacción concreta en H2 |
 | Lista concreta de habilidades | H2 | Abierto | Se deriva del dado de combate; redacción concreta en H2 |
-| Tablas de exploración iniciales (5 biomas) | H4 | Abierto | Se redacta en H4 con herramientas de H8 adelantadas si hace falta |
+| Tablas de exploración iniciales (5 biomas) | H4 | Abierto | Se redacta en H4 con herramientas de H9 adelantadas si hace falta |
 
 **Estado de bloqueantes a 26/4/2026:** **0 bloqueantes de diseño**. Lo que queda abierto (stat-lines, habilidades, tablas de bioma) es contenido, se redacta en su hito sin necesidad de sesión de diseño previa.
 
@@ -341,15 +352,16 @@ Estos no son "trabajo del MVP", son pre-requisitos. Sin cerrarlos, los hitos cor
 | H1 — Reglas núcleo (incluye `exploration.ts`) | 6-9 |
 | H2 — Creación UI | 5-7 |
 | H3 — Combate vertical slice | 8-12 |
-| H4 — Mapa y exploración (incluye integración de tirada raíz) | 14-20 |
-| H5 — Inventario | 5-7 |
-| H6 — Crafteo | 5-7 |
-| H7 — Progresión + NPCs + facciones | 10-15 |
-| H8 — Modo Privado (incluye herramientas de tabla de exploración) | 8-12 |
-| H9 — Pulido y onboarding | 8-12 |
-| **Total** | **72-106 sesiones** |
+| H4 — Mapa y exploración (incluye integración de tirada raíz, sin quest) | 12-16 |
+| H5 — Modo Historia: quest principal + secundarias + eventos narrativos | 8-12 |
+| H6 — Inventario | 5-7 |
+| H7 — Crafteo | 5-7 |
+| H8 — Progresión + NPCs + facciones | 10-15 |
+| H9 — Modo Privado (incluye herramientas de tabla de exploración) | 8-12 |
+| H10 — Pulido y onboarding | 8-12 |
+| **Total** | **78-114 sesiones** |
 
-A una sesión jugable por semana en los bloques buenos (realista para Bazalo con todos sus proyectos), son **15-24 meses de calendario**. Dos sesiones por semana en sprints buenos bajan a **8-12 meses**. Más rápido que eso sería inesperado.
+A una sesión jugable por semana en los bloques buenos (realista para Bazalo con todos sus proyectos), son **17-26 meses de calendario**. Dos sesiones por semana en sprints buenos bajan a **9-13 meses**. Más rápido que eso sería inesperado.
 
 ---
 
@@ -365,7 +377,7 @@ A una sesión jugable por semana en los bloques buenos (realista para Bazalo con
 - *Mitigación:* este documento. Cualquier cosa que no esté en §1 va a lista v1.1 sin discusión.
 
 **Riesgo 4 — Balance de combate insatisfactorio en H3.**
-- *Mitigación:* H8 (Modo Privado) adelanta la herramienta de simulación masiva. Si H3 deja dudas, se puede acelerar H8 parcialmente para tener simulación antes.
+- *Mitigación:* H9 (Modo Privado) adelanta la herramienta de simulación masiva. Si H3 deja dudas, se puede acelerar H9 parcialmente para tener simulación antes.
 
 **Riesgo 5 — Burnout por proyectos paralelos.**
 - *Mitigación:* cuello de botella reconocido. No se fija deadline. Entre hitos, pausas largas están permitidas.
@@ -394,10 +406,10 @@ Si un hito no cumple los cinco puntos, no se declara terminado, no se pasa al si
 No todo se decide hoy. Estas quedan marcadas para decidirlas cuando llegue su hito, no antes:
 
 - **Granularidad exacta de los puntos de acción por turno** en mapa (se decide al empezar H4, tras tener H3 jugable).
-- **UI concreta del árbol de perks** (se decide al empezar H7).
-- **Tono y estética visual definitiva** (se decide en H9, con placeholders hasta entonces).
-- **Identidad narrativa del mapa de historia** (se decide al empezar H4; hasta entonces, placeholders geográficos).
-- **Contenido del catálogo de 50 items y 30-50 recetas** (se redacta en H5 y H6 respectivamente, no antes).
+- **UI concreta del árbol de perks** (se decide al empezar H8).
+- **Tono y estética visual definitiva** (se decide en H10, con placeholders hasta entonces).
+- **Identidad narrativa del mapa de historia** (se decide al empezar H5; H4 trabaja con placeholders geográficos coherentes con biomas pero sin contenido de quest).
+- **Contenido del catálogo de 50 items y 30-50 recetas** (se redacta en H6 y H7 respectivamente, no antes).
 
 ---
 
@@ -466,3 +478,14 @@ Orden de atención:
 - Sin cambios en §1, §2, §3, §5, §6, §7, §8: el cierre del esqueleto no altera el inventario del MVP, los hitos ni la estimación. La forma del MVP era correcta; lo que se cerró es la cimentación.
 
 Hito implícito de proceso: este es el primer ciclo en que el motor tiene contratos completos antes de que nada de UI exista. La fase de "ajustar mecánicas y añadir contenido" puede arrancar sin que reescribir contratos rompa código de UI.
+
+**v0.8** — Cierre del **Hito 3** y **reordenamiento de hitos** (1/5/2026, biblia v0.19, decisión #62). Cambios al scope:
+
+- §3 reescrita con **10 hitos** (antes 9). H4 deja de embeber la quest principal del modo Historia; queda como mapa + exploración con cierre por muerte. **H5 nuevo** centraliza modo Historia: quest principal, quests secundarias, sistema de eventos narrativos, pantalla de victoria y selector Historia/Libre. Los antiguos H5-H9 se renumeran a H6-H10.
+- §4 bloqueantes: línea 324 actualizada — la quest principal del mapa de historia se diseña en **H5** (antes H4). Onboarding renumerado a H10. Curva de XP renumerada a H8. Tablas de bioma siguen en H4 con herramientas de H9 (antes H8) adelantables.
+- §5 estimación: tabla con 11 filas (incluye H10). H4 bajado a 12-16 sesiones (antes 14-20) por liberar la carga de quest. H5 nuevo entra con 8-12 sesiones. Total **78-114** (antes 72-106). Calendario subido a 17-26 meses a una sesión/semana, 9-13 meses a dos.
+- §6 mitigación de Riesgo 4: H8 antiguo → H9 (Modo Privado mantiene su rol).
+- §8 decisiones diferidas: árbol de perks H7 → H8, estética H9 → H10, identidad narrativa del mapa H4 → H5, items H5 → H6, recetas H6 → H7.
+- Sin cambios en §1 (qué hay dentro del MVP) ni §2 (qué queda fuera). El reordenamiento es de **orden de construcción**, no de inventario. El mismo juego se entrega en otro orden.
+
+Razón del reordenamiento: H4 actual mezclaba dos sistemas grandes (mapa + quest principal) en un mismo hito, violando "un hito entregable por bloque" (§0). Separar permite que H4 cierre como demo jugable sin victoria (entregable real) y que H5 acumule todo lo narrativo (quest, eventos, modo Historia) en un sistema coherente. Ver biblia v0.19 decisiones #44 (aclarada), #61 (actualizada), #62 (nueva).
