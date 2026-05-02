@@ -917,6 +917,15 @@ function formatLogEntry(
     case 'status_expired':
       if (entry.status_kind === 'dodging') return 'Esquiva expirada.';
       return `Estado expirado: ${escapeHtml(statusLabel(entry.status_kind))}.`;
+    case 'status_damage': {
+      // Sub-paso 4a.2: daño por DoT (bleeding al inicio del turno, poisoned al
+      // final). Una línea por tick, para que la vista lo anime.
+      const actorName = entry.actor_kind === 'character'
+        ? 'Tú pierdes'
+        : `${escapeHtml(actorLabel(entry.actor, state, enemyNames))} pierde`;
+      const statusTxt = escapeHtml(statusLabel(entry.status_kind));
+      return `${actorName} <span class="combat-view__num">${entry.damage}</span> HP por ${statusTxt}.`;
+    }
     case 'loot_resolved': {
       if (entry.gold === 0 && entry.items.length === 0) return 'Botín: nada.';
       const itemsTxt = entry.items.length === 0

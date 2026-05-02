@@ -26,6 +26,7 @@ import { computeDefense } from './character';
 // Se importan localmente para usarlos en la firma de EnemyState y se
 // re-exportan más abajo para mantener los importadores actuales (combat-flow.ts).
 import type { StatusEffect } from './statuses';
+import { hasStatus, tickStatusesAtTurnEnd, tickStatusesAtTurnStart } from './statuses';
 
 // -----------------------------------------------------------------------------
 // Enemigos (biblia §4.8 + scope §1.5/§1.9)
@@ -368,6 +369,14 @@ function checkVictoryOrAdvance(state: CombatState): CombatState {
 // todos los enemigos están muertos → status=victory. Si no, avanza turno al
 // siguiente actor vivo.
 //
+// Integración del tick de statuses (sub-paso 4a.2, simétrica con applyEnemyTurn):
+//   1. tickStatusesAtTurnStart sobre el PJ → daño de bleeding. Si muere → defeat.
+//   2. Si tiene `stunned` activo, consume el turno: tickStatusesAtTurnEnd sobre el
+//      PJ (decrementa stunned y resto), avanza turno. NO se procesa la acción.
+//   3. Procesa la acción solicitada (attack, etc.).
+//   4. tickStatusesAtTurnEnd sobre el PJ → daño de poisoned + decremento. Si muere → defeat.
+//   5. checkVictoryOrAdvance avanza al siguiente actor vivo.
+//
 // Acciones implementadas en H3: 'attack'. El resto (dodge, use_item, use_skill,
 // flee) se implementan según se cierren reglas. dodge sería sólo aplicar un
 // status; use_item necesita inventory; use_skill necesita catálogo de habilidades;
@@ -387,6 +396,33 @@ export function applyCharacterAction(
     throw new Error(`applyCharacterAction: no es el turno del PJ.`);
   }
 
+  // (1) Tick de inicio: bleeding sobre el PJ antes de actuar.
+  const startTick = tickStatusesAtTurnStart(state.character);
+  let character = startTick.bearer;
+  if (startTick.damage > 0) {
+    character = applyDamageToCharacter(character, startTick.damage);
+  }
+  if (!character.alive) {
+    // Murió por DoT antes de actuar. NO se procesa la acción ni se avanza
+    // turno. El epitafio lo escribe el caller (combat-flow / tests).
+    return { ...state, character, status: 'defeat' };
+  }
+
+  // (2) ¿Stunned? Pierde el turno: tick de fin (que también decrementa stunned)
+  // y avanza. NO procesa la acción solicitada.
+  if (hasStatus(character, 'stunned')) {
+    const endTick = tickStatusesAtTurnEnd(character);
+    let stunnedChar = endTick.bearer;
+    if (endTick.damage > 0) {
+      stunnedChar = applyDamageToCharacter(stunnedChar, endTick.damage);
+    }
+    if (!stunnedChar.alive) {
+      return { ...state, character: stunnedChar, status: 'defeat' };
+    }
+    return checkVictoryOrAdvance({ ...state, character: stunnedChar });
+  }
+
+  // Validamos la acción ANTES de procesarla (para que stunned no haga validar).
   if (action.kind !== 'attack') {
     throw new Error(`applyCharacterAction: acción "${action.kind}" no implementada en H3.`);
   }
@@ -404,23 +440,42 @@ export function applyCharacterAction(
   // El umbral lo recalcula computeHitThreshold a partir de una "DEF efectiva"
   // proxy = defense_threshold * 3 para que la fórmula sea coherente.
   // Más limpio: pasar threshold directo. resolveAttack ya recibe threshold.
+  // (3) Procesa la acción.
+  const baseInput = buildAttackInputFromCharacter(character, 0, catalog);
   const attackInput: AttackInput = {
-    attacker_pool: buildAttackInputFromCharacter(state.character, 0, catalog).attacker_pool,
+    attacker_pool: baseInput.attacker_pool,
     defender_threshold: targetTemplate.defense_threshold,
-    weapon_damage: buildAttackInputFromCharacter(state.character, 0, catalog).weapon_damage,
+    weapon_damage: baseInput.weapon_damage,
   };
   const result = resolveAttack(rng, attackInput);
   const newEnemyState = applyDamageToEnemy(target.state, result.damage);
   const newEnemies = state.enemies.slice();
   newEnemies[target.index] = newEnemyState;
 
-  const advanced = checkVictoryOrAdvance({ ...state, enemies: newEnemies });
-  return advanced;
+  // (4) Tick de fin: poisoned + decremento sobre el PJ.
+  const endTick = tickStatusesAtTurnEnd(character);
+  character = endTick.bearer;
+  if (endTick.damage > 0) {
+    character = applyDamageToCharacter(character, endTick.damage);
+  }
+  if (!character.alive) {
+    return { ...state, character, enemies: newEnemies, status: 'defeat' };
+  }
+
+  return checkVictoryOrAdvance({ ...state, character, enemies: newEnemies });
 }
 
 // Resuelve el turno del enemigo cuyo turno está en current_turn_index.
 // IA básica de H3: ataca al PJ siempre. La IA táctica (target preference,
 // huida, uso de habilidad) entra en H7.
+//
+// Integración del tick de statuses (sub-paso 4a.2, simétrica con applyCharacterAction):
+//   1. tickStatusesAtTurnStart sobre el enemigo → daño de bleeding. Si muere
+//      → checkVictoryOrAdvance (puede cerrar combate si era el último).
+//   2. Si tiene `stunned`, consume el turno: tickStatusesAtTurnEnd, avanza.
+//   3. Procesa el ataque.
+//   4. tickStatusesAtTurnEnd sobre el enemigo → poisoned + decremento. Si muere → idem (1).
+//   5. checkVictoryOrAdvance.
 export function applyEnemyTurn(
   state: CombatState,
   enemyTemplates: Readonly<Record<EnemyId, Enemy>>,
@@ -445,10 +500,58 @@ export function applyEnemyTurn(
     throw new Error(`Template "${found.state.enemy_id}" no encontrado.`);
   }
 
+  // Helper local para reescribir un EnemyState concreto en la lista de
+  // enemigos preservando el resto. Evita repetir el slice/index.
+  const replaceEnemy = (enemies: readonly EnemyState[], next: EnemyState): readonly EnemyState[] => {
+    const arr = enemies.slice();
+    const idx = arr.findIndex((e) => e.instance_id === next.instance_id);
+    if (idx === -1) return arr;
+    arr[idx] = next;
+    return arr;
+  };
+
+  // (1) Tick de inicio: bleeding sobre el enemigo antes de atacar.
+  const startTick = tickStatusesAtTurnStart(found.state);
+  let enemyState = startTick.bearer;
+  if (startTick.damage > 0) {
+    enemyState = applyDamageToEnemy(enemyState, startTick.damage);
+  }
+  if (!enemyState.alive) {
+    // Muerto por DoT: NO ataca. Avanza turno y comprueba victoria.
+    return checkVictoryOrAdvance({ ...state, enemies: replaceEnemy(state.enemies, enemyState) });
+  }
+
+  // (2) ¿Stunned? Pierde el turno: tick fin de turno y avanza sin atacar.
+  if (hasStatus(enemyState, 'stunned')) {
+    const endTick = tickStatusesAtTurnEnd(enemyState);
+    let stunnedEnemy = endTick.bearer;
+    if (endTick.damage > 0) {
+      stunnedEnemy = applyDamageToEnemy(stunnedEnemy, endTick.damage);
+    }
+    return checkVictoryOrAdvance({
+      ...state,
+      enemies: replaceEnemy(state.enemies, stunnedEnemy),
+    });
+  }
+
+  // (3) Procesa el ataque.
   const characterDef = computeCharacterDefense(state.character, catalog);
   const attackInput = buildAttackInputFromEnemy(template, characterDef);
   const result = resolveAttack(rng, attackInput);
   const newCharacter = applyDamageToCharacter(state.character, result.damage);
 
-  return checkVictoryOrAdvance({ ...state, character: newCharacter });
+  // (4) Tick de fin: poisoned + decremento sobre el enemigo.
+  const endTick = tickStatusesAtTurnEnd(enemyState);
+  enemyState = endTick.bearer;
+  if (endTick.damage > 0) {
+    enemyState = applyDamageToEnemy(enemyState, endTick.damage);
+  }
+
+  // El PJ puede haber muerto por el ataque del enemigo (no por DoT). Eso lo
+  // detecta checkVictoryOrAdvance vía character.alive=false → status='defeat'.
+  return checkVictoryOrAdvance({
+    ...state,
+    character: newCharacter,
+    enemies: replaceEnemy(state.enemies, enemyState),
+  });
 }

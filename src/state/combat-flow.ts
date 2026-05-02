@@ -29,6 +29,21 @@
 //     bono de dodging al threshold del atacante enemigo (combat.ts no lo
 //     contempla en H3). El motor sagrado queda intacto; la "regla" del
 //     dodging es un agregado de orquestación, no una regla nueva.
+//   - D-4a-2-1 (sub-paso 4a.2): los statuses del PJ migran del buffer paralelo
+//     `characterStatuses` (que sólo vivía en la closure) al campo canónico
+//     `state.character.statuses`, ahora que existe (sub-paso 4a.1). Una sola
+//     fuente de verdad. El epitafio captura el final_character con los statuses
+//     activos, lo cual es info útil para la pantalla de muerte.
+//   - D-4a-2-2 (sub-paso 4a.2): el log gana un kind `status_damage` para que
+//     la vista anime "el PJ pierde 1 HP por sangrado" / "el lobo pierde 1 HP
+//     por veneno". No es una nueva razón de muerte (el combat_end sigue siendo
+//     victory/defeat); es información de turno necesaria para la animación.
+//   - D-4a-2-3 (sub-paso 4a.2): el orquestador integra el ciclo de tick de
+//     statuses (bleeding al inicio, poisoned al final, decremento al final,
+//     stunned consume turno) en cada turno (PJ y enemigo). Reutiliza los
+//     helpers de rules/statuses.ts; combat.ts también los integra para que
+//     applyCharacterAction/applyEnemyTurn (consumidos por skeleton.smoke.test)
+//     mantengan el mismo contrato.
 //   - D-3a-4: `consumeLogTail()` devuelve las entradas pendientes y avanza un
 //     cursor. La vista anima paso a paso o las pinta de golpe; no necesita
 //     conocer cuántas hay desde la última lectura. Alternativa de "pasar log
@@ -69,6 +84,13 @@ import {
   resolveAttack,
   startCombat,
 } from '../rules/combat';
+import {
+  applyStatus,
+  hasStatus,
+  tickStatusesAtTurnEnd,
+  tickStatusesAtTurnStart,
+  type StatusKind,
+} from '../rules/statuses';
 import { addItem, removeFromSlot } from '../rules/inventory';
 import { addGold } from '../rules/character';
 import { deathByEnemy, killCharacter } from '../rules/death';
@@ -135,8 +157,18 @@ export type CombatLogEntry =
     }
   | {
       kind: 'status_expired';
-      actor: string;
+      actor: string; // 'character' | instance_id
+      actor_kind: 'character' | 'enemy';
       status_kind: StatusEffect['kind'];
+    }
+  | {
+      kind: 'status_damage';
+      actor: string; // 'character' | instance_id
+      actor_kind: 'character' | 'enemy';
+      status_kind: StatusEffect['kind']; // 'bleeding' | 'poisoned'
+      damage: number;
+      target_hp_after: number;
+      target_alive_after: boolean;
     }
   | {
       kind: 'loot_resolved';
@@ -283,22 +315,33 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
     return bonus;
   };
 
-  // Decrementa los `remaining` de los statuses del PJ tras su propio turno
-  // (modelo: el dodging dura 1 turno, se evapora al final del turno del PJ
-  // siguiente — es decir, cubre exactamente al primer ataque enemigo que
-  // venga después). Aquí decrementamos al pasar al siguiente actor; los que
-  // queden en 0 se purgan en el momento de leerlos.
-  const tickCharacterStatuses = (statuses: readonly StatusEffect[]): readonly StatusEffect[] => {
-    const next: StatusEffect[] = [];
-    for (const s of statuses) {
-      const remaining = s.remaining - 1;
-      if (remaining > 0) {
-        next.push({ ...s, remaining });
-      } else {
-        pushLog({ kind: 'status_expired', actor: 'character', status_kind: s.kind });
+  // Compara `before` y `after` de statuses para emitir entradas
+  // `status_expired` por cada kind que desapareció. La regla de identidad es
+  // por kind (cap 1 por kind, 4a.1).
+  const logExpirations = (
+    before: readonly StatusEffect[],
+    after: readonly StatusEffect[],
+    actor: string,
+    actor_kind: 'character' | 'enemy',
+  ): void => {
+    for (const prev of before) {
+      const stillThere = after.some((s) => s.kind === prev.kind);
+      if (!stillThere) {
+        pushLog({ kind: 'status_expired', actor, actor_kind, status_kind: prev.kind });
       }
     }
-    return next;
+  };
+
+  // Devuelve el StatusKind dañino que disparó al inicio del turno (bleeding).
+  // Usado para etiquetar el `status_damage` del tick de inicio. En H3 sólo
+  // bleeding tickea al inicio, así que devolvemos 'bleeding' si está presente.
+  const startTickKind = (statuses: readonly StatusEffect[]): StatusKind | null => {
+    return statuses.some((s) => s.kind === 'bleeding') ? 'bleeding' : null;
+  };
+
+  // Misma función para el tick de fin (poisoned).
+  const endTickKind = (statuses: readonly StatusEffect[]): StatusKind | null => {
+    return statuses.some((s) => s.kind === 'poisoned') ? 'poisoned' : null;
   };
 
   // Avanza al siguiente actor vivo del turn_order. Réplica funcional del
@@ -383,32 +426,24 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
   };
 
   const resolveCharacterDodge = (): void => {
-    const newStatus: StatusEffect = {
+    // remaining = DODGE_DURATION_TURNS + 1 = 2 porque el tick de fin de turno
+    // del PJ (que se ejecuta al cerrar el turno actual) decrementará a 1.
+    // El primer ataque enemigo posterior verá remaining=1 y aplicará el bono.
+    // En el siguiente turno PJ, el tick de fin lo bajará a 0 y expirará.
+    // Así "cubre exactamente al primer ataque enemigo siguiente".
+    const dodgeEffect: StatusEffect = {
       kind: 'dodging',
-      // remaining=DODGE_DURATION_TURNS+1 porque tickCharacterStatuses se
-      // ejecuta al cerrar el turno del PJ; queremos que sobreviva exactamente
-      // al primer ataque enemigo posterior. Tras el tick quedará en
-      // DODGE_DURATION_TURNS y se aplicará; tras los enemigos, en su próximo
-      // turno del PJ, se purgará.
       remaining: DODGE_DURATION_TURNS + 1,
       magnitude: DODGE_THRESHOLD_BONUS,
     };
-    const newCharacter: Character = {
-      ...state.character,
-    };
-    // El status del PJ NO vive en Character (no hay campo aún en H3); vive en
-    // el orquestador como un buffer paralelo asociado a 'character'. Lo
-    // modelamos en una propiedad lateral del closure.
-    characterStatuses = [...characterStatuses, newStatus];
+    const newCharacter = applyStatus(state.character, dodgeEffect);
+    state = { ...state, character: newCharacter };
 
     pushLog({
       kind: 'dodge_applied',
       magnitude: DODGE_THRESHOLD_BONUS,
       duration: DODGE_DURATION_TURNS,
     });
-    // No alteramos `state.character` (lo dejamos para no contaminar el
-    // Character autoritativo con campos no presentes en el tipo).
-    void newCharacter;
   };
 
   const resolveCharacterUseItem = (slotIndex: number): void => {
@@ -459,8 +494,9 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
 
     const characterDef = computeCharacterDefense(state.character, itemCatalog);
     const baseInput = buildAttackInputFromEnemy(template, characterDef);
-    // Aplicamos el bono de threshold por dodging del PJ (D-3a-3).
-    const dodgeBonus = dodgingBonusAgainst(characterStatuses);
+    // Aplicamos el bono de threshold por dodging del PJ (D-3a-3). Tras 4a.2
+    // el dodging vive en state.character.statuses (no en buffer paralelo).
+    const dodgeBonus = dodgingBonusAgainst(state.character.statuses);
     const finalThreshold = baseInput.defender_threshold + dodgeBonus;
     const result: AttackResult = resolveAttack(rng, {
       attacker_pool: baseInput.attacker_pool,
@@ -490,6 +526,110 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
     });
 
     state = { ...state, character: newCharacter };
+  };
+
+  // -------------------------------------------------------------------------
+  // Helpers de tick por turno (sub-paso 4a.2)
+  // -------------------------------------------------------------------------
+
+  // Helper: reescribe un EnemyState en la lista preservando referencias del
+  // resto. Devuelve nuevo array (puro).
+  const replaceEnemyInState = (next: EnemyState): readonly EnemyState[] => {
+    return state.enemies.map((e) => (e.instance_id === next.instance_id ? next : e));
+  };
+
+  // Tick de inicio de turno sobre el PJ. Aplica daño de bleeding, loguea
+  // `status_damage` si toca y actualiza state.character. Devuelve true si el
+  // PJ sigue vivo, false si murió por DoT.
+  const tickStartOnCharacter = (): boolean => {
+    const before = state.character.statuses;
+    const tick = tickStatusesAtTurnStart(state.character);
+    if (tick.damage <= 0) return state.character.alive;
+    const damagedKind = startTickKind(before);
+    const newCharacter = applyDamageToCharacter(tick.bearer, tick.damage);
+    state = { ...state, character: newCharacter };
+    pushLog({
+      kind: 'status_damage',
+      actor: 'character',
+      actor_kind: 'character',
+      status_kind: damagedKind ?? 'bleeding',
+      damage: tick.damage,
+      target_hp_after: newCharacter.hp.current,
+      target_alive_after: newCharacter.alive,
+    });
+    return newCharacter.alive;
+  };
+
+  // Tick de fin de turno sobre el PJ. Aplica daño de poisoned, decrementa
+  // todos los statuses, loguea `status_damage` y `status_expired`. Devuelve
+  // true si el PJ sigue vivo.
+  const tickEndOnCharacter = (): boolean => {
+    const before = state.character.statuses;
+    const damagedKind = endTickKind(before);
+    const tick = tickStatusesAtTurnEnd(state.character);
+    let newCharacter = tick.bearer;
+    if (tick.damage > 0) {
+      newCharacter = applyDamageToCharacter(newCharacter, tick.damage);
+    }
+    state = { ...state, character: newCharacter };
+    if (tick.damage > 0) {
+      pushLog({
+        kind: 'status_damage',
+        actor: 'character',
+        actor_kind: 'character',
+        status_kind: damagedKind ?? 'poisoned',
+        damage: tick.damage,
+        target_hp_after: newCharacter.hp.current,
+        target_alive_after: newCharacter.alive,
+      });
+    }
+    logExpirations(before, newCharacter.statuses, 'character', 'character');
+    return newCharacter.alive;
+  };
+
+  // Tick de inicio de turno sobre un enemigo. Devuelve { alive, enemyAfter }.
+  const tickStartOnEnemy = (enemy: EnemyState): { alive: boolean; enemyAfter: EnemyState } => {
+    const before = enemy.statuses;
+    const tick = tickStatusesAtTurnStart(enemy);
+    if (tick.damage <= 0) return { alive: enemy.alive, enemyAfter: enemy };
+    const damagedKind = startTickKind(before);
+    const enemyAfter = applyDamageToEnemy(tick.bearer, tick.damage);
+    state = { ...state, enemies: replaceEnemyInState(enemyAfter) };
+    pushLog({
+      kind: 'status_damage',
+      actor: enemy.instance_id,
+      actor_kind: 'enemy',
+      status_kind: damagedKind ?? 'bleeding',
+      damage: tick.damage,
+      target_hp_after: enemyAfter.hp,
+      target_alive_after: enemyAfter.alive,
+    });
+    return { alive: enemyAfter.alive, enemyAfter };
+  };
+
+  // Tick de fin de turno sobre un enemigo. Devuelve { alive, enemyAfter }.
+  const tickEndOnEnemy = (enemy: EnemyState): { alive: boolean; enemyAfter: EnemyState } => {
+    const before = enemy.statuses;
+    const damagedKind = endTickKind(before);
+    const tick = tickStatusesAtTurnEnd(enemy);
+    let enemyAfter = tick.bearer;
+    if (tick.damage > 0) {
+      enemyAfter = applyDamageToEnemy(enemyAfter, tick.damage);
+    }
+    state = { ...state, enemies: replaceEnemyInState(enemyAfter) };
+    if (tick.damage > 0) {
+      pushLog({
+        kind: 'status_damage',
+        actor: enemy.instance_id,
+        actor_kind: 'enemy',
+        status_kind: damagedKind ?? 'poisoned',
+        damage: tick.damage,
+        target_hp_after: enemyAfter.hp,
+        target_alive_after: enemyAfter.alive,
+      });
+    }
+    logExpirations(before, enemyAfter.statuses, enemy.instance_id, 'enemy');
+    return { alive: enemyAfter.alive, enemyAfter };
   };
 
   // -------------------------------------------------------------------------
@@ -618,14 +758,60 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
   };
 
   // -------------------------------------------------------------------------
-  // Statuses del PJ (D-3a-3): viven en el orquestador, no en Character
-  // -------------------------------------------------------------------------
-
-  let characterStatuses: readonly StatusEffect[] = [];
-
-  // -------------------------------------------------------------------------
   // Loop principal: avanzar hasta turno del PJ o cierre
   // -------------------------------------------------------------------------
+  //
+  // Nota 4a.2: el buffer paralelo `characterStatuses` se eliminó. Los
+  // statuses del PJ viven ahora en state.character.statuses (campo añadido
+  // en sub-paso 4a.1). Una sola fuente de verdad.
+
+  // Resuelve un turno enemigo completo (tick start + ataque + tick end + advance).
+  // Devuelve sin más si el combate ya cerró o si no hay enemigo vivo en ese
+  // slot (skip silencioso). Loguea turn_start sólo si el enemigo de ese slot
+  // está vivo al ENTRAR (ya pasó posibles cierres anteriores).
+  const runEnemyTurn = (instanceId: string): void => {
+    const enemy = findEnemyState(instanceId);
+    if (!enemy.alive) {
+      // Slot muerto al llegar su turno: no hay tick (no actúa), no hay log.
+      // El advanceTurn del caller pasa al siguiente.
+      return;
+    }
+    pushLog({ kind: 'turn_start', actor: instanceId, actor_kind: 'enemy' });
+
+    // (1) Tick start (bleeding). Si muere por DoT, advance y fin.
+    const start = tickStartOnEnemy(enemy);
+    if (!start.alive) {
+      state = advanceTurn(state);
+      return;
+    }
+    let liveEnemy = start.enemyAfter;
+
+    // (2) ¿Stunned? Pierde el turno: tick end + advance, sin atacar.
+    if (hasStatus(liveEnemy, 'stunned')) {
+      tickEndOnEnemy(liveEnemy);
+      state = advanceTurn(state);
+      return;
+    }
+
+    // (3) Ataca al PJ.
+    resolveEnemyAttack(instanceId);
+    // El PJ puede haber muerto. resolveEnemyAttack ya actualizó state.
+    if (!state.character.alive) {
+      state = advanceTurn(state);
+      return;
+    }
+
+    // (4) Tick end (poisoned + decremento). El enemigo puede haber sufrido
+    // cambios externos durante el ataque (no en H3, pero releemos la
+    // referencia viva por si acaso). Si muere por DoT al final, sólo afecta
+    // a su propio slot.
+    const liveEnemyAfterAttack = state.enemies.find((e) => e.instance_id === instanceId);
+    if (liveEnemyAfterAttack !== undefined && liveEnemyAfterAttack.alive) {
+      tickEndOnEnemy(liveEnemyAfterAttack);
+    }
+
+    state = advanceTurn(state);
+  };
 
   // Tras una acción del PJ, el orquestador avanza turnos enemigos hasta volver
   // al PJ o cerrar el combate. NO bloquea: cada turno enemigo empuja sus
@@ -639,9 +825,7 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
     while (state.status === 'ongoing') {
       const turn = state.turn_order[state.current_turn_index]!;
       if (turn.actor === 'character') return;
-      pushLog({ kind: 'turn_start', actor: turn.actor, actor_kind: 'enemy' });
-      resolveEnemyAttack(turn.actor);
-      state = advanceTurn(state);
+      runEnemyTurn(turn.actor);
       iters++;
       if (iters > MAX_ITERS) {
         throw new Error('combat-flow: bucle de turnos enemigos excedido (bug).');
@@ -670,6 +854,35 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
     try {
       pushLog({ kind: 'turn_start', actor: 'character', actor_kind: 'character' });
 
+      // (1) Tick start del PJ (bleeding). Si muere por DoT, no procesa la
+      // acción, advance + cierre.
+      const aliveAfterStart = tickStartOnCharacter();
+      if (!aliveAfterStart) {
+        state = advanceTurn(state);
+        finalizeIfClosed();
+        return log.slice(tailStart);
+      }
+
+      // (2) ¿Stunned? Pierde el turno. Tick end (decrementa stunned) + advance.
+      // La acción NO se procesa pero NO se considera un error (el caller no
+      // sabe necesariamente que el PJ está aturdido — la vista podría haber
+      // pintado el panel de acciones igual).
+      if (hasStatus(state.character, 'stunned')) {
+        const aliveAfterEnd = tickEndOnCharacter();
+        if (!aliveAfterEnd) {
+          state = advanceTurn(state);
+          finalizeIfClosed();
+          return log.slice(tailStart);
+        }
+        state = advanceTurn(state);
+        if (!finalizeIfClosed()) {
+          runUntilCharacterTurnOrEnd();
+          finalizeIfClosed();
+        }
+        return log.slice(tailStart);
+      }
+
+      // (3) Procesa la acción.
       switch (action.kind) {
         case 'attack':
           resolveCharacterAttack(action.target_instance_id);
@@ -687,13 +900,16 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
           );
       }
 
-      // Tras la acción: avanzar turno y encadenar enemigos.
-      state = advanceTurn(state);
-      // Tick de statuses al cerrar el turno del PJ (decrementa dodging;
-      // el bono se aplicará al primer ataque enemigo siguiente y luego
-      // expirará en el próximo turno del PJ).
-      characterStatuses = tickCharacterStatuses(characterStatuses);
+      // (4) Tick end del PJ (poisoned + decremento). Si muere → cierre.
+      const aliveAfterEnd = tickEndOnCharacter();
+      if (!aliveAfterEnd) {
+        state = advanceTurn(state);
+        finalizeIfClosed();
+        return log.slice(tailStart);
+      }
 
+      // (5) Avanzar turno y encadenar enemigos.
+      state = advanceTurn(state);
       if (!finalizeIfClosed()) {
         runUntilCharacterTurnOrEnd();
         finalizeIfClosed();
