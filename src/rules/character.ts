@@ -4,6 +4,7 @@
 import type { Inventory } from './inventory';
 import { buildStartingInventory } from '../data/items';
 import type { Epitaph } from './death';
+import type { StatusEffect } from './statuses';
 
 // -----------------------------------------------------------------------------
 // Constantes de creación (biblia §4.1, §4.2, §4.7)
@@ -99,6 +100,12 @@ export interface Character {
   // Puntos sin gastar acumulados por subidas de nivel pulsadas pero no
   // asignadas a habilidad/atributo/perk concretos. En creación, todo a 0.
   pending: PendingPoints;
+  // Estados activos (sangrado, veneno, aturdido, esquivando, etc.). Vacío al
+  // crear el PJ. Se rellena durante el combate vía rules/statuses.ts y se
+  // limpia al cerrar el combate (sub-paso 4a.4): los statuses no persisten
+  // entre combates en H3. La fuente de verdad de los tipos vive en
+  // rules/statuses.ts; aquí sólo se almacena el contenedor inmutable.
+  statuses: readonly StatusEffect[];
 }
 
 // -----------------------------------------------------------------------------
@@ -298,6 +305,7 @@ export function createCharacter(input: CreateCharacterInput): Character {
     alive: true,
     epitaph: null,
     pending: { skill: 0, attribute: 0, perk: 0 },
+    statuses: [],
   };
 }
 

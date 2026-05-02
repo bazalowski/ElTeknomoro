@@ -22,6 +22,10 @@ import type { AttributeId, Character } from './character';
 import type { Item, ItemId } from './inventory';
 import { equippedWeapon, totalDefenseBonus } from './inventory';
 import { computeDefense } from './character';
+// Tipos canónicos de estados — la fuente de verdad vive en rules/statuses.ts.
+// Se importan localmente para usarlos en la firma de EnemyState y se
+// re-exportan más abajo para mantener los importadores actuales (combat-flow.ts).
+import type { StatusEffect } from './statuses';
 
 // -----------------------------------------------------------------------------
 // Enemigos (biblia §4.8 + scope §1.5/§1.9)
@@ -59,18 +63,14 @@ export interface EnemyState {
 // -----------------------------------------------------------------------------
 // Estados (biblia §4.8: iconos sobre sprite)
 // -----------------------------------------------------------------------------
-
-// PROVISIONAL H3: catálogo mínimo. Cada estado se modelará en su hito propio
-// (sangrado/veneno como DoT en H3, aturdido como skip-turn en H3, etc.).
-export type StatusKind = 'bleeding' | 'poisoned' | 'stunned' | 'dodging';
-
-export interface StatusEffect {
-  kind: StatusKind;
-  // Turnos que le quedan. 0 = se evapora al final del turno actual.
-  remaining: number;
-  // Magnitud (daño por turno para DoT, bono de DEF para dodging, etc.).
-  magnitude: number;
-}
+//
+// Los tipos canónicos viven en rules/statuses.ts (sub-paso 4a.1). Aquí se
+// re-exportan para mantener compatibilidad con los importadores actuales
+// (combat-flow.ts, death.ts) sin duplicar la fuente de verdad. Cualquier
+// helper de stacking/tick se importa desde rules/statuses.ts. La importación
+// `import type { StatusEffect } from './statuses'` está arriba, junto al
+// resto de imports, porque la usa la firma de EnemyState en este mismo archivo.
+export type { StatusKind, StatusEffect } from './statuses';
 
 // -----------------------------------------------------------------------------
 // Resolución de ataque (biblia §4.3, decisión #36)
