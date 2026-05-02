@@ -1417,7 +1417,7 @@ El inventario del MVP no cambia: el mismo juego se entrega en otro orden. La est
 - `vite build` limpio.
 - 0 deudas técnicas de cableado. PASO 3 archivado como completo. Hitos del MVP: 10 (antes 9), inventario del producto inalterado.
 
-Próximo: arrancar **H4** (mapa + exploración, sin quest). Cuestionario de scope con Bazalo antes del sub-paso 4a.
+Próximo: **PASO 4 del Hito 3** (4a Statuses → 4b Perks aplicados → 4c IA con perfiles + `flee`). Tras cierre de PASO 4, cuestionario de scope con Bazalo y arranque de **H4** (mapa + exploración, sin quest).
 
 ---
 

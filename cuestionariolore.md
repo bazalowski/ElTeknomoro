@@ -103,22 +103,37 @@
 21. *(Si respondiste que sí hay alma en 20)* ¿A dónde va, quién la recibe, puede regresar?
 Los personajes con esta hjabilidad.
 22. *(Si respondiste que sí hay alma en 20)* ¿Las criaturas mutadas tienen el mismo tipo de alma que tendría un humano clásico, o algo cambió?
--
+- Las almas de seres humanos conscientes tienen mas poder.
 
 23. *(Si respondiste que no hay alma en 20)* ¿Qué queda entonces de un ser cuando muere — recuerdos en otros, masa orgánica, eco arcano, nada?
+- Si nadie usa la habilidad, masa orgánica. Si es "exorcizado", es diferente.
 
 24. ¿El esoterismo demoníaco implica entidades reales con voluntad, o son fenómenos sin sujeto que la gente personifica por miedo?
+- Depende del poder de los cultos. Puede ser ambas. 
 25. *(Si respondiste "entidades reales" en 24)* ¿Son finitas, contables, conocidas, o son potencialmente infinitas y sin nombre?
+- Son finitas y conocidas. Pero con un potencial amplio.
 26. ¿Existe destino, providencia, predestinación en este mundo, o todo es contingente?
+- Todo es contingente.
+
 27. ¿Hay leyes físicas que el evento rompió o reescribió? Da un ejemplo concreto de una ley que aquí ya no se cumple como en nuestro mundo.
+- Los minerales. Debido a la evolución, adquirieron poderes ampliados. EJ: Una espada forjada con una aleacion de diamante y volcanita añadiria + resistencia + daño de fuego.
 
 ### Bloque 3 — Geografía y cartografía
 
 28. [★] ¿El mundo del juego es **un continente**, un archipiélago, una región dentro de un mundo mayor, o no se sabe porque nadie lo ha cartografiado entero?
+- Es literalmente la tierra. El juego comienza en la Peninsula Ibérica (España, Portugal, Las islas Baleares)
 29. ¿Qué escala tiene la zona jugable: el equivalente a una comarca, a un país, a un continente, o irrelevante porque la geografía es subjetiva?
+- Un pais en v1. Un continente en v2. El mundo en v3.
 30. [REPO] Los 5 biomas de MVP son llanura, bosque, desierto, glaciar, ruinas arcanas. Confirma o cambia los nombres internos de cada bioma para que dejen de ser genéricos.
+- Norte : Bosque Lluvioso
+- Sur : Tierras Cálidas
+- Este : Llanuras costeras
+- Oeste : Costa Montañosa
+- Centro : Zona Cero
 31. ¿Cada bioma tiene una identidad propia (un nombre propio, una historia), o son categorías genéricas tipo "el bosque del norte"?
+- Justo lo definó en .30 
 32. ¿Existen fronteras visibles entre biomas (líneas, ríos, muros, accidentes) o las transiciones son borrosas y orgánicas?
+
 33. ¿Qué bioma es el más peligroso del mundo y por qué motivo concreto (no solo "es duro")?
 34. ¿Qué bioma es el más sagrado o reverenciado, si lo hay?
 35. ¿Hay lugares **prohibidos**: zonas a las que nadie va, ni siquiera los más temerarios? ¿Por qué están prohibidas — peligro físico, tabú, contaminación arcana, otra cosa?
