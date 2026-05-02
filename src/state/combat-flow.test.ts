@@ -4,6 +4,7 @@ import { createCharacter, type CreateCharacterInput, type Character } from '../r
 import { addItem } from '../rules/inventory';
 import { createRng } from '../rules/dice';
 import type { Enemy, EnemyId, EnemyState } from '../rules/combat';
+import { STATUS_DEFAULT_MAGNITUDE } from '../rules/statuses';
 import { ENEMIES_BY_ID } from '../data/enemies';
 import { ITEMS_BY_ID } from '../data/items';
 
@@ -292,18 +293,22 @@ describe('combat-flow / acciones del PJ', () => {
     const log = h2.getLog();
     const dodgeEntry = log.find((e) => e.kind === 'dodge_applied');
     expect(dodgeEntry).toBeDefined();
+    // 4a.3: la magnitud reportada en el log es la del status `dodging` por
+    // defecto (STATUS_DEFAULT_MAGNITUDE.dodging). El bono real al threshold lo
+    // calcula el motor (defensiveThresholdBonus → +1 fijo si dodging activo).
     if (dodgeEntry?.kind === 'dodge_applied') {
-      expect(dodgeEntry.magnitude).toBe(2);
+      expect(dodgeEntry.magnitude).toBe(STATUS_DEFAULT_MAGNITUDE.dodging);
     }
 
     // El primer ataque enemigo en el log debe tener threshold con bono.
-    // Lobo defense_threshold de PJ = ceil(DEF/3). DEF de buildOP = 2 + floor(4/2) = 4 → threshold base 2. Con +2 → 4.
+    // Lobo defense_threshold del PJ = ceil(DEF/3). DEF de buildOP = 2 + floor(4/2) = 4
+    // → threshold base 2. Con +1 (bono dodging del motor, decisión 4a.3) → 3.
     const firstEnemyAttack = log.find(
       (e): e is Extract<CombatLogEntry, { kind: 'attack_resolved' }> =>
         e.kind === 'attack_resolved' && e.attacker_kind === 'enemy',
     );
     expect(firstEnemyAttack).toBeDefined();
-    expect(firstEnemyAttack!.threshold).toBe(4); // 2 base + 2 dodge
+    expect(firstEnemyAttack!.threshold).toBe(3); // 2 base + 1 dodge (4a.3)
 
     // Tras un ciclo más (ataque del PJ siguiente), el dodging debería expirar.
     if (h2.isOngoing() && h2.isCharacterTurn()) {

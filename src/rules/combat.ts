@@ -25,8 +25,15 @@ import { computeDefense } from './character';
 // Tipos canónicos de estados — la fuente de verdad vive en rules/statuses.ts.
 // Se importan localmente para usarlos en la firma de EnemyState y se
 // re-exportan más abajo para mantener los importadores actuales (combat-flow.ts).
-import type { StatusEffect } from './statuses';
-import { hasStatus, tickStatusesAtTurnEnd, tickStatusesAtTurnStart } from './statuses';
+import type { StatusBearer, StatusEffect } from './statuses';
+import {
+  applyStatus,
+  hasStatus,
+  STATUS_DEFAULT_DURATION,
+  STATUS_DEFAULT_MAGNITUDE,
+  tickStatusesAtTurnEnd,
+  tickStatusesAtTurnStart,
+} from './statuses';
 
 // -----------------------------------------------------------------------------
 // Enemigos (biblia §4.8 + scope §1.5/§1.9)
@@ -72,6 +79,38 @@ export interface EnemyState {
 // `import type { StatusEffect } from './statuses'` está arriba, junto al
 // resto de imports, porque la usa la firma de EnemyState en este mismo archivo.
 export type { StatusKind, StatusEffect } from './statuses';
+
+// -----------------------------------------------------------------------------
+// Modificadores externos al threshold (decisión 4a.3)
+// -----------------------------------------------------------------------------
+//
+// El threshold base (computeHitThreshold = ceil(DEF/3), decisión #46) es
+// SAGRADO: no se modifica. Los efectos que endurecen al defensor se aplican
+// como una capa externa que SUMA al threshold final justo antes de pasar el
+// AttackInput a resolveAttack. Esta separación es la única forma de tocar
+// "qué tan difícil es impactar" sin romper #75 (motor intocable).
+//
+// dodging: +1 al threshold del defensor mientras el efecto esté activo.
+//   - El bono es CONSTANTE (+1), no toma la magnitud del efecto. Razón:
+//     simulamos que un dado de pool típico tiene P(éxito)=0.5; +1 al threshold
+//     bajo un pool de 4-6 dados reduce P(impacto) en ~25-30%, suficiente para
+//     que dodge sea una opción "gasto turno para reducir daño esperado", no
+//     "casi inmunidad". El +2 que el orquestador usaba en H3 (D-3a-2) era
+//     equivalente a esquiva total y se descarta al bajar al motor.
+//   - El llamador suma este bono en el sitio donde construye el AttackInput
+//     final (el último mile antes del dado). Eso garantiza que cualquier
+//     modificador futuro (cobertura, ceguera) se apile en el mismo sitio.
+const DODGING_THRESHOLD_BONUS = 1;
+
+// Devuelve el bono total al threshold por statuses defensivos del portador.
+// Hoy solo dodging contribuye. Genérico para que un futuro `covered` o
+// `blinded` se sume aquí sin tocar las llamadas. Acepta cualquier StatusBearer
+// (Character o EnemyState): preserva la simetría PJ ↔ enemigo.
+export function defensiveThresholdBonus(defender: StatusBearer): number {
+  let bonus = 0;
+  if (hasStatus(defender, 'dodging')) bonus += DODGING_THRESHOLD_BONUS;
+  return bonus;
+}
 
 // -----------------------------------------------------------------------------
 // Resolución de ataque (biblia §4.3, decisión #36)
@@ -422,47 +461,87 @@ export function applyCharacterAction(
     return checkVictoryOrAdvance({ ...state, character: stunnedChar });
   }
 
-  // Validamos la acción ANTES de procesarla (para que stunned no haga validar).
-  if (action.kind !== 'attack') {
+  // Validamos las acciones NO implementadas ANTES de procesarlas. attack y dodge
+  // son acciones de primera clase del motor en 4a.3. El resto siguen lanzando
+  // hasta que se cierren reglas (use_item necesita inventory; use_skill
+  // necesita catálogo de habilidades; flee es regla diferida).
+  if (action.kind === 'use_item' || action.kind === 'use_skill' || action.kind === 'flee') {
     throw new Error(`applyCharacterAction: acción "${action.kind}" no implementada en H3.`);
   }
 
-  const target = findEnemyByInstance(state.enemies, action.target_instance_id);
-  const targetTemplate = enemyTemplates[target.state.enemy_id];
-  if (targetTemplate === undefined) {
-    throw new Error(`Template "${target.state.enemy_id}" no encontrado.`);
-  }
-  if (!target.state.alive) {
-    throw new Error(`applyCharacterAction: el enemigo "${action.target_instance_id}" ya está muerto.`);
+  // (3) Procesa la acción según el kind. Cada rama prepara las mutaciones
+  // de enemies (si toca) y deja `character` en el estado pre-tickEnd. El tick
+  // de fin de turno se hace UNA sola vez al final, fuera del switch, para
+  // garantizar que dodging recién aplicado se decremente exactamente una vez.
+  let nextEnemies: readonly EnemyState[] = state.enemies;
+
+  if (action.kind === 'attack') {
+    const target = findEnemyByInstance(state.enemies, action.target_instance_id);
+    const targetTemplate = enemyTemplates[target.state.enemy_id];
+    if (targetTemplate === undefined) {
+      throw new Error(`Template "${target.state.enemy_id}" no encontrado.`);
+    }
+    if (!target.state.alive) {
+      throw new Error(`applyCharacterAction: el enemigo "${action.target_instance_id}" ya está muerto.`);
+    }
+
+    const baseInput = buildAttackInputFromCharacter(character, 0, catalog);
+    // Modificador externo: +1 si el defensor (enemigo) tiene dodging.
+    // Simetría PJ ↔ enemigo: aunque la IA de H3 no aplica dodging a sí misma,
+    // el motor lo soporta para que IA vs IA del Modo Privado funcione sin
+    // bifurcar la regla.
+    const defenderBonus = defensiveThresholdBonus(target.state);
+    const attackInput: AttackInput = {
+      attacker_pool: baseInput.attacker_pool,
+      defender_threshold: targetTemplate.defense_threshold + defenderBonus,
+      weapon_damage: baseInput.weapon_damage,
+    };
+    const result = resolveAttack(rng, attackInput);
+    const newEnemyState = applyDamageToEnemy(target.state, result.damage);
+    const arr = state.enemies.slice();
+    arr[target.index] = newEnemyState;
+    nextEnemies = arr;
+  } else {
+    // action.kind === 'dodge'.
+    //
+    // Aplica el status `dodging` al PJ. NO daña, NO consume objetivo, sólo
+    // posiciona el buff y deja que el flujo normal cierre el turno (tickEnd
+    // + checkVictoryOrAdvance).
+    //
+    // Auditoría timing dodging (decisión 4a.3, confirmada por director):
+    //   Turno PJ N (dodge): tickEnd decrementa remaining 2 → 1. Sigue activo.
+    //   Turno enemigo N+1: tickStart enemigo NO toca al PJ. Ataque enemigo ve
+    //     `dodging` activo en state.character.statuses → +1 threshold (vía
+    //     defensiveThresholdBonus). tickEnd enemigo NO toca al PJ.
+    //   Turno PJ N+2: tickStart PJ NO altera dodging. tickEnd PJ decrementa
+    //     remaining 1 → 0 → expira. Cobertura exacta: el ATAQUE enemigo
+    //     siguiente, ni más ni menos.
+    // Por eso remaining = STATUS_DEFAULT_DURATION.dodging (=1) + 1 = 2:
+    // el "+1" compensa el tickEnd del propio turno donde se aplica.
+    //
+    // STATUS_DEFAULT_DURATION.dodging es la duración SEMÁNTICA (1 ataque
+    // cubierto), no el remaining real. El motor traduce semántica → remaining
+    // sumando 1.
+    const dodgeEffect: StatusEffect = {
+      kind: 'dodging',
+      remaining: STATUS_DEFAULT_DURATION.dodging + 1,
+      magnitude: STATUS_DEFAULT_MAGNITUDE.dodging,
+    };
+    character = applyStatus(character, dodgeEffect);
   }
 
-  // Defensa del enemigo: derivada de defense_threshold ya resuelto en plantilla.
-  // El umbral lo recalcula computeHitThreshold a partir de una "DEF efectiva"
-  // proxy = defense_threshold * 3 para que la fórmula sea coherente.
-  // Más limpio: pasar threshold directo. resolveAttack ya recibe threshold.
-  // (3) Procesa la acción.
-  const baseInput = buildAttackInputFromCharacter(character, 0, catalog);
-  const attackInput: AttackInput = {
-    attacker_pool: baseInput.attacker_pool,
-    defender_threshold: targetTemplate.defense_threshold,
-    weapon_damage: baseInput.weapon_damage,
-  };
-  const result = resolveAttack(rng, attackInput);
-  const newEnemyState = applyDamageToEnemy(target.state, result.damage);
-  const newEnemies = state.enemies.slice();
-  newEnemies[target.index] = newEnemyState;
-
-  // (4) Tick de fin: poisoned + decremento sobre el PJ.
+  // (4) Tick de fin: poisoned + decremento sobre el PJ. UNA sola vez, común
+  // a todas las acciones.
   const endTick = tickStatusesAtTurnEnd(character);
   character = endTick.bearer;
   if (endTick.damage > 0) {
     character = applyDamageToCharacter(character, endTick.damage);
   }
   if (!character.alive) {
-    return { ...state, character, enemies: newEnemies, status: 'defeat' };
+    return { ...state, character, enemies: nextEnemies, status: 'defeat' };
   }
 
-  return checkVictoryOrAdvance({ ...state, character, enemies: newEnemies });
+  return checkVictoryOrAdvance({ ...state, character, enemies: nextEnemies });
 }
 
 // Resuelve el turno del enemigo cuyo turno está en current_turn_index.
@@ -536,7 +615,15 @@ export function applyEnemyTurn(
 
   // (3) Procesa el ataque.
   const characterDef = computeCharacterDefense(state.character, catalog);
-  const attackInput = buildAttackInputFromEnemy(template, characterDef);
+  const baseEnemyInput = buildAttackInputFromEnemy(template, characterDef);
+  // Modificador externo: +1 si el defensor (PJ) tiene dodging. Mismo helper
+  // que la rama PJ→enemigo: una sola fuente de verdad para el bono.
+  const characterBonus = defensiveThresholdBonus(state.character);
+  const attackInput: AttackInput = {
+    attacker_pool: baseEnemyInput.attacker_pool,
+    defender_threshold: baseEnemyInput.defender_threshold + characterBonus,
+    weapon_damage: baseEnemyInput.weapon_damage,
+  };
   const result = resolveAttack(rng, attackInput);
   const newCharacter = applyDamageToCharacter(state.character, result.damage);
 

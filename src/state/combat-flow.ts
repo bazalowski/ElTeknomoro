@@ -81,12 +81,15 @@ import {
   buildAttackInputFromEnemy,
   computeCharacterDefense,
   computeHitThreshold,
+  defensiveThresholdBonus,
   resolveAttack,
   startCombat,
 } from '../rules/combat';
 import {
   applyStatus,
   hasStatus,
+  STATUS_DEFAULT_DURATION,
+  STATUS_DEFAULT_MAGNITUDE,
   tickStatusesAtTurnEnd,
   tickStatusesAtTurnStart,
   type StatusKind,
@@ -97,13 +100,20 @@ import { deathByEnemy, killCharacter } from '../rules/death';
 import { getLootTableForEnemy } from '../data/enemies';
 
 // -----------------------------------------------------------------------------
-// Constantes de orquestación (D-3a-1, D-3a-2)
+// Constantes de orquestación (D-3a-1)
 // -----------------------------------------------------------------------------
 
 const HEAL_AMOUNT_MINOR_POTION = 6;
-const DODGE_THRESHOLD_BONUS = 2;
-const DODGE_DURATION_TURNS = 1;
 const HEAL_POTION_ITEM_ID: ItemId = 'pocion_curacion_menor';
+
+// Dodge: la duración SEMÁNTICA y el bono al threshold viven ya en el motor
+// (rules/combat.ts y rules/statuses.ts) tras 4a.3. El orquestador conserva
+// estas constantes derivadas SOLO para que la entrada `dodge_applied` del log
+// (consumida por la vista) reporte un par (magnitude, duration) coherente con
+// lo que el motor escribe. NO se usan para calcular el bono real al threshold:
+// para eso el orquestador llama a `defensiveThresholdBonus(defender)` del motor.
+const DODGE_LOG_DURATION = STATUS_DEFAULT_DURATION.dodging;
+const DODGE_LOG_MAGNITUDE = STATUS_DEFAULT_MAGNITUDE.dodging;
 
 // -----------------------------------------------------------------------------
 // Tipos de log (discriminated union)
@@ -305,15 +315,12 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
     return found;
   };
 
-  // Suma del bono al threshold del atacante por status 'dodging' del defensor.
-  // En H3 sólo el PJ puede tener dodging, pero la lógica es genérica.
-  const dodgingBonusAgainst = (defenderStatuses: readonly StatusEffect[]): number => {
-    let bonus = 0;
-    for (const s of defenderStatuses) {
-      if (s.kind === 'dodging' && s.remaining > 0) bonus += s.magnitude;
-    }
-    return bonus;
-  };
+  // El bono al threshold del atacante por dodging del defensor ya no se
+  // calcula aquí. Lo expone el motor vía `defensiveThresholdBonus(defender)`
+  // (rules/combat.ts), que suma +1 fijo si el defensor tiene `dodging`. Una
+  // sola fuente de verdad PJ ↔ enemigo. El llamador (resolveEnemyAttack y, si
+  // alguna vez se añade IA con dodge, también resolveCharacterAttack) usa el
+  // helper directamente.
 
   // Compara `before` y `after` de statuses para emitir entradas
   // `status_expired` por cada kind que desapareció. La regla de identidad es
@@ -391,10 +398,14 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
     // attackInput del PJ. buildAttackInputFromCharacter recalcula el
     // threshold a partir de una DEF dummy=0 (que no usamos aquí); lo
     // sobrescribimos por el defense_threshold declarado del enemigo.
+    // Bono de dodging del enemigo defensor (simetría 4a.3): hoy ningún
+    // enemigo lo aplica, pero el motor está preparado.
     const baseInput = buildAttackInputFromCharacter(state.character, 0, itemCatalog);
+    const enemyDodgeBonus = defensiveThresholdBonus(target);
+    const finalThreshold = targetTemplate.defense_threshold + enemyDodgeBonus;
     const result: AttackResult = resolveAttack(rng, {
       attacker_pool: baseInput.attacker_pool,
-      defender_threshold: targetTemplate.defense_threshold,
+      defender_threshold: finalThreshold,
       weapon_damage: baseInput.weapon_damage,
     });
 
@@ -410,7 +421,7 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
       target: target.instance_id,
       target_kind: 'enemy',
       pool: baseInput.attacker_pool,
-      threshold: targetTemplate.defense_threshold,
+      threshold: finalThreshold,
       rolls: result.pool_result.rolls,
       successes: result.pool_result.successes,
       sixes: result.pool_result.sixes,
@@ -426,23 +437,30 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
   };
 
   const resolveCharacterDodge = (): void => {
-    // remaining = DODGE_DURATION_TURNS + 1 = 2 porque el tick de fin de turno
-    // del PJ (que se ejecuta al cerrar el turno actual) decrementará a 1.
-    // El primer ataque enemigo posterior verá remaining=1 y aplicará el bono.
-    // En el siguiente turno PJ, el tick de fin lo bajará a 0 y expirará.
-    // Así "cubre exactamente al primer ataque enemigo siguiente".
+    // Tras 4a.3, dodge es acción de primera clase del motor (rules/combat.ts):
+    // applyCharacterAction({ kind: 'dodge' }) aplica el status `dodging` al PJ
+    // con remaining = STATUS_DEFAULT_DURATION + 1 y magnitud por defecto. El
+    // orquestador NO lo invoca directamente porque mantiene su propio loop
+    // de tick para emitir entradas de log paso a paso (`status_damage`,
+    // `status_expired`); en su lugar replica la mutación con los MISMOS
+    // parámetros que el motor. Una sola fuente de verdad para los números:
+    // STATUS_DEFAULT_DURATION.dodging y STATUS_DEFAULT_MAGNITUDE.dodging.
+    //
+    // El "+1" sobre la duración semántica compensa el tickEnd del propio
+    // turno donde se aplica (auditoría en rules/combat.ts § applyCharacterAction
+    // rama dodge). Cobertura efectiva: el siguiente ataque enemigo, ni más ni menos.
     const dodgeEffect: StatusEffect = {
       kind: 'dodging',
-      remaining: DODGE_DURATION_TURNS + 1,
-      magnitude: DODGE_THRESHOLD_BONUS,
+      remaining: STATUS_DEFAULT_DURATION.dodging + 1,
+      magnitude: STATUS_DEFAULT_MAGNITUDE.dodging,
     };
     const newCharacter = applyStatus(state.character, dodgeEffect);
     state = { ...state, character: newCharacter };
 
     pushLog({
       kind: 'dodge_applied',
-      magnitude: DODGE_THRESHOLD_BONUS,
-      duration: DODGE_DURATION_TURNS,
+      magnitude: DODGE_LOG_MAGNITUDE,
+      duration: DODGE_LOG_DURATION,
     });
   };
 
@@ -494,9 +512,11 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
 
     const characterDef = computeCharacterDefense(state.character, itemCatalog);
     const baseInput = buildAttackInputFromEnemy(template, characterDef);
-    // Aplicamos el bono de threshold por dodging del PJ (D-3a-3). Tras 4a.2
-    // el dodging vive en state.character.statuses (no en buffer paralelo).
-    const dodgeBonus = dodgingBonusAgainst(state.character.statuses);
+    // Aplicamos el bono de threshold por dodging del PJ. Tras 4a.3 el bono
+    // (+1 fijo) vive en el motor: defensiveThresholdBonus(defender). El
+    // orquestador SOLO consulta. Garantiza simetría con applyEnemyTurn del
+    // motor: ambos lados aplican el mismo modificador.
+    const dodgeBonus = defensiveThresholdBonus(state.character);
     const finalThreshold = baseInput.defender_threshold + dodgeBonus;
     const result: AttackResult = resolveAttack(rng, {
       attacker_pool: baseInput.attacker_pool,
