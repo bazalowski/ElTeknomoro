@@ -1,7 +1,7 @@
 # El Teknomoro — Biblia del juego
 
 > Documento vivo. Consolida todo lo que sabemos (y lo que no sabemos) sobre el proyecto.
-> **Versión:** v0.9 · **Fecha:** 26 de abril de 2026 · **Autor:** Bazalo con dirección de el-teknomoro-director
+> **Versión:** v0.20 · **Fecha:** 2 de mayo de 2026 · **Autor:** Bazalo con dirección de el-teknomoro-director
 
 ---
 
@@ -11,11 +11,15 @@
 2. Visión y scope
 3. Estado actual y roadmap
 4. Reglamento (núcleo numérico cerrado)
-5. Decisiones cerradas (46)
+5. Decisiones cerradas
 6. Preguntas abiertas (0 bloqueantes)
 7. Arquitectura técnica planeada
 8. Flujos y pantallas del MVP
-9. Historial de versiones
+9. Sistema de exploración v1 (overworld y POIs)
+10. Sistema de lore v1 (átomos embebidos)
+11. Tropos evitados
+12. Protocolo Bazalo ↔ Claude
+13. Historial de versiones
 
 ---
 
@@ -39,21 +43,76 @@
 
 ## 2. Visión y scope
 
-El Teknomoro es un RPG donde el jugador explora un mundo **post-humano** — la humanidad se extinguió y la naturaleza creció encima, hostil y mutada — compone un personaje con atributos y habilidades, combate, craftea, se une a facciones y toma decisiones que modifican el mundo de manera persistente. Sobre la base biológica corre una veta esotérica/demoníaca **rara y reverencial**: cuando aparece, es evento singular, no atmósfera. Muere una vez, muere para siempre.
+### 2.1 Verbo del juego
 
-El marco lore queda fijado en decisión #47 (§5). Cualquier contenido, paleta, copy o iconografía deriva de ahí.
+El Teknomoro es un RPG donde el jugador **explora, combate, colecciona, visita asentamientos y persigue la leyenda Teknomoro** en un mundo **post-humano** — la humanidad se extinguió y la naturaleza creció encima, hostil y mutada. Compone un personaje con atributos y habilidades, combate, craftea, se une a facciones y toma decisiones que modifican el mundo de manera persistente. Sobre la base biológica corre una veta esotérica/demoníaca **rara y reverencial**: cuando aparece, es evento singular, no atmósfera. Muere una vez, muere para siempre.
 
-**Dos fases, no tres.** La fase de mesa (PDF jugable) que aparecía en versiones anteriores está fuera del proceso activo. El reglamento ya no se valida jugando en papel: se valida por **simulación numérica** (hoja de cálculo / Monte Carlo) antes de tocar código, y por **playtest del propio prototipo web** una vez haya módulos jugables.
+El jugador tipo combina **Fallout 1-2** (arquetipo + decisiones permanentes), **Baldur's Gate** (densidad de hoja de personaje y descubrimiento) y **RTS clásico** (lectura del mapa, planificación). No es Stardew, no es Mad Max, no es Slay the Spire (aunque le presta el "intent visible"); ver §11 Tropos evitados.
 
-La fase web existe porque es el camino más corto entre "tengo reglas simuladas" y "tengo jugadores externos probándolo". Un ejecutable de Godot requiere instalación; una URL con login no.
+### 2.2 Mix campaña + sandbox
+
+El juego base mezcla **campaña con cierre Teknomoro** (modo Historia, H5) y **sandbox post-final** que se desbloquea al completar la quest principal. El sandbox post-final no entra en v1 — se reserva para v1.1+ junto con NG+ y dos expansiones planificadas.
+
+Permadeath con **items de salvación** (consumibles raros que evitan la muerte una vez). Al morir, **reset total** del personaje y del progreso de partida; sobreviven entre runs únicamente: lore descubierto, nombres de POIs visitados, recetas conocidas, meta-progresión declarada en §2.3 y stats globales del jugador (combates, muertes, etc.).
+
+### 2.3 Hitos roguelike
+
+A partir de v1, El Teknomoro entra como **roguelike-lite**: cada nueva run tiene **hitos roguelike** que el jugador desbloquea de forma persistente entre muertes. Las categorías cerradas son:
+
+- Clases / arquetipos disponibles al crear el siguiente PJ.
+- Zonas iniciales seleccionables (puntos de salida).
+- Items de partida desbloqueables.
+
+La **cantidad concreta** de hitos por categoría (cuántas clases / cuántas zonas / cuántos items) se cierra cuando v1 esté esqueletada y el director pueda calibrar contra contenido real. Provisional: la run 1 sólo tiene clase y zona base; cada nueva run intenta abrir 1-2 hitos por completar logros internos. Objetivo de longitud: **10-20 runs para "ver todo" v1**.
+
+### 2.4 Fases activas
+
+**Dos fases, no tres.** La fase de mesa (PDF jugable) que aparecía en versiones anteriores está fuera del proceso activo. El reglamento ya no se valida jugando en papel: se valida por **simulación numérica** (Monte Carlo determinista) antes de tocar código, y por **playtest del propio prototipo web** una vez haya módulos jugables.
+
+La fase web existe porque es el camino más corto entre "tengo reglas simuladas" y "tengo jugadores externos probándolo". Un ejecutable de Godot requiere instalación; una URL con login no. **Publicación v1: GitHub Pages.**
 
 La fase motor existe como posibilidad, no como compromiso. Solo se activa si la fase web tiene demanda real.
+
+### 2.5 Definición de terminado (v1)
+
+Una v1 es entregable cuando un **jugador externo** puede:
+
+1. Empezar una run sin recibir explicación previa.
+2. Alcanzar el final Teknomoro **o** morir definitivamente.
+3. En al menos **3 regiones** jugables.
+4. Sin bug bloqueante.
+5. Entendiendo cada acción sin preguntar al autor.
+
+El marco lore queda fijado en decisión #47 (§5). Cualquier contenido, paleta, copy o iconografía deriva de ahí.
 
 ---
 
 ## 3. Estado actual y roadmap
 
-**Estado hoy (26 abril 2026):** biblia en v0.8. **H0 y H1 cerrados, esqueleto extendido completo.** Todos los módulos de `rules/` (combat, inventory, crafting, world-gen, fast-travel, death, time, faction, dialog, achievements) tienen sus contratos públicos definidos y la mecánica que la biblia ya cierra está implementada y testeada (168 tests verdes). Los 5 bloqueantes de diseño que restaban están cerrados (decisiones #41-#45 más #46 emergente).
+**Estado hoy (2 mayo 2026):** biblia en v0.20. **H0, H1, H2 y H3 cerrados.** El primer loop completo del juego (crear PJ → home → combate al Lobo → loot/epitafio → persistencia → home) corre en producción. 257/257 tests verde, `tsc --noEmit` limpio, `vite build` limpio. PASO 3 archivado como completo. Los 5 bloqueantes de diseño que restaban (v0.8) están cerrados (decisiones #41-#45 más #46 emergente). Lore (#47), reordenamiento de hitos (#62) y decisiones del cuestionario de visión (#63 en adelante) cerradas en v0.20.
+
+**Próximo:** **PASO 4 del Hito 3** — profundización del combate vertical slice: 4a Statuses → 4b Perks aplicados → 4c IA con perfiles y condiciones de victoria por escena (decisiones del Bloque 5 del cuestionario de visión). Tras eso, arrancar **H4** (mapa + exploración, sin quest principal) con cuestionario de scope previo al sub-paso 4a.
+
+### 3.1 Inventario binario de v1 (8 elementos)
+
+v1 se considera completable cuando estos 8 elementos están cerrados extremo a extremo:
+
+1. **Motor d20** con statuses, perks aplicados e IA (PASO 4 a/b/c del H3).
+2. **3 regiones jugables** (de las 5 del overworld, ver §9). Las 2 periféricas se reservan para v1.1.
+3. **40 POIs curados** (de los 80 totales planeados en §9).
+4. **15 enemigos** con stat-line y loot tabulado.
+5. **20 items + 8 recetas** (catálogo provisional fase 1, calibrado en H6).
+6. **Persistencia entre runs** (meta-progresión + lore + nombres POI + recetas + stats globales).
+7. **Onboarding completo + final Teknomoro** alcanzable.
+8. **Hitos roguelike** desbloqueables entre runs (ver §2.3; cantidad por categoría se calibra en cierre de v1).
+
+Lo que NO entra en v1 (queda para v1.1+):
+- 2 regiones periféricas restantes.
+- Sandbox post-final con NG+.
+- Música compuesta (v1 va con silencio + SFX UI CC0).
+- Mapa completo, editor, exportación a motor externo, multijugador (?), 2 expansiones (ver §10).
+
+### 3.2 Roadmap original (mantenido para trazabilidad)
 
 **Proceso de dirección** (detallado en `proceso-director.md`):
 
@@ -579,7 +638,7 @@ Estas no se reabren sin motivo fuerte. Si Bazalo las cuestiona, la dirección le
 | 9 | Habilidades suben por uso con techo blando + XP rompe techo. | v0.4 |
 | 10 | Un personaje por slot de partida. Sin party. | v0.4 |
 | 11 | Permadeath con epitafio consultable. | v0.4 |
-| 12 | Mapa-mundi con nodos, sub-mapas en grid, top-down 2D. | v0.4 |
+| 12 | Mapa-mundi con nodos, sub-mapas en grid, top-down 2D. **Matizada en v0.20 por decisión #67:** el modelo definitivo es overworld único con zoom semántico y 180 grids. La intuición top-down 2D y "navegable por grid" sobrevive; la separación mapa-mundi vs sub-mapa desaparece. | v0.4 |
 | 13 | Historia + Libre (procedural por frase-semilla) como modos de partida. | v0.4 |
 | 14 | Tutorial guiado de ~5 min (no tooltips, no "aprender jugando"). | v0.4 |
 | 15 | Nivel máximo 50. Subir requiere pulsar botón (estilo Diablo). | v0.4 |
@@ -588,7 +647,7 @@ Estas no se reabren sin motivo fuerte. Si Bazalo las cuestiona, la dirección le
 | 18 | No hay código hasta cerrar bloqueantes numéricos por simulación. | v0.4 |
 | 19 | Tirada de exploración es sistema raíz al mismo nivel que combate. | v0.5 |
 | 20 | Dado de exploración separado del dado de combate. | v0.5 |
-| 21 | Viaje rápido híbrido: solo a nodos descubiertos, con tramo seguro o arriesgado. | v0.5 |
+| 21 | Viaje rápido híbrido: solo a nodos descubiertos, con tramo seguro o arriesgado. **Sustituida en v0.20 por decisión #70:** fast travel sólo entre grids Controlados, vía anclas, consume recursos. La distinción seguro/arriesgado deja de tener sentido sin nodos discretos; la presión de viaje vive ahora en la fatiga de jornada (#71) y en el estado del grid. | v0.5 |
 | 22 | Brújula de exploración: "libertad → cautela y preparación". | v0.5 |
 | 23 | Tirada de exploración visible por completo (dado en log/HUD cada paso). | v0.5 |
 | 24 | Toda entrada de tabla de exploración debe declarar `evade_check` reactivo. | v0.5 |
@@ -616,6 +675,21 @@ Estas no se reabren sin motivo fuerte. Si Bazalo las cuestiona, la dirección le
 | 46 | Umbral de éxitos para impactar: `threshold = ceil(DEF / 3)`. Promovida a decisión propia desde la simulación implícita del dado v0.2 (era la fórmula que validó P(impacto) en cada perfil). DEF 4 → 2, DEF 8 → 3, DEF 12 → 4. | v0.8 |
 | 47 | **Marco lore del mundo:** post-humano, naturaleza vencedora, mutaciones orgánicas, esoterismo/demoníaco **raro y reverencial**. La humanidad se extinguió y la vegetación creció encima — no es ruina seca, es bosque hostil vivo. La grieta arcana aparece como evento singular, nunca como atmósfera de fondo permanente. De este marco derivan paleta, copy, iconografía y contenido. Sustituye cualquier lectura previa tipo "tierra desértica fracturada" o "manuscrito viejo seco". El sistema visual concreto vive en `DESIGN.md` y la marca/anti-references en `PRODUCT.md`. | v0.9 |
 | 62 | **Reordenamiento de hitos: modo Historia separado a H5.** El antiguo H4 (mapa + exploración + quest principal) se divide en dos: H4 nuevo = mapa + exploración con cierre por muerte (sin victoria); H5 nuevo = modo Historia, quest principal del mapa, quests secundarias, sistema de eventos narrativos, pantalla de victoria, selector Historia/Libre. Los hitos antiguos H5-H9 (Inventario, Crafteo, Progresión, Modo Privado, Pulido) se renumeran a H6-H10. El total de hitos pasa de 9 a 10 sin cambiar el inventario del MVP — sólo el orden de construcción. Razón: dos sistemas grandes (mapa y quest) en un mismo hito violaban "un hito entregable por bloque" (scope §0); separar permite que H4 cierre como demo jugable sin victoria y que H5 acumule todo lo narrativo en un sistema coherente. Implica: aclaración de #44 (quest principal en H5, no H4) y actualización de #61 (fase 1 cierra en H5, no H4). | v0.19 |
+| 63 | **Verbo del juego cerrado:** explorar + combatir + coleccionar + visitar asentamientos + perseguir leyenda Teknomoro. Jugador tipo: Fallout 1-2 + Baldur's Gate + RTS clásico. NO es Stardew, NO es Mad Max, NO es Slay the Spire (ver §11 tropos evitados). De este verbo derivan las prioridades de scope (§3.1) y los pesos de la tabla d20 de exploración (§9). | v0.20 |
+| 64 | **Mix campaña + sandbox post-final.** Juego base = modo Historia con cierre Teknomoro (H5). Sandbox post-final con NG+ y dos expansiones reservados para v1.1+. v1 entrega solo Historia + Libre con 3 regiones jugables (de 5 totales), no sandbox post-final. | v0.20 |
+| 65 | **Permadeath con items de salvación.** Reset total de personaje y progreso de partida al morir. Sobreviven entre runs únicamente: lore descubierto, nombres de POIs visitados, recetas conocidas, meta-progresión de hitos roguelike, stats globales del jugador (combates, muertes). Los items de salvación son consumibles raros que evitan UNA muerte y se gastan; siguen siendo permadeath honesto. | v0.20 |
+| 66 | **Hitos roguelike entre runs (categorías cerradas, cantidades TBD).** v1 desbloquea progresivamente entre runs: clases / arquetipos seleccionables al crear PJ, zonas iniciales (puntos de salida), items de partida. La cantidad por categoría se calibra cuando v1 esté esqueletada. Objetivo: 10-20 runs para "ver todo" v1. La run 1 tiene clase y zona base; cada run desbloquea 1-2 hitos por logros internos. | v0.20 |
+| 67 | **Overworld único con zoom semántico.** No hay mapa-mundi separado de sub-mapas con grid en cada nodo (la decisión #12 queda matizada). El mundo es un único overworld dividido en **180 grids** repartidos en 5 regiones (Centro 50, Norte 35, Sur 35, Este 30, Oeste 30) con zoom semántico: vista regional (grids agrupados) → vista de grid (POIs visibles) → vista de POI (escena). v1 entrega 3 regiones jugables; las 2 periféricas se reservan para v1.1. | v0.20 |
+| 68 | **720 POIs con tabla d20 por bandas + 4 arquetipos.** Cada grid contiene ~4 POIs (180×4=720). 80 son **curados** con evento fijo escrito a mano; 640 son **genéricos** resueltos por una tabla d20 con bandas: 1 peligro real, 2-3 combate menor, 4-12 color del mundo (45%), 13-15 encuentro neutral, 16-17 recurso, 18 pista/rumor, 19 oportunidad, 20 legendario. Cuatro arquetipos de POI estructuran la tabla: **Natural, Ruina, Asentamiento, Arcano**. Tres capas modulan los pesos: bioma + estado del grid (Inexplorado / Explorado / Controlado) + memoria de progresión. v1 entrega 40 POIs curados (de 80). Ver §9. | v0.20 |
+| 69 | **Mapa visible desde inicio, niebla a nivel POI.** El overworld y los nombres de regiones son visibles desde el primer minuto. La niebla opera al nivel de **POI individual** (cada POI no visitado aparece como "???" hasta entrar). Los grids se marcan como Inexplorado / Explorado / Controlado según el progreso. Sustituye la niebla de guerra clásica por celda de §4.10. | v0.20 |
+| 70 | **Fast travel desbloqueable entre grids Controlados.** El viaje rápido sólo se habilita entre grids con estado Controlado, vía **anclas** colocadas explícitamente por el jugador, y consume recursos (no es gratis). Sustituye al viaje rápido híbrido de la decisión #21 — la #21 queda cubierta por esta y por la fatiga de jornada (§9). | v0.20 |
+| 71 | **Fatiga de jornada como recurso de tiempo en MVP.** El jugador tiene **8 acciones por día**. Acampar repone la jornada al precio de **una ración** (consumible). El día queda como ciclo cerrado de presión: planificar 8 acciones, decidir cuándo acampar, gestionar provisiones. Sustituye al "240 ticks por día" provisional (§6) que ya estaba marcado para cerrar en H4. La granjita Stardew queda explícitamente fuera (§11). | v0.20 |
+| 72 | **Mundo fijo entre runs.** El overworld no se regenera procedural por seed — los 180 grids y los 720 POIs son los mismos partida tras partida. El modo Libre sigue existiendo (decisión #13) pero modula contenido dentro del mundo fijo (eventos, encuentros, frecuencia de tablas) en lugar de regenerar el mapa. Razón: el lore embebido (§10) y la memoria de progresión entre runs (#65) sólo funcionan si el mundo es estable. | v0.20 |
+| 73 | **Lore embebido en flujo, sin códice modal en MVP.** El lore se entrega en el momento de juego (descripciones de POI, lápida del PJ caído, banners narrativos, copy de eventos). NO existe pantalla de códice / enciclopedia / glosario consultable en v1. Razón: el códice modal mata el ritmo y empuja al jugador fuera del mundo (§11). v1.1+ podría añadir códice si el contenido lo justifica; por ahora, no. Schema de átomo y flujo de escritura en §10. | v0.20 |
+| 74 | **Catálogo lore v1 = ~100 átomos seed (20 largos + 30 medios + 50 cortos).** Estimación de escritura: ~50h. Bazalo escribe a mano, en lotes. Schema con 4 voces (`cronista` / `npc` / `objeto` / `ambiente`), tags, contradicciones explícitas (5-10 pares). Ver §10. | v0.20 |
+| 75 | **Combate ocupa 10-30% del tiempo de juego.** El motor d20 (`src/rules/combat.ts`, validado con 60.000 simulaciones de iteraciones previas + 720.000 del lobo) es **sagrado e intocable**. Resolución abstracta sin grid. Profundización en PASO 4 a/b/c: Statuses (4a) → Perks aplicados (4b) → IA con perfiles y condiciones de victoria por escena (4c). Curva única en v1 (ajustes a v1.1+). **Frustración productiva** como objetivo: el jugador tiene que pensar, no se le regala el éxito. **Intents enemigos visibles** estilo Slay the Spire (lee, decide, ejecuta) — única referencia tomada del juego, no se asume el resto del paquete StS (ver §11). `flee` debe implementarse en PASO 4c (hoy lanza Error). Vías de muerte: combate, fatiga sin ración, decisiones narrativas. | v0.20 |
+| 76 | **Audio v1 = silencio + SFX UI CC0.** No hay música compuesta en v1 (se reserva para v1.1+). SFX limitados a clicks de UI y golpes mínimos, todos de bibliotecas CC0. Decisión coherente con "esqueleto > contenido > pulido" (#61) y con publicación en GitHub Pages. | v0.20 |
+| 77 | **Líneas rojas eternas.** NUNCA: microtransacciones, IA generativa en runtime (texto/imagen/audio generados al vuelo durante la partida). Todo el contenido es escrito y validado por Bazalo o director. La IA puede usarse en pipeline de desarrollo (asistencia a escritura, pruebas) pero nunca como motor de generación de contenido visible al jugador. | v0.20 |
 
 ---
 
@@ -789,12 +863,260 @@ Login → Modo (Historia/Libre) → Creación → Tutorial guiado → Decisión 
 - **Texto redimensionable:** 3 tamaños (S/M/L).
 - **Solo desktop** en v1. Tablet y móvil cuando v1 esté funcional.
 - **Navegadores soportados:** Chromium y Firefox.
-- **Música:** sí. SFX: clicks de UI y golpes como mínimo.
+- **Audio v1:** silencio + SFX UI CC0 (decisión #76). Música compuesta a v1.1+.
 - **Sin modo daltónico** en MVP.
+- **Aprendizaje por exploración** (decisión #45 + filosofía v1): el jugador descubre mecánicas jugando, no leyendo. Tutorial guiado de 5 min más copy embebido en eventos. Sin tooltips densos, sin manual.
 
 ---
 
-## 9. Historial de versiones
+## 9. Sistema de exploración v1 (overworld y POIs)
+
+**Cierre v0.20 (decisiones #67-#72).** Esta sección consolida el modelo de mundo de El Teknomoro y sustituye conceptualmente las menciones a "mapa-mundi con nodos" anteriores a v0.20.
+
+### 9.1 Overworld único con zoom semántico
+
+El mundo es **un único overworld** dividido en **180 grids**. No hay separación mapa-mundi / sub-mapa: el jugador navega tres niveles de zoom sobre el mismo dataset:
+
+1. **Vista regional** — el overworld al completo, 5 regiones marcadas, grids agrupados.
+2. **Vista de grid** — un grid concreto con sus ~4 POIs visibles (o "???" si están bajo niebla).
+3. **Vista de POI** — escena del POI (combate, evento, asentamiento, ruina).
+
+El cambio entre niveles es continuo (zoom), no modal.
+
+### 9.2 Distribución de regiones y grids
+
+| Región | Grids | Notas |
+|---|---|---|
+| Centro | 50 | Hub geográfico, mayor densidad de asentamientos. |
+| Norte | 35 | — |
+| Sur | 35 | — |
+| Este | 30 | Periférica. v1.1+. |
+| Oeste | 30 | Periférica. v1.1+. |
+| **Total** | **180** | |
+
+**v1 entrega 3 regiones jugables:** Centro + dos de las periféricas Norte/Sur (la elección concreta se cierra al arrancar H4). Las dos restantes se reservan para v1.1+.
+
+### 9.3 POIs: 720 totales, 80 curados, 640 genéricos
+
+Cada grid contiene ~4 POIs → **720 POIs** totales en el overworld completo.
+
+- **80 curados** (≈11% del total): evento fijo escrito a mano, encuentro narrativo único, recompensa singular. Distribución entre los 4 arquetipos por definir en H5.
+- **640 genéricos** (≈89%): resueltos por la **tabla d20 con bandas** (§9.5). Cada visita tira sobre la tabla activa del POI.
+
+**v1 entrega 40 POIs curados** (de los 80) y los 640 genéricos disponibles vía tabla. El resto de curados se reserva para v1.1+.
+
+### 9.4 Cuatro arquetipos de POI
+
+Todo POI se clasifica en uno de los cuatro:
+
+1. **Natural** — bosque, río, formación geológica, claro de mutación.
+2. **Ruina** — vestigio post-humano, edificio derrumbado, infraestructura cubierta de vegetación.
+3. **Asentamiento** — colectivo humano superviviente. Comercio, NPCs, facciones.
+4. **Arcano** — manifestación esotérica/demoníaca. Singular y reverencial (#47).
+
+El arquetipo modula la tabla d20 disponible y los pesos por banda.
+
+### 9.5 Tabla d20 con bandas
+
+Cada visita a POI genérico tira **1d20** y resuelve por banda. Pesos por defecto:
+
+| Resultado | Banda | Frecuencia | Tipo |
+|---|---|---|---|
+| 1 | Peligro real | 5% | Trampa, emboscada con pifia, evento que puede matar al PJ. |
+| 2-3 | Combate menor | 10% | Encuentro hostil resoluble. |
+| 4-12 | **Color del mundo** | **45%** | Detalle ambiental, observación, fragmento de lore embebido, escena sin combate. |
+| 13-15 | Encuentro neutral | 15% | NPC, animal pacífico, viajero, mercader ambulante. |
+| 16-17 | Recurso | 10% | Material de crafteo, ración, oro menor. |
+| 18 | Pista / rumor | 5% | Información sobre otro POI o sobre el lore. |
+| 19 | Oportunidad | 5% | Encuentro con valor estratégico (alianza, info de facción, descuento). |
+| 20 | Legendario | 5% | Recompensa singular: ítem único, hito narrativo, perk extra. |
+
+La banda **color del mundo** domina deliberadamente (45%) — es el "Nada con sustancia" del juego. El jugador siente que el mundo está vivo sin que cada paso le pida algo. Coherente con la brújula de exploración (#22): "libertad → cautela y preparación".
+
+### 9.6 Tres capas de modulación
+
+Los pesos por defecto se modulan por:
+
+1. **Bioma del grid** (heredado de §4.10): bosque podrido, llanura cubierta, ruinas, glaciar, etc.
+2. **Estado del grid:** Inexplorado (todos los POIs ???) / Explorado (POIs visibles, tablas activas) / Controlado (fast travel disponible, recursos garantizados, tablas con menor varianza).
+3. **Memoria de progresión:** la run actual + meta-progresión entre runs (#65). Eventos vistos pierden peso de reaparición; pistas leídas no se repiten en la misma run.
+
+### 9.7 Fatiga de jornada (decisión #71)
+
+- **8 acciones por día** disponibles. Una acción = mover al siguiente grid, entrar a POI, combatir, craftear, hablar.
+- Al consumir las 8, el día está agotado: el PJ debe **acampar**.
+- **Acampar** consume **una ración** (consumible). Si no hay ración, el PJ acampa con penalización (HP reducido al despertar, posibilidad de evento de fatiga).
+- Reset de las 8 acciones al despertar.
+
+Vías de muerte por fatiga: agotar acciones sin ración varios días seguidos → degradación de HP máximo → muerte. Ver decisión #75.
+
+### 9.8 Fast travel (decisión #70)
+
+- Sólo entre grids con estado **Controlado**.
+- Se viaja a través de **anclas** colocadas explícitamente por el jugador (no nodos prediseñados).
+- Consume **recursos** (ración + tiempo de jornada). Coste exacto: TBD en H4 según calibración.
+- No salta tiradas: las acciones se gastan, los eventos peligrosos del trayecto se condensan (heredado del concepto #21).
+
+### 9.9 Mapa visible desde inicio (decisión #69)
+
+- Overworld + nombres de regiones visibles desde el primer minuto. No hay descubrimiento del mapa global.
+- **Niebla a nivel POI:** cada POI no visitado aparece como "???". Al entrar por primera vez, se revela su nombre, arquetipo y descripción base.
+- Estado del grid (Inexplorado / Explorado / Controlado) se muestra con indicador visual sutil en vista regional.
+
+### 9.10 Mundo fijo entre runs (decisión #72)
+
+El overworld no se regenera procedural por seed. Los 180 grids y los 720 POIs son los mismos partida tras partida. El **modo Libre** (#13) sigue existiendo pero modula contenido dentro del mundo fijo (eventos, frecuencia de tablas, encuentros) en lugar de regenerar el mapa.
+
+Razón: lore embebido (#73) y memoria de progresión entre runs (#65) sólo funcionan si el mundo es estable.
+
+---
+
+## 10. Sistema de lore v1 (átomos embebidos)
+
+**Cierre v0.20 (decisiones #73-#74).** El lore es un **producto** de El Teknomoro, no un decorado. El jugador descubre el mundo jugándolo, no consultando un códice.
+
+### 10.1 Principio: embebido en flujo
+
+Todo lore aparece **en el momento de juego**:
+
+- Descripciones de POI al entrar.
+- Lápida del PJ caído (heredada de v0.19, ya implementada en home).
+- Banners narrativos de eventos.
+- Copy de items, perks, habilidades cuando se descubren.
+- Diálogo con NPCs.
+- Resultados del 18 (pista / rumor) y 20 (legendario) de la tabla d20.
+
+**No hay códice modal en v1** (decisión #73). Razón: el códice mata el ritmo y empuja al jugador fuera del mundo. v1.1+ podría añadirlo si la cantidad de lore lo justifica.
+
+### 10.2 Schema de átomo
+
+Cada pieza de lore es un **átomo** con la siguiente forma canónica:
+
+```ts
+type LoreAtom = {
+  id: string;                // único, slug en español: 'cronista_glaciar_norte'
+  body: string;              // el texto en sí
+  length: 'short' | 'medium' | 'long';
+  voice: 'cronista' | 'npc' | 'objeto' | 'ambiente';
+  // Opcionales:
+  boundTo?: string;          // id del POI/item/perk/NPC al que pertenece
+  unlockCondition?: string;  // expresión legible, ej: "visitedPOI:cripta_norte"
+  tags?: string[];           // ['mutacion', 'arcano', 'humanidad-perdida']
+  relatedAtoms?: string[];   // ids de átomos hermanos (contradicciones, ecos)
+};
+```
+
+### 10.3 Cuatro voces
+
+- **`cronista`** — narrador externo, distante, registro semi-formal. Voz autoritativa pero no omnisciente.
+- **`npc`** — personaje vivo. Coloquial, con sesgo, posible mentira.
+- **`objeto`** — descripción de ítem, inscripción, marca grabada. Lacónica.
+- **`ambiente`** — observación del entorno, sin narrador identificado. Sensorial.
+
+**Párrafo-muestra de cada voz se fija antes de la escritura masiva** y queda en `references/lore-voces.md` (a crear cuando arranque la sesión de redacción del Bloque 4 del plan de contenido). Toda redacción posterior se valida contra ese párrafo.
+
+### 10.4 Ubicación en el código
+
+- **Largos y medios** → `src/data/lore/` con un archivo por átomo o por bundle temático.
+- **Cortos** (1-3 frases) → junto al sistema que los consume. Ejemplo: descripciones de POI en `src/data/exploration/poi-flavor.ts`, descripciones de ítem en `src/data/items.ts`.
+
+Esta separación evita el "todos los textos en un único JSON gigante" y conserva localidad de referencia: quien edita un POI ve su flavor sin abrir lore/.
+
+### 10.5 Cantidad y pacing v1
+
+**~100 átomos seed** distribuidos:
+
+- **20 largos** (párrafos de varias frases, voz `cronista` predominante).
+- **30 medios** (1-2 frases con peso, mix de las 4 voces).
+- **50 cortos** (frase única, descripciones de POI/ítem/perk).
+
+**Estimación de escritura:** ~50 horas. Bazalo escribe a mano, en lotes (no encargado, no IA generativa por #77).
+
+### 10.6 Contradicciones explícitas
+
+Entre los ~100 átomos, **5-10 pares de contradicciones explícitas**: dos átomos de voces distintas que dan versiones incompatibles del mismo evento o entidad. El jugador descubre la contradicción jugando y debe (o no) resolverla. Coherente con el tono "naturaleza vencedora, esoterismo reverencial": el mundo no se entrega cerrado.
+
+Las contradicciones se marcan vía `relatedAtoms` apuntando entre sí + tag compartido `contradiccion:<tema>`.
+
+---
+
+## 11. Tropos evitados
+
+**Cierre v0.20 (decisión del cuestionario de visión Bloque 10).** El Teknomoro NO ES estos siete juegos. Cuando el director o el equipo proponga una mecánica, debe pasar por este filtro: "¿esto nos lleva a uno de los tropos prohibidos? Si sí, descartar o transformar."
+
+1. **Erial Mad Max.** Desierto seco, ruinas resecas, paleta marrón-amarillenta polvorienta. El Teknomoro es **bosque vivo hostil**, naturaleza vencedora con humedad, mutación, vegetación cubriéndolo todo. Paleta verde-violeta, no ocre.
+
+2. **Códice modal.** Pantalla de enciclopedia / glosario / "lore unlocked" consultable. Mata el ritmo. Sustituido por lore embebido (§10).
+
+3. **Crafteo-spreadsheet.** Pantallas de crafteo con cientos de recetas, tablas de progreso, optimización tipo Path of Exile. v1 cierra con 8 recetas (§3.1). El crafteo es ritual menor, no minijuego central.
+
+4. **Granjita Stardew.** Loop de "regar tomate, ordeñar vaca, dormir, repetir". El tiempo en El Teknomoro es presión (fatiga de jornada, §9.7), no rutina apacible.
+
+5. **Combate cinemático en tiempo real.** Souls-like, action RPG, hack&slash. El combate es **por turnos abstracto sin grid** (§4.8 + decisión #75). La frustración es por decisión, no por reflejos.
+
+6. **Elegido + mal absoluto.** Narrativa de "el héroe predestinado contra la oscuridad". El Teknomoro es post-humano: no hay héroe, no hay imperio del mal, sólo restos y consecuencias. El final Teknomoro es un descubrimiento, no una redención.
+
+7. **Hub social tipo BG con companions parlanchines.** Compañeros que comentan cada acción, romances, tabernas con barde cantando. **Sin party** (decisión #10). NPCs son herramientas y testigos, no acompañantes emocionales.
+
+Si una propuesta cae en uno de estos siete, el director la rechaza por defecto y exige reformulación. Si Bazalo insiste, se reabre con justificación documentada en este apartado.
+
+---
+
+## 12. Protocolo Bazalo ↔ Claude
+
+**Cierre v0.20 (decisiones del cuestionario de visión Bloque 8).** Esta sección formaliza los patrones de trabajo entre Bazalo y la dirección IA (Claude actuando como `el-teknomoro-director`). No son sugerencias: son contrato de sesión.
+
+### 12.1 Arranque de sesión
+
+Al iniciar conversación nueva, el director:
+
+1. Lee la biblia (este archivo) y el último hito cerrado en `scope-mvp-web-v0.1.md`.
+2. Si Bazalo no propone tarea: **sugiere** basándose en hitos pendientes y deudas técnicas conocidas.
+3. No habla en abstracto antes de tener el panorama.
+
+### 12.2 Iniciativa ejecutiva
+
+El director **ejecuta sub-pasos completos sin preguntar detalles internos**. Decide arquitectura interna, nombres de funciones, estructura de tests, micro-orden de commits.
+
+**Para y pregunta** sólo en cuatro casos:
+
+1. **Decisión de producto** — algo que cambia la experiencia del jugador (no la arquitectura).
+2. **Tocar módulo SAGRADO** — `src/rules/` o `src/data/` requiere OK explícito (memoria `feedback_modulos_sagrados`).
+3. **Cierre de sub-paso** — al terminar un sub-paso, resume y espera OK antes de pasar al siguiente.
+4. **Commits y pushes** — uno a uno, con OK explícito por cada acción (memoria `feedback_commits_y_pushes`).
+
+### 12.3 Simulaciones por defecto
+
+Cualquier propuesta que toque **números de balanceo** (curvas, probabilidades, umbrales, stat-lines) viene acompañada de **simulación o sugerencia de simular**. No se acepta "yo creo que el lobo tiene poco HP" — se acepta "simulé 720k combates con HP 16, victoria queda en 33.4%". El formato canónico vive en `simulaciones/*.md` + `*.sim.ts`.
+
+### 12.4 Director como capa
+
+`el-teknomoro-director` permanece como capa permanente sobre todas las interacciones. Los modos Modo A (código) y Modo B (diseño) se infieren del mensaje, no se activan explícitamente.
+
+### 12.5 MODOPIPELINE
+
+- **MODOPIPELINE actual** (skill `modopipeline`) sigue obligatorio para **toda UI** del navegador. Cadena: Prompt Master → director → impeccable. Memoria `feedback_modopipeline_ui`.
+- **MODOPIPELINE-CONTENIDO** (combate / lore / mapa) **no existe todavía**. Se creará cuando entre el primer hito de contenido (PASO 4 H3 o H4 al arrancar). No antes.
+
+### 12.6 Entrega y artefactos
+
+- **Archivos directos al repo** + **commits con OK explícito uno a uno**. Push aparte.
+- **Chat se reserva para fragmentos de discusión**, diagnósticos, propuestas. No para entregables editables.
+- Cuando el director produzca código importante, lo escribe al archivo correspondiente y comenta cambio en respuesta.
+
+### 12.7 Cierre diario corto
+
+Al final de cada sesión productiva, **3 líneas máximo**:
+
+1. **Qué se cerró.** Sub-paso, hito, decisión.
+2. **Qué quedó a medias.** Estado exacto, archivo en el que está.
+3. **Siguiente paso.** Acción concreta para el arranque de la próxima sesión.
+
+Sin reportes largos. Sin retrospectivas. Tres líneas.
+
+---
+
+## 13. Historial de versiones
 
 **v0.1** — Brief inicial de Bazalo. No conservado en este documento.
 
@@ -1096,3 +1418,41 @@ El inventario del MVP no cambia: el mismo juego se entrega en otro orden. La est
 - 0 deudas técnicas de cableado. PASO 3 archivado como completo. Hitos del MVP: 10 (antes 9), inventario del producto inalterado.
 
 Próximo: arrancar **H4** (mapa + exploración, sin quest). Cuestionario de scope con Bazalo antes del sub-paso 4a.
+
+---
+
+**v0.20** — Cierre del **cuestionario de visión** (2/5/2026). Bloques 1-5, 8, 9, 10 respondidos y depurados (los bloques 6 y 7 quedan pendientes, fuera de scope de este bump). 15 decisiones nuevas (#63-#77), 2 decisiones matizadas (#12 y #21), 4 secciones nuevas en biblia (§9, §10, §11, §12), §2 reescrita con 5 sub-secciones nuevas, §3 ampliada con inventario binario de v1. Sin cambios en §4 reglamento, §6 bloqueantes (siguen 0 abiertos), §7 arquitectura ni §8 flujos.
+
+**Movimiento 1 — Visión cerrada.** El verbo del juego (#63), el mix campaña + sandbox (#64), la permadeath con items de salvación y reset total (#65) y los hitos roguelike entre runs (#66) quedan formalizados. v1 sigue siendo 3 regiones jugables + final Teknomoro alcanzable; el sandbox post-final + NG+ + 2 expansiones + 2 regiones periféricas entran en v1.1+.
+
+**Movimiento 2 — Modelo de mundo cerrado.** El overworld único con zoom semántico y 180 grids (#67) sustituye conceptualmente la separación mapa-mundi / sub-mapa de la decisión #12 (matizada en sitio). Cierre de 720 POIs con 80 curados + tabla d20 con bandas y 4 arquetipos (#68), niebla a nivel POI con mapa visible desde inicio (#69), fast travel restringido a grids Controlados con anclas y consumo de recursos (#70, sustituye #21), fatiga de jornada con 8 acciones/día y acampada con ración (#71, cierra el provisional "240 ticks por día" del §6), y mundo fijo entre runs como condición para lore embebido y meta-progresión (#72).
+
+**Movimiento 3 — Lore como producto.** Lore embebido en flujo, sin códice modal en MVP (#73). Catálogo seed v1 = ~100 átomos (20 largos + 30 medios + 50 cortos), ~50h de escritura por Bazalo en lotes (#74). Schema de átomo con 4 voces (`cronista` / `npc` / `objeto` / `ambiente`), tags, contradicciones explícitas (5-10 pares). Largos/medios en `src/data/lore/`; cortos junto al sistema que los consume.
+
+**Movimiento 4 — Combate como sagrado profundizable.** El motor d20 (validado con 60.000 sims previas + 720.000 del lobo) queda explícitamente intocable (#75). Profundización vía PASO 4 a/b/c: Statuses → Perks aplicados → IA con perfiles y condiciones de victoria por escena. Curva única en v1; intents enemigos visibles estilo Slay the Spire como única referencia tomada de StS (no se asume el resto del paquete). `flee` debe implementarse en PASO 4c. Combate ocupa 10-30% del tiempo de juego.
+
+**Movimiento 5 — Líneas rojas y tropos evitados.** Audio v1 = silencio + SFX UI CC0 (#76). Líneas rojas eternas: NUNCA microtransacciones, NUNCA IA generativa en runtime (#77). Siete tropos evitados explícitamente (§11): erial Mad Max, códice modal, crafteo-spreadsheet, granjita Stardew, combate cinemático real-time, elegido + mal absoluto, hub social con companions parlanchines.
+
+**Movimiento 6 — Protocolo Bazalo ↔ Claude formalizado (§12).** Arranque leyendo biblia + hitos. Iniciativa ejecutiva con cuatro paradas obligatorias (producto, sagrados, cierre de sub-paso, commits/pushes uno a uno). Simulaciones propuestas por defecto al tocar números. Director como capa permanente. MODOPIPELINE actual sigue obligatorio para UI; MODOPIPELINE-CONTENIDO se creará cuando entre primer hito de contenido (no antes). Entrega: archivos directos + commits con OK explícito; chat para fragmentos. Cierre diario en 3 líneas.
+
+**Cambios estructurales del documento:**
+
+- §1 sin cambios.
+- §2 reescrita con cinco sub-secciones (verbo, mix, hitos roguelike, fases activas, definición de terminado).
+- §3 ampliada con sub-sección §3.1 (inventario binario de v1, 8 elementos) + §3.2 (roadmap original mantenido para trazabilidad).
+- §4 sin cambios.
+- §5 ampliada: 15 decisiones nuevas (#63-#77). Decisiones #12 y #21 matizadas en sitio con marca de v0.20.
+- §6 sin cambios estructurales (sigue 0 bloqueantes; el provisional "240 ticks por día" queda absorbido por #71).
+- §7 sin cambios estructurales.
+- §8 ampliada en §8.5 con audio v1 + aprendizaje por exploración.
+- **§9 nueva** (Sistema de exploración v1): 10 sub-secciones cubriendo overworld, regiones, POIs, arquetipos, tabla d20, modulación, fatiga, fast travel, niebla, mundo fijo.
+- **§10 nueva** (Sistema de lore v1): 6 sub-secciones cubriendo principio embebido, schema de átomo, voces, ubicación en código, cantidad y pacing, contradicciones.
+- **§11 nueva** (Tropos evitados): 7 tropos con explicación de qué hace El Teknomoro en su lugar.
+- **§12 nueva** (Protocolo Bazalo ↔ Claude): 7 sub-secciones cubriendo arranque, iniciativa, simulaciones, director como capa, MODOPIPELINE, entrega, cierre diario.
+- §9 anterior (historial) renumerada a §13.
+
+**Estado al cierre de v0.20:**
+
+- Biblia: 13 secciones (antes 9), 77 decisiones cerradas (antes 62), 0 bloqueantes abiertos.
+- Sin cambios en código del repo. Esta versión es un cierre de visión, no de implementación.
+- Próximo: PASO 4 del Hito 3 (Statuses → Perks aplicados → IA con perfiles), antes de arrancar H4. Cuestionario de scope de H4 cuando PASO 4 cierre.

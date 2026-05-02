@@ -33,48 +33,80 @@
 
 1. [★] En una sola frase de pitch (máx 25 palabras), ¿qué es El Teknomoro para alguien que nunca ha oído hablar del mundo? [REPO] (existe pitch de producto, falta pitch de mundo).
 - Un juego de rol en web , en el que exploras un futuro apocaliptico, con mecanicas rpg, en busca de las verdades del antiguo mundo
+
 2. [★] ¿Qué tres referentes (libros, juegos, películas, cómics) son los primarios para entender el tono del mundo, en orden de cercanía?
 - The Road, Cormac Mcarthy
 - Fallout 3 - Bethesda Games
 - Dark Souls - From Software
 - Nacidos de los Hombres - Alfonso CUARON
 - El libro de Eli 
+
 3. [REPO] El brand dice "tétrico, sombras largas, no gore". Confirma o matiza: ¿el horror del mundo es **psicológico, fisiológico, ecológico, espiritual** o una mezcla concreta de varios?
 - Mas que horror, hay que cambiarlo por la palabra tension. Es un mundo peligroso, pero gratificante. Asombroso, pero destructivo.
+
 4. ¿Qué emoción quieres que sienta el jugador la primera vez que sale al mapa abierto: cautela, asombro, melancolía, hostilidad, soledad, fascinación, o cuál?
 -Espectacion y cautela.
+
 5. ¿Hay humor en el mundo? Si lo hay, ¿de qué tipo (negro, seco, popular, irónico, ausente del todo)?
 - Seco. Pero de esto me encargaré yo.
+
 6. ¿Qué NO es El Teknomoro? Da tres ejemplos de mundos o juegos cuyo tono debería cualquier copy o arte evitar emular.
 - No es un stardew valley
 - NO es project zomboid
 - No es Baldurs Gate
+
 7. [★] La palabra "Teknomoro" en el mundo del juego, ¿es **un nombre propio** (ciudad, entidad, era, tecnología, dios) o solo el nombre externo del producto sin diégesis?
 - Son un grupo reducido de personas: Los Teknomoros. Motor de la historia principal.
+
 8. Si "Teknomoro" es diegético, ¿quién lo pronuncia y en qué contexto? Si no lo es, ¿qué nombre interno usan los habitantes del mundo para nombrar al mundo (o al "después" de la humanidad)? 
 - Terra. 
+
 9. Nivel de letalidad ambiente, en una escala 1-10, donde 1 es Stardew y 10 es Dark Souls a oscuras: ¿en qué número vive el día a día del jugador y por qué?
 - Oscilante dependiendo zonas, tu equipo, tu azar en la ruta elegida. Puede ser de 3/10 a 9/10. En ocasiones puntuales es -3 y +9.
+
 10. ¿El tono moral del mundo es **trágico** (la caída ya pasó, solo queda dignidad), **ambiguo** (cada facción tiene razón parcial), **brutal** (la moral es lujo de los vivos) o **reverencial** (lo que queda merece respeto, no juicio)?
 - Cada facción tendrá un color diferente en su forma de ver y hacer en el mundo.
+
 11. ¿Hay esperanza en el mundo? Si la hay, ¿es esperanza de **restauración**, de **adaptación** o de **trascendencia**?
 - Es ambigua.
+
 12. ¿Cuál es el primer adjetivo que un NPC usa para describir el lugar donde vive (no su mundo entero, su lugar)?
 - Zona (por escribir)
 
 ### Bloque 2 — Cosmología y metafísica
 
 13. [★] ¿Qué fue exactamente "el evento arcano" que aparece nombrado en biblia §2 y en `arcanismo`? Da una versión canónica de una sola frase (sin metáforas).
+- Una civilizacion que conoció la paz gracias a la cybertecnologia, caé cuando el internet + redes + toda la tecnologia falla (vuelta a la edad media.)
+- Miles de años despues, el mundo ha recurrido a sus propios dioses creados, sus deidades, sus teorias...
+
 14. ¿Cuándo ocurrió el evento, medido desde el ahora del juego: décadas, siglos, milenios, o tiempo no cuantificable?
+- Unos 4000 años. Pero no todos los personajes del mundo conocen este dato.
+
 15. ¿El evento tuvo un origen **interno** (los humanos lo provocaron), **externo** (algo vino y lo causó), **emergente** (la naturaleza lo desencadenó sola) o **cíclico** (ya había pasado antes)?
+
+- FUe una mezcla entre interno y emergente. Una energia que empezó a emanar la tierra la cual los seres humanos intentaron controlar que salió mal, desencadeno la caida.
 16. ¿Sigue ocurriendo el evento en alguna forma residual, o terminó y solo quedan consecuencias?
+- La energia que causó La Caida sigue fluyendo. 
+
 17. [★] Antes de la humanidad, ¿hubo otra cosa? Si sí, ¿lo recuerda alguien o algo en el mundo?
+- No. 
+
 18. ¿Existen planos, dimensiones o reinos distintos del físico? Si sí, ¿cuántos y cómo se relacionan con el mundo material?
+- No. el mundo es real.
+
 19. ¿Cómo funciona el tiempo en este mundo: lineal homogéneo, lineal pero perceptiblemente acelerado/lento por zonas, cíclico, fracturado, o algo más raro?
+- Funciona de manera real. COmo funcionaria el tiempo dentro de 4000 años.
+
 20. [★] ¿Qué le pasa al alma (o a lo que sea equivalente) de un ser vivo cuando muere? *(Si respondes que no hay alma, salta 21 y 22 y responde 23.)*
+- No hay alma como tal de manera influyente. Solo ciertos personajes con ciertas habilidades podrian hacer cosas con estas. Como reencarnarlas en demonios, criaturas, o incluso imbuir sus poderes en artefactos minerales
+
 21. *(Si respondiste que sí hay alma en 20)* ¿A dónde va, quién la recibe, puede regresar?
+Los personajes con esta hjabilidad.
 22. *(Si respondiste que sí hay alma en 20)* ¿Las criaturas mutadas tienen el mismo tipo de alma que tendría un humano clásico, o algo cambió?
+-
+
 23. *(Si respondiste que no hay alma en 20)* ¿Qué queda entonces de un ser cuando muere — recuerdos en otros, masa orgánica, eco arcano, nada?
+
 24. ¿El esoterismo demoníaco implica entidades reales con voluntad, o son fenómenos sin sujeto que la gente personifica por miedo?
 25. *(Si respondiste "entidades reales" en 24)* ¿Son finitas, contables, conocidas, o son potencialmente infinitas y sin nombre?
 26. ¿Existe destino, providencia, predestinación en este mundo, o todo es contingente?
