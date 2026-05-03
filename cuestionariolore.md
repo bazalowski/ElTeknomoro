@@ -56,7 +56,7 @@
 - No es Baldurs Gate
 
 7. [★] La palabra "Teknomoro" en el mundo del juego, ¿es **un nombre propio** (ciudad, entidad, era, tecnología, dios) o solo el nombre externo del producto sin diégesis?
-- Son un grupo reducido de personas: Los Teknomoros. Motor de la historia principal.
+- Son un grupo reducido de personas: Los Teknomoros. Motor de la historia principal.SOn un grupo cerrado, muy hermetico. Algo asi como unos "templarios". SU modo de vida es buscar y recolectar TODO lo que sea del mundo antiguo, ya sea chatarra o teks inclasificables.
 
 8. Si "Teknomoro" es diegético, ¿quién lo pronuncia y en qué contexto? Si no lo es, ¿qué nombre interno usan los habitantes del mundo para nombrar al mundo (o al "después" de la humanidad)? 
 - Terra. 
@@ -83,8 +83,8 @@
 - Unos 4000 años. Pero no todos los personajes del mundo conocen este dato.
 
 15. ¿El evento tuvo un origen **interno** (los humanos lo provocaron), **externo** (algo vino y lo causó), **emergente** (la naturaleza lo desencadenó sola) o **cíclico** (ya había pasado antes)?
+- Mezcla de cataclismos en la tierra, sumados a tormentas solares, dejaron al mundo sin comunicacion. Miles de millones de personas vivian conectadas al mundo cybernetico. EN cuestion de años la población se perdio un 98%. A raiz de estas descargas solares, los minerales de la tierra se cargaron con poderes que podrian llamarse mágicos.
 
-- FUe una mezcla entre interno y emergente. Una energia que empezó a emanar la tierra la cual los seres humanos intentaron controlar que salió mal, desencadeno la caida.
 16. ¿Sigue ocurriendo el evento en alguna forma residual, o terminó y solo quedan consecuencias?
 - La energia que causó La Caida sigue fluyendo. 
 
@@ -109,7 +109,8 @@ Los personajes con esta hjabilidad.
 - Si nadie usa la habilidad, masa orgánica. Si es "exorcizado", es diferente.
 
 24. ¿El esoterismo demoníaco implica entidades reales con voluntad, o son fenómenos sin sujeto que la gente personifica por miedo?
-- Depende del poder de los cultos. Puede ser ambas. 
+- Depende del poder de los cultos. Puede ser ambas. La mayoria solo imbuye poderes en objetos, los mas poderosos invocan entidades, o realizan "posesiones". Que mutan a lo que ataquen.
+
 25. *(Si respondiste "entidades reales" en 24)* ¿Son finitas, contables, conocidas, o son potencialmente infinitas y sin nombre?
 - Son finitas y conocidas. Pero con un potencial amplio.
 26. ¿Existe destino, providencia, predestinación en este mundo, o todo es contingente?
@@ -122,33 +123,58 @@ Los personajes con esta hjabilidad.
 
 28. [★] ¿El mundo del juego es **un continente**, un archipiélago, una región dentro de un mundo mayor, o no se sabe porque nadie lo ha cartografiado entero?
 - Es literalmente la tierra. El juego comienza en la Peninsula Ibérica (España, Portugal, Las islas Baleares)
+
 29. ¿Qué escala tiene la zona jugable: el equivalente a una comarca, a un país, a un continente, o irrelevante porque la geografía es subjetiva?
 - Un pais en v1. Un continente en v2. El mundo en v3.
+
 30. [REPO] Los 5 biomas de MVP son llanura, bosque, desierto, glaciar, ruinas arcanas. Confirma o cambia los nombres internos de cada bioma para que dejen de ser genéricos.
-- Norte : Bosque Lluvioso
-- Sur : Tierras Cálidas
-- Este : Llanuras costeras
-- Oeste : Costa Montañosa
-- Centro : Zona Cero
+- Norte : Bosque Lluvioso <4 en dificultad>
+- Sur : Tierras Cálidas <1 en dificultad>
+- Este : Llanuras costeras  <2 en dificultad>
+- Oeste : Costa Montañosa <3 en dificultad>
+- Centro : Zona Cero (5 en dificultad)
+
 31. ¿Cada bioma tiene una identidad propia (un nombre propio, una historia), o son categorías genéricas tipo "el bosque del norte"?
 - Justo lo definó en .30 
+
 32. ¿Existen fronteras visibles entre biomas (líneas, ríos, muros, accidentes) o las transiciones son borrosas y orgánicas?
+- Las fronteras son las propias del mundo real :
+- SUR <MAR Mediterraneo>
+- OESTE <OCEANO Atlantico + Pirineos>
+- NORTE <Mar Oscuro>
+- Este <Costa desertica>
 
 33. ¿Qué bioma es el más peligroso del mundo y por qué motivo concreto (no solo "es duro")?
+- v1. EL norte. + Criaturas mas fuertes + Recursos antiguos + Peligro mayor
+
 34. ¿Qué bioma es el más sagrado o reverenciado, si lo hay?
+- Las tierras cálidas. Es una zona relativamente tranquila comparada a las otras.
+
 35. ¿Hay lugares **prohibidos**: zonas a las que nadie va, ni siquiera los más temerarios? ¿Por qué están prohibidas — peligro físico, tabú, contaminación arcana, otra cosa?
+- La zona cero en general. Ruinas antiguas, peligros mortales, pero encontrar tecnologia del pasado es factible. Pero el riesgo es inmenso. Pocos se aventuran en esa zona si no estan bien equipados y con experiencia de combate... Se dice que la verdad aguarda ahi desde milenios...
+
 36. ¿Hay lugares **imposibles**: que no deberían existir según las leyes que el mundo aún reconoce (ciudades flotantes, mares sin agua, bosques bajo tierra)?
+- No. 
 37. ¿Las ruinas arcanas son ruinas **de la humanidad clásica**, de algo anterior, de algo posterior, o de los tres mezclados?
+- SOn ruinas de la humanidad clásica. MIles de años despuies ya no son mas que escombros, cubiertos por capas milenarias de hongos y degradación de sus materiales. Pero siempre aguardan secretos a los que tienen el valor de aventurarse en ellas.
+
 38. [★] ¿Qué recurso natural del mundo es más valioso (no en valor de mercado, en valor de supervivencia)?
+- Los minerales en general. Para construir, vender, reforzar, incluso usar sus propiedades para añadir tipos de energia a las armas y armaduras.
 39. ¿Hay mares u océanos en la zona jugable, o el mundo es interior?
+- SI.
 40. ¿Existen rutas de comercio activas, o cada asentamiento es una isla?
+- Depende del bioma, pero son escasas. Es mas en asentamientos donde se ejerce el comercio, o incluso en los refugios, si coincides con algun mercader. Puede que incluso tengas la suerte de encontrarte con alguno de ellos vagando por el mundo...
 41. ¿Hay ciclo día/noche **normal** o el cielo cambió tras el evento? Si cambió, describe qué se ve ahora cuando el jugador mira hacia arriba.
+- Es normal, pero debido a la inexistencia d contaminacion lumínica, el cielo está super potenciado. Es una vision ancestral.
 42. ¿Hay constelaciones, lunas, o cuerpos celestes con nombre y rol mítico?
 
 ### Bloque 4 — Historia y cronología
 
 43. ¿Cómo cuenta el mundo el tiempo: años humanos antiguos, eras desde el evento, ciclos naturales, o no se cuenta más allá de "después"?
-44. [★] Da nombre y duración aproximada a las eras del mundo (mínimo 2: pre-evento y post-evento; añade más si las hay).
+- Los años antiguos (2000-2558 año aprox de la llega de la gran tormenta solar)
+- LOs años oscuros (2558-4500 aprox) EL mundo se convirtio en un lugar cruel y despiadado. Muere el 98% de la poblacion
+- El NUevo mundo (4898 aprox-) La actualidad. 
+
 45. ¿La memoria del mundo pre-evento se conserva como **historia documentada**, **leyenda oral**, **ruinas mudas**, o **se ha perdido del todo**?
 46. ¿Qué fue exactamente la humanidad clásica antes de caer: una civilización tecnológica, mágica, mixta, o el dato no es accesible?
 47. [★] ¿Cómo cayó la humanidad: en un día, en una guerra de generaciones, por colapso lento, por elección propia, por extinción biológica, o por algo más extraño?
