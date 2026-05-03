@@ -792,3 +792,216 @@ describe('defensiveThresholdBonus — capa externa pura', () => {
     expect(defensiveThresholdBonus(enemyDodging)).toBe(1);
   });
 });
+
+// =============================================================================
+// Sub-paso 4b — perks aplicados en el motor de combate
+// =============================================================================
+//
+// Estos tests cubren las 4 inyecciones del motor:
+//   1. perkAttackPoolBonus: +1 dado al pool del PJ (perk_golpe_brutal).
+//   2. perkDamageBonus: +N daño post-impacto (perk_filo_paciente / perk_ojo_clinico).
+//   3. perkDefBonus: +1 DEF a computeCharacterDefense (perk_callo_de_intemperie).
+//   4. perkInitiativeBonus: +N a rollInitiativeForCharacter (perk_pies_ligeros / perk_sello_del_humo).
+//
+// Invariantes de regresión:
+//   - Sin perks, los números son los pre-4b. Eso lo cubren los 17 tests de
+//     este suite que ya pasaban; no se duplican aquí.
+//   - resolveAttack y AttackResult NO se tocan (#75 sagrado): los bonos al
+//     daño se ven como `enemy.hp` cambiando más, no como AttackResult.damage
+//     diferente (ese sigue siendo arma + margen).
+
+import { computeCharacterDefense, rollInitiativeForCharacter, buildAttackInputFromCharacter } from './combat';
+
+describe('Sub-paso 4b — perks en el motor de combate', () => {
+  it('perk_golpe_brutal: pool de ataque del PJ +1 dado permanente', () => {
+    // PJ sin perks: pool = FUE + skill (puños sin catalog → FUE=4, skill 0 → 4).
+    const baseChar = makeCharacter({
+      attributes: { fue: 4, des: 3, con: 2, int: 2, vol: 1 },
+      skills: {},
+      perks: ['perk-test'], // huérfano: sin bono
+    });
+    const baseInput = buildAttackInputFromCharacter(baseChar, 4);
+    expect(baseInput.attacker_pool).toBe(4);
+
+    // Mismo PJ con perk_golpe_brutal: pool = 4 + 1 = 5.
+    const brutalChar = makeCharacter({
+      attributes: { fue: 4, des: 3, con: 2, int: 2, vol: 1 },
+      skills: {},
+      perks: ['perk_golpe_brutal'],
+    });
+    const brutalInput = buildAttackInputFromCharacter(brutalChar, 4);
+    expect(brutalInput.attacker_pool).toBe(5);
+    // weapon_damage no se toca por este perk.
+    expect(brutalInput.weapon_damage).toBe(baseInput.weapon_damage);
+  });
+
+  it('perk_filo_paciente: +1 daño POST-impacto (HIT) sin tocar resolveAttack', () => {
+    // Estrategia: usamos el RNG_ALL_FOURS (cara 4 = éxito sin crit) para que
+    // el resultado sea determinista. El PJ ataca con puños (FUE=2 → pool 2);
+    // contra defense_threshold=1 obtenemos margin=1 → daño = 1 (puños) + 1
+    // (margen) = 2 sin perk. Con perk_filo_paciente, +1 → enemigo recibe 3.
+    const enemy = makeDummyEnemy({
+      defense_threshold: 1,
+      hp_max: 50,
+      weapon_damage: 0,
+      attack_pool: 0,
+    });
+    const enemyState = makeEnemyState(enemy, 'dummy#1', 50);
+
+    // Sin perk damage_bonus.
+    const charNoPerk = makeCharacter({
+      attributes: { fue: 2, des: 3, con: 4, int: 2, vol: 1 },
+      skills: {},
+      perks: ['perk-test'],
+    });
+    const stateNo = makeCombatState(
+      charNoPerk,
+      [enemyState],
+      [{ actor: 'character', initiative: 10 }, { actor: 'dummy#1', initiative: 0 }],
+      0,
+    );
+    const afterNo = applyCharacterAction(
+      stateNo,
+      { kind: 'attack', target_instance_id: 'dummy#1' },
+      templatesOf(enemy),
+      RNG_ALL_FOURS(),
+    );
+    // hp_before = 50; daño esperado sin perk = 1 (puños) + (2 éxitos - 1
+    // threshold = margin 1) = 2 → hp = 48.
+    expect(afterNo.enemies[0]!.hp).toBe(48);
+
+    // Con perk_filo_paciente: damage_bonus +1 → daño total = 2 + 1 = 3 → hp = 47.
+    const charWithPerk = makeCharacter({
+      attributes: { fue: 2, des: 3, con: 4, int: 2, vol: 1 },
+      skills: {},
+      perks: ['perk_filo_paciente'],
+    });
+    const stateWith = makeCombatState(
+      charWithPerk,
+      [enemyState],
+      [{ actor: 'character', initiative: 10 }, { actor: 'dummy#1', initiative: 0 }],
+      0,
+    );
+    const afterWith = applyCharacterAction(
+      stateWith,
+      { kind: 'attack', target_instance_id: 'dummy#1' },
+      templatesOf(enemy),
+      RNG_ALL_FOURS(),
+    );
+    expect(afterWith.enemies[0]!.hp).toBe(47);
+  });
+
+  it('perk_ojo_clinico: +1 daño post-impacto (mismo mecanismo que filo_paciente)', () => {
+    // Reescritura 4b.6: pasa de flag narrativo a damage_bonus. Mismo test que
+    // filo_paciente pero blindando el contrato del recableado.
+    const enemy = makeDummyEnemy({
+      defense_threshold: 1, hp_max: 50, weapon_damage: 0, attack_pool: 0,
+    });
+    const enemyState = makeEnemyState(enemy, 'dummy#1', 50);
+
+    const char = makeCharacter({
+      attributes: { fue: 2, des: 3, con: 4, int: 2, vol: 1 },
+      skills: {},
+      perks: ['perk_ojo_clinico'],
+    });
+    const state = makeCombatState(
+      char,
+      [enemyState],
+      [{ actor: 'character', initiative: 10 }, { actor: 'dummy#1', initiative: 0 }],
+      0,
+    );
+    const after = applyCharacterAction(
+      state, { kind: 'attack', target_instance_id: 'dummy#1' },
+      templatesOf(enemy), RNG_ALL_FOURS(),
+    );
+    // 50 - (1 puños + 1 margen + 1 perk) = 47.
+    expect(after.enemies[0]!.hp).toBe(47);
+  });
+
+  it('perk_filo_paciente NO suma daño en MISS (resolveAttack devuelve damage=0)', () => {
+    // Caso clave: el bono de daño sólo se suma si hit. Construimos un caso
+    // donde el ataque falla y verificamos que el enemigo no recibe nada.
+    const enemy = makeDummyEnemy({
+      defense_threshold: 5, // threshold alto: 2 éxitos no llegan
+      hp_max: 50, weapon_damage: 0, attack_pool: 0,
+    });
+    const enemyState = makeEnemyState(enemy, 'dummy#1', 50);
+    const char = makeCharacter({
+      attributes: { fue: 2, des: 3, con: 4, int: 2, vol: 1 }, // pool puños = 2
+      skills: {},
+      perks: ['perk_filo_paciente'],
+    });
+    const state = makeCombatState(
+      char, [enemyState],
+      [{ actor: 'character', initiative: 10 }, { actor: 'dummy#1', initiative: 0 }],
+      0,
+    );
+    const after = applyCharacterAction(
+      state, { kind: 'attack', target_instance_id: 'dummy#1' },
+      templatesOf(enemy), RNG_ALL_FOURS(),
+    );
+    // 2 éxitos vs threshold 5 → margin -3 → MISS → damage=0 → enemy intacto.
+    // Si el bono se hubiera sumado en miss, habría 1 de daño. Test antiregresión.
+    expect(after.enemies[0]!.hp).toBe(50);
+  });
+
+  it('perk_callo_de_intemperie: +1 a computeCharacterDefense', () => {
+    const baseChar = makeCharacter({
+      attributes: { fue: 4, des: 4, con: 2, int: 1, vol: 1 }, // DEF base = 2 + 2 = 4
+      perks: ['perk-test'],
+    });
+    expect(computeCharacterDefense(baseChar)).toBe(4);
+
+    const callo = makeCharacter({
+      attributes: { fue: 4, des: 4, con: 2, int: 1, vol: 1 },
+      perks: ['perk_callo_de_intemperie'],
+    });
+    expect(computeCharacterDefense(callo)).toBe(5); // 4 base + 1 perk
+  });
+
+  it('perk_pies_ligeros: +2 a rollInitiativeForCharacter', () => {
+    // Estrategia: RNG fijo que devuelve 0.5 → rollD20 = floor(0.5*20)+1 = 11.
+    // Sin perks: DES=3 + 11 = 14. Con perk_pies_ligeros: 14 + 2 = 16.
+    const baseChar = makeCharacter({
+      attributes: { fue: 4, des: 3, con: 2, int: 2, vol: 1 },
+      perks: ['perk-test'],
+    });
+    const fixedRng: Rng = () => 0.5;
+    expect(rollInitiativeForCharacter(baseChar, fixedRng)).toBe(14);
+
+    const ligeros = makeCharacter({
+      attributes: { fue: 4, des: 3, con: 2, int: 2, vol: 1 },
+      perks: ['perk_pies_ligeros'],
+    });
+    expect(rollInitiativeForCharacter(ligeros, fixedRng)).toBe(16);
+  });
+
+  it('perk_sello_del_humo: +2 a iniciativa (mismo efecto numérico, perk distinto)', () => {
+    // Único arcano del catálogo H2/H3. Numéricamente equivalente a Pies
+    // Ligeros; el test blinda que el efecto está cableado pese a tener id
+    // diferente.
+    const sello = makeCharacter({
+      attributes: { fue: 4, des: 3, con: 2, int: 2, vol: 1 },
+      perks: ['perk_sello_del_humo'],
+    });
+    const fixedRng: Rng = () => 0.5;
+    expect(rollInitiativeForCharacter(sello, fixedRng)).toBe(16); // 3 + 11 + 2
+  });
+
+  it('regresión: PJ sin perks reconocidos da exactamente los números pre-4b', () => {
+    // Test antiregresión global: cubrimos las 4 inyecciones a la vez con un
+    // PJ sin perks válidos. Cualquier suma residual aparecería aquí.
+    const char = makeCharacter({
+      attributes: { fue: 4, des: 3, con: 2, int: 2, vol: 1 },
+      skills: {},
+      perks: ['perk-test'], // huérfano: 0 efecto
+    });
+    const fixedRng: Rng = () => 0.5;
+    // DEF: 2 + floor(3/2) + 0 armadura = 3.
+    expect(computeCharacterDefense(char)).toBe(3);
+    // Pool puños: FUE=4.
+    expect(buildAttackInputFromCharacter(char, 4).attacker_pool).toBe(4);
+    // Iniciativa: DES=3 + 11 (rollD20=0.5) = 14.
+    expect(rollInitiativeForCharacter(char, fixedRng)).toBe(14);
+  });
+});

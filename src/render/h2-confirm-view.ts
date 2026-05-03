@@ -1,7 +1,11 @@
 import type { H2StepCtx } from '../state/h2-flow';
 import { CharacterAlreadyAliveError } from '../backend/characters';
 import { showConfirmModal } from './confirm-modal';
-import { ATTRIBUTE_IDS, computeDefense, computeMaxHp } from '../rules/character';
+// Sub-paso 4b: la vista confirm trabaja con un draft (no Character) y usa la
+// fórmula base sin perks (computeBaseMaxHp). El bono real de los perks se
+// aplica al crear el Character; la confirm NO lo refleja todavía. Misma deuda
+// menor de UI documentada en h2-preview-view.ts.
+import { ATTRIBUTE_IDS, computeBaseMaxHp, computeDefense } from '../rules/character';
 import type { AttributeBlock, AttributeId } from '../rules/character';
 import { ARCHETYPES_BY_ID } from '../data/archetypes';
 import { PORTRAITS_BY_ID } from '../data/portraits';
@@ -71,7 +75,7 @@ function trainedSkills(ctx: H2StepCtx): readonly { name: string; value: number }
 
 export function renderH2ConfirmView(root: HTMLElement, ctx: H2StepCtx): void {
   const attributes = readAttributes(ctx);
-  const maxHp = computeMaxHp(attributes);
+  const maxHp = computeBaseMaxHp(attributes);
   const def = computeDefense(attributes);
   const initiative = attributes.des;
   const luck = Math.floor((attributes.int + attributes.vol) / 2);

@@ -22,6 +22,16 @@ import type { AttributeId, Character } from './character';
 import type { Item, ItemId } from './inventory';
 import { equippedWeapon, totalDefenseBonus } from './inventory';
 import { computeDefense } from './character';
+// Sub-paso 4b: bonos de perks aplicados como CAPA EXTERNA (#75 sagrado).
+// resolveAttack/rollCombatPool/computeHitThreshold no se modifican: los bonos
+// se suman en el caller (buildAttackInputFromCharacter, computeCharacterDefense,
+// rollInitiativeForCharacter, applyCharacterAction post-resolveAttack).
+import {
+  perkAttackPoolBonus,
+  perkDamageBonus,
+  perkDefBonus,
+  perkInitiativeBonus,
+} from './perks';
 // Tipos canónicos de estados — la fuente de verdad vive en rules/statuses.ts.
 // Se importan localmente para usarlos en la firma de EnemyState y se
 // re-exportan más abajo para mantener los importadores actuales (combat-flow.ts).
@@ -198,6 +208,11 @@ export function buildAttackInputFromCharacter(
     weapon_damage = 1;
   }
 
+  // Sub-paso 4b: bono permanente al pool de perks como perk_golpe_brutal
+  // (degradado en 4b.3 a +1 dado, sin trigger). Capa externa al motor: el
+  // pool se construye aquí, en el último mile antes de pasar al AttackInput.
+  attacker_pool += perkAttackPoolBonus(character);
+
   return {
     attacker_pool,
     defender_threshold: computeHitThreshold(defender_defense),
@@ -207,12 +222,17 @@ export function buildAttackInputFromCharacter(
 
 // DEF efectiva del personaje considerando armadura equipada. Es el contraparte
 // del threshold para enemigos: el enemy.attack_pool tira contra ceil(DEF/3).
+//
+// Sub-paso 4b: suma `perkDefBonus(character)` como capa externa. computeDefense
+// (rules/character.ts) sigue siendo función pura sobre AttributeBlock + armor:
+// no se entera de los perks. La suma vive aquí, en la API de combate, igual que
+// la suma de armadura.
 export function computeCharacterDefense(
   character: Character,
   catalog: Readonly<Record<ItemId, Item>> = {},
 ): number {
   const armor = Object.keys(catalog).length > 0 ? totalDefenseBonus(character.inventory, catalog) : 0;
-  return computeDefense(character.attributes, armor);
+  return computeDefense(character.attributes, armor) + perkDefBonus(character);
 }
 
 export function buildAttackInputFromEnemy(
@@ -256,9 +276,12 @@ export function applyDamageToEnemy(state: EnemyState, damage: number): EnemyStat
 // Iniciativa (decisión #41 — simulaciones/iniciativa-v0.1.md)
 // -----------------------------------------------------------------------------
 
-// PJ: iniciativa = DES + 1d20.
+// PJ: iniciativa = DES + 1d20 (+ bonos de perks como perk_pies_ligeros y
+// perk_sello_del_humo, sub-paso 4b). Capa externa: la fórmula DES+d20 sigue
+// pura. El bono se suma al final, antes de devolver, igual que armadura
+// suma a DEF tras computeDefense.
 export function rollInitiativeForCharacter(character: Character, rng: Rng): number {
-  return character.attributes.des + rollD20(rng);
+  return character.attributes.des + rollD20(rng) + perkInitiativeBonus(character);
 }
 
 // Enemigo: iniciativa = initiative_base + 1d20.
@@ -497,7 +520,13 @@ export function applyCharacterAction(
       weapon_damage: baseInput.weapon_damage,
     };
     const result = resolveAttack(rng, attackInput);
-    const newEnemyState = applyDamageToEnemy(target.state, result.damage);
+    // Sub-paso 4b: bono de daño post-impacto (perk_filo_paciente,
+    // perk_ojo_clinico). Se suma SÓLO si hit, ANTES de aplicar el daño al
+    // enemigo. resolveAttack y AttackResult NO se modifican (#75 sagrado): la
+    // decoración vive en el caller, igual que defensiveThresholdBonus se aplica
+    // antes de construir attackInput. El daño base por defecto es 0 si no hit.
+    const finalDamage = result.hit ? result.damage + perkDamageBonus(character) : result.damage;
+    const newEnemyState = applyDamageToEnemy(target.state, finalDamage);
     const arr = state.enemies.slice();
     arr[target.index] = newEnemyState;
     nextEnemies = arr;

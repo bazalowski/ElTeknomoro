@@ -181,7 +181,11 @@ export function spendAttributePoint(
     );
   }
   const newAttributes = { ...character.attributes, [attrId]: next };
-  const newMaxHp = computeMaxHp(newAttributes);
+  // Sub-paso 4b: computeMaxHp ahora recibe Character (suma bonos de perks).
+  // Construimos el Character con los nuevos atributos antes de invocarlo, así
+  // los bonos de perk_piel_dura / perk_temple se aplican consistentemente.
+  const characterWithNewAttrs: Character = { ...character, attributes: newAttributes };
+  const newMaxHp = computeMaxHp(characterWithNewAttrs);
   // CON sube → maxHp sube → el current sube proporcional para no penalizar.
   const hpDelta = newMaxHp - character.hp.max;
   const newCurrentHp = Math.min(newMaxHp, character.hp.current + Math.max(0, hpDelta));

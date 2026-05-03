@@ -3,8 +3,8 @@ import {
   ATTRIBUTE_IDS,
   CREATION_RULES,
   addGold,
+  computeBaseMaxHp,
   computeDefense,
-  computeMaxHp,
   createCharacter,
   spendGold,
   validateCreation,
@@ -55,12 +55,15 @@ describe('computeDefense (biblia §4.4)', () => {
   });
 });
 
-describe('computeMaxHp', () => {
+describe('computeBaseMaxHp (fórmula pura sin perks)', () => {
   it('aplica HP_max = 8 + 2·CON (provisional H1)', () => {
     const attrs = (con: number): AttributeBlock => ({ fue: 1, des: 1, con, int: 1, vol: 1 });
-    expect(computeMaxHp(attrs(1))).toBe(10);
-    expect(computeMaxHp(attrs(4))).toBe(16);
-    expect(computeMaxHp(attrs(7))).toBe(22);
+    // Sub-paso 4b: la firma de la API cambió a `computeMaxHp(character)` para
+    // sumar bonos de perks; la fórmula base se exporta como `computeBaseMaxHp`
+    // y la usan las vistas de preview/confirm que aún no tienen Character.
+    expect(computeBaseMaxHp(attrs(1))).toBe(10);
+    expect(computeBaseMaxHp(attrs(4))).toBe(16);
+    expect(computeBaseMaxHp(attrs(7))).toBe(22);
   });
 });
 
@@ -169,8 +172,10 @@ describe('createCharacter', () => {
     expect(c.epitaph).toBeNull();
     expect(c.archetype).toBe('guerrero');
 
-    // HP lleno = computeMaxHp(attrs)
-    expect(c.hp.max).toBe(computeMaxHp(input.attributes));
+    // HP lleno = fórmula base (input usa `perk-golpe-firme`, perk huérfano
+    // que no está en PERKS_BY_ID y no aporta bonos). 4b: la API canónica es
+    // computeMaxHp(character); la fórmula pura es computeBaseMaxHp(attrs).
+    expect(c.hp.max).toBe(computeBaseMaxHp(input.attributes));
     expect(c.hp.current).toBe(c.hp.max);
 
     // Skills se serializan a { value, usage: 0 }
@@ -346,5 +351,54 @@ describe('gold (recurso del personaje)', () => {
     const dead = killCharacter(c, deathByEnemy('lobo-01', 'Lobo hambriento'), '2026-04-29T12:00:00Z');
     expect(dead.epitaph).not.toBeNull();
     expect(dead.epitaph!.final_character.gold).toBe(50);
+  });
+});
+
+// =============================================================================
+// Sub-paso 4b — perks aplicados en createCharacter
+// =============================================================================
+//
+// Tres ejes que la creación debe respetar:
+//   1. perk_temple / perk_piel_dura: hp_max_bonus +2 → HP máx aumenta en +2.
+//   2. perk_pulmon_de_ceniza: attribute_bonus CON +1 (opción B) →
+//      character.attributes.con sube en 1, y la fórmula HP máx ya lo refleja
+//      (8 + 2·CON con CON+1 = +2 HP máx). Total: HP máx = base con CON ya
+//      bonificado, sin doble suma.
+//   3. perk huérfano (id no existe en PERKS_BY_ID): ignorado, motor no rompe.
+
+describe('createCharacter — perks con efecto al crear (sub-paso 4b)', () => {
+  it('perk_temple: HP máx = base + 2 (hp_max_bonus)', () => {
+    // Base con CON=2: 8 + 2·2 = 12. Con perk_temple: 12 + 2 = 14.
+    const c = createCharacter(baseInput({ perks: ['perk_temple'] }));
+    expect(c.hp.max).toBe(14);
+    expect(c.hp.current).toBe(14);
+    // CON intacto (no es attribute_bonus).
+    expect(c.attributes.con).toBe(2);
+  });
+
+  it('perk_piel_dura: HP máx = base + 2 (hp_max_bonus)', () => {
+    const c = createCharacter(baseInput({ perks: ['perk_piel_dura'] }));
+    expect(c.hp.max).toBe(14);
+  });
+
+  it('perk_pulmon_de_ceniza (opción B): CON +1 directo en attributes; HP máx refleja CON bonificado', () => {
+    // Base CON=2, perk sube a 3. HP máx = 8 + 2·3 = 14 (NO 12+2=14 por
+    // hp_max_bonus; aquí no hay hp_max_bonus, sólo attribute_bonus).
+    const c = createCharacter(baseInput({ perks: ['perk_pulmon_de_ceniza'] }));
+    expect(c.attributes.con).toBe(3); // 2 base + 1 perk
+    expect(c.hp.max).toBe(14);        // 8 + 2·3
+    // Otros atributos intactos.
+    expect(c.attributes.fue).toBe(4);
+    expect(c.attributes.des).toBe(3);
+    expect(c.attributes.int).toBe(2);
+    expect(c.attributes.vol).toBe(1);
+  });
+
+  it('perk huérfano (id inexistente) no rompe createCharacter, no aplica bono', () => {
+    // El validador acepta el id como string; el helper de perks ignora ids
+    // huérfanos. La creación queda jugable sin sumar nada.
+    const c = createCharacter(baseInput({ perks: ['perk_inexistente_xyz'] }));
+    expect(c.attributes.con).toBe(2);     // sin bono
+    expect(c.hp.max).toBe(computeBaseMaxHp(c.attributes)); // 12
   });
 });

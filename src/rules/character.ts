@@ -5,6 +5,7 @@ import type { Inventory } from './inventory';
 import { buildStartingInventory } from '../data/items';
 import type { Epitaph } from './death';
 import type { StatusEffect } from './statuses';
+import { perkAttributeBonus, perkHpMaxBonus } from './perks';
 
 // -----------------------------------------------------------------------------
 // Constantes de creación (biblia §4.1, §4.2, §4.7)
@@ -118,11 +119,31 @@ export function computeDefense(attributes: AttributeBlock, armor = 0): number {
   return 2 + Math.floor(attributes.des / 2) + armor;
 }
 
-// HP máximo. PROVISIONAL para H1: 8 + 2·CON. CON 1 → 10, CON 7 → 22.
+// HP máximo BASE. PROVISIONAL para H1: 8 + 2·CON. CON 1 → 10, CON 7 → 22.
 // Encaja con los HP_obj del scope MVP (10/20/40 por perfil) y con la simulación
 // del dado v0.2. Pendiente de cierre cuando se cierre la curva de XP (§6).
-export function computeMaxHp(attributes: AttributeBlock): number {
+//
+// Función pura sobre AttributeBlock, sin perks. La consume:
+//   - computeMaxHp (la API canónica, que añade bonos de perks).
+//   - h2-preview-view / h2-confirm-view: durante la creación, el draft no es
+//     Character todavía, por eso necesitan la fórmula base. La vista de preview
+//     no refleja el bono del perk seleccionado en H2.4 hoy; cuando 4b cierre y
+//     el bono importe en preview, se reescribe esta llamada (deuda menor de UI).
+export function computeBaseMaxHp(attributes: AttributeBlock): number {
   return 8 + 2 * attributes.con;
+}
+
+// HP máximo del Character. Sub-paso 4b: cambia firma de AttributeBlock a
+// Character para que los bonos de perks (perk_piel_dura, perk_temple, etc.)
+// se sumen aquí UNA SOLA VEZ y no proliferen sumas en cada caller.
+//
+// Decisión #75 sagrada: la fórmula base (computeBaseMaxHp) sigue intacta y
+// pura. Los bonos son CAPA EXTERNA aplicada en el último mile. Si un perk
+// sube CON via attribute_bonus, esa suma ya está en `character.attributes.con`
+// (la aplica createCharacter antes de invocar computeMaxHp), así que la
+// fórmula base ya refleja CON+bono. Los hp_max_bonus son aditivos a eso.
+export function computeMaxHp(character: Character): number {
+  return computeBaseMaxHp(character.attributes) + perkHpMaxBonus(character);
 }
 
 // Suerte derivada. Decisión #43:
@@ -278,14 +299,39 @@ export function createCharacter(input: CreateCharacterInput): Character {
     skills[skillId] = { value, usage: 0 };
   }
 
-  const maxHp = computeMaxHp(input.attributes);
+  // Sub-paso 4b.4 opción B: aplicar `attribute_bonus` de los perks al
+  // `attributes` final ANTES de calcular HP máx. Construimos un Character
+  // temporal mínimo (sólo con los campos que perkAttributeBonus consulta:
+  // .perks) para reusar el wrapper. Si el perk sube CON, el HP máx ya lo
+  // refleja porque la fórmula base 8+2·CON se evalúa sobre el atributo
+  // bonificado. El bono se incorpora a `character.attributes` para siempre:
+  // cualquier cómputo posterior (DEF, luck, pool de ataque) lee el atributo
+  // ya bonificado sin saber del perk.
+  const baseAttributes: AttributeBlock = { ...input.attributes };
+  // Character "temporal" sólo para que perkAttributeBonus lea .perks. El
+  // resto de campos no se consultan y se rellenan con stubs irrelevantes.
+  const stubForBonus = { perks: input.perks } as unknown as Character;
+  const bonusedAttributes: AttributeBlock = {
+    fue: baseAttributes.fue + perkAttributeBonus(stubForBonus, 'fue'),
+    des: baseAttributes.des + perkAttributeBonus(stubForBonus, 'des'),
+    con: baseAttributes.con + perkAttributeBonus(stubForBonus, 'con'),
+    int: baseAttributes.int + perkAttributeBonus(stubForBonus, 'int'),
+    vol: baseAttributes.vol + perkAttributeBonus(stubForBonus, 'vol'),
+  };
+
+  // Para HP máx necesitamos un Character que ya tenga los `attributes`
+  // bonificados Y los perks (porque perkHpMaxBonus también lee perks).
+  // Construimos otro stub mínimo. La única razón por la que HP máx no se
+  // hace al final es que el campo `hp` necesita el resultado para crearse.
+  const characterForHp = { attributes: bonusedAttributes, perks: input.perks } as unknown as Character;
+  const maxHp = computeMaxHp(characterForHp);
 
   return {
     id: input.id,
     name: input.name,
     portraitId: input.portraitId,
     archetype: input.archetype,
-    attributes: { ...input.attributes },
+    attributes: bonusedAttributes,
     skills,
     perks: [...input.perks],
     level: 1,

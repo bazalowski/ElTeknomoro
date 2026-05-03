@@ -1,5 +1,11 @@
 import type { H2StepCtx } from '../state/h2-flow';
-import { ATTRIBUTE_IDS, computeDefense, computeMaxHp } from '../rules/character';
+// Sub-paso 4b: la vista preview trabaja con un draft (no Character) y usa la
+// fórmula base sin perks (computeBaseMaxHp). El bono real de los perks
+// (perk_piel_dura, perk_temple, perk_pulmon_de_ceniza) se aplica al crear el
+// Character en createCharacter; el preview NO lo refleja todavía. Deuda menor
+// de UI: cuando el preview deba mostrar el HP máx final con bonos, se cambia
+// la llamada a computeMaxHp(stubCharacter) o se construye el Character aquí.
+import { ATTRIBUTE_IDS, computeBaseMaxHp, computeDefense } from '../rules/character';
 import type { AttributeBlock, AttributeId } from '../rules/character';
 import { ARCHETYPES_BY_ID } from '../data/archetypes';
 import { PORTRAITS_BY_ID } from '../data/portraits';
@@ -84,7 +90,7 @@ function trainedSkills(ctx: H2StepCtx): readonly { id: string; name: string; val
 
 export function renderH2PreviewView(root: HTMLElement, ctx: H2StepCtx): void {
   const attributes = readAttributes(ctx);
-  const maxHp = computeMaxHp(attributes);
+  const maxHp = computeBaseMaxHp(attributes);
   const def = computeDefense(attributes);
   const initiative = attributes.des;
   const luck = Math.floor((attributes.int + attributes.vol) / 2);
