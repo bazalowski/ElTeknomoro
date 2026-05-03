@@ -38,7 +38,19 @@
 
 import type { Enemy, EnemyId } from '../rules/combat';
 import type { ItemId } from '../rules/inventory';
+import type { AIProfile } from '../rules/ai';
 import { ITEMS_BY_ID } from './items';
+
+// Catálogo cerrado de perfiles de IA válidos. Se usa para validar que cada
+// Enemy declare un perfil del set permitido (ver enemies.test.ts y la
+// auto-validación del bloque defensivo más abajo). Sincronizado con el tipo
+// `AIProfile` de `rules/ai.ts`: si añades un perfil allí, añádelo aquí.
+const VALID_AI_PROFILES: ReadonlySet<AIProfile> = new Set<AIProfile>([
+  'agresivo',
+  'evasor',
+  'cauteloso',
+  'toxico',
+]);
 
 // -----------------------------------------------------------------------------
 // Tipos de loot (D-2d-1: viven aquí, no en rules/inventory.ts)
@@ -95,6 +107,11 @@ export const ENEMIES: readonly Enemy[] = [
     weapon_damage: 2,
     initiative_base: 4,
     hp_max: 16,
+    // Sub-paso 4c (decisión E2 + tabla del briefing): el lobo es el enemigo
+    // básico del tutorial → perfil `agresivo` (siempre ataca al PJ). Cuando
+    // se amplíe el catálogo (H7), nuevos enemigos podrán declarar evasor,
+    // cauteloso o toxico para variar la dinámica de combate.
+    ai_profile: 'agresivo',
   },
 ] as const;
 
@@ -155,6 +172,18 @@ export function getLootTableForEnemy(enemyId: EnemyId): LootTable | null {
 // -----------------------------------------------------------------------------
 // Auto-validación de integridad referencial (defensiva, defensa en profundidad)
 // -----------------------------------------------------------------------------
+
+// Sub-paso 4c: cada enemy debe declarar un ai_profile válido. Si alguien
+// añade un enemy nuevo y olvida el campo (TS lo pillará) o usa un valor que
+// no está en el catálogo, el proceso peta en import time. Misma política
+// que la validación de drops huérfanos.
+for (const enemy of ENEMIES) {
+  if (!VALID_AI_PROFILES.has(enemy.ai_profile)) {
+    throw new Error(
+      `data/enemies: enemy "${enemy.id}" declara ai_profile "${enemy.ai_profile}" no soportado. Válidos: ${Array.from(VALID_AI_PROFILES).join(', ')}.`,
+    );
+  }
+}
 
 // Validamos al cargar el módulo que cada drop con kind 'item' referencia un
 // item del catálogo. Si alguien añade una tabla con un id huérfano, el

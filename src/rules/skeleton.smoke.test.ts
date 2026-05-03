@@ -129,6 +129,8 @@ function makeWeakEnemy(): Enemy {
     weapon_damage: 2,
     initiative_base: 1,
     hp_max: 3,
+    // Sub-paso 4c: el motor exige ai_profile en cualquier Enemy.
+    ai_profile: 'agresivo',
   };
 }
 
@@ -139,6 +141,7 @@ function makeEnemyState(template: Enemy, instance_id = 'lobo#1'): EnemyState {
     hp: template.hp_max,
     alive: true,
     statuses: [],
+    intent: null,
   };
 }
 
@@ -737,13 +740,25 @@ describe('smoke: combate por turnos completo', () => {
     expect(['victory', 'defeat']).toContain(state.status);
   });
 
-  it('applyCharacterAction rechaza acción no implementada', () => {
+  it('applyCharacterAction rechaza acciones aún no implementadas (use_item, use_skill)', () => {
+    // Sub-paso 4c: flee ya está implementado y se cubre en su propio test;
+    // aquí validamos que las acciones que SIGUEN diferidas (use_item con
+    // inventory en H5, use_skill con catálogo de habilidades en hito
+    // posterior) sigan lanzando con un mensaje claro.
     const rng = createRng(1);
     const character = makeTestCharacter();
     const enemy = makeWeakEnemy();
     const state = startCombat(character, [makeEnemyState(enemy)], { lobo: enemy }, rng);
     expect(() =>
-      applyCharacterAction(state, { kind: 'flee' }, { lobo: enemy }, rng),
+      applyCharacterAction(state, { kind: 'use_item', slot_index: 0 }, { lobo: enemy }, rng),
+    ).toThrow(/no implementada/);
+    expect(() =>
+      applyCharacterAction(
+        state,
+        { kind: 'use_skill', skill_id: 'sigilo', target_instance_id: null },
+        { lobo: enemy },
+        rng,
+      ),
     ).toThrow(/no implementada/);
   });
 

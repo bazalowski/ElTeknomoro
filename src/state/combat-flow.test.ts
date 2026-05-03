@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { startCombatFlow, type CombatLogEntry, type CombatResult } from './combat-flow';
 import { createCharacter, type CreateCharacterInput, type Character } from '../rules/character';
 import { addItem } from '../rules/inventory';
-import { createRng } from '../rules/dice';
+import { createRng, type Rng } from '../rules/dice';
 import type { Enemy, EnemyId, EnemyState } from '../rules/combat';
 import { STATUS_DEFAULT_MAGNITUDE } from '../rules/statuses';
 import { ENEMIES_BY_ID } from '../data/enemies';
@@ -55,6 +55,7 @@ function loboInstance(instanceId = 'lobo#1'): EnemyState {
     hp: tpl.hp_max,
     alive: true,
     statuses: [],
+    intent: null,
   };
 }
 
@@ -72,6 +73,7 @@ const TEST_DUMMY_ENEMY: Enemy = {
   weapon_damage: 0,
   initiative_base: 0,
   hp_max: 1,
+  ai_profile: 'agresivo',
 };
 
 const TEST_BRUTE_ENEMY: Enemy = {
@@ -83,6 +85,7 @@ const TEST_BRUTE_ENEMY: Enemy = {
   weapon_damage: 5,
   initiative_base: 10,
   hp_max: 50,
+  ai_profile: 'agresivo',
 };
 
 function makeTemplates(extra: Enemy[] = []): Readonly<Record<EnemyId, Enemy>> {
@@ -192,6 +195,7 @@ describe('combat-flow / derrota', () => {
           hp: TEST_BRUTE_ENEMY.hp_max,
           alive: true,
           statuses: [],
+          intent: null,
         },
       ],
       enemyTemplates: makeTemplates([TEST_BRUTE_ENEMY]),
@@ -410,6 +414,7 @@ describe('combat-flow / validaciones', () => {
           hp: TEST_DUMMY_ENEMY.hp_max,
           alive: true,
           statuses: [],
+          intent: null,
         },
       ],
       enemyTemplates: makeTemplates([TEST_DUMMY_ENEMY]),
@@ -465,6 +470,7 @@ describe('combat-flow / validaciones', () => {
           hp: TEST_DUMMY_ENEMY.hp_max,
           alive: true,
           statuses: [],
+          intent: null,
         },
         {
           enemy_id: TEST_DUMMY_ENEMY.id,
@@ -472,6 +478,7 @@ describe('combat-flow / validaciones', () => {
           hp: TEST_DUMMY_ENEMY.hp_max,
           alive: true,
           statuses: [],
+          intent: null,
         },
       ],
       enemyTemplates: makeTemplates([TEST_DUMMY_ENEMY]),
@@ -492,7 +499,7 @@ describe('combat-flow / validaciones', () => {
     }
   });
 
-  it('use_skill y flee no implementadas en H3', () => {
+  it('use_skill sigue sin implementar en H3 (flee ya está implementado en 4c)', () => {
     const handle = startCombatFlow({
       character: buildOP(),
       enemies: [loboInstance()],
@@ -506,7 +513,6 @@ describe('combat-flow / validaciones', () => {
     expect(() =>
       handle.submitAction({ kind: 'use_skill', skill_id: 'x', target_instance_id: null }),
     ).toThrow(/no implementada en H3/);
-    expect(() => handle.submitAction({ kind: 'flee' })).toThrow(/no implementada en H3/);
   });
 });
 
@@ -532,6 +538,7 @@ describe('combat-flow / encadenamiento de turnos', () => {
           hp: fastWolf.hp_max,
           alive: true,
           statuses: [],
+          intent: null,
         },
       ],
       enemyTemplates: makeTemplates([fastWolf]),
@@ -621,6 +628,299 @@ describe('combat-flow / consumeLogTail', () => {
       expect(tail2.length).toBeGreaterThan(0);
       // No incluye el combat_start anterior.
       expect(tail2.find((e) => e.kind === 'combat_start')).toBeUndefined();
+    }
+  });
+});
+
+// =============================================================================
+// Sub-paso 4c: flee + intents
+// =============================================================================
+//
+// Para los tests de flee necesitamos controlar el primer rng() consumido por
+// resolveCharacterFlee (umbral 0.5). El motor consume rng() en muchos otros
+// sitios (initiative, pool d6), así que NO sirve un rng global constante:
+// rompería las iniciativas. Estrategia: rng que devuelve UN valor controlado
+// la primera vez tras un "trigger" (vía contador interno) y luego propaga a
+// otra rng base. Eso permite construir un flow normal con createRng(seed) y
+// luego, justo antes del flee, "armar" el primer valor.
+//
+// Implementación más simple: usamos un rng-stub que devuelve la SECUENCIA
+// dada en orden, y al agotarse propaga a un rng base. La construcción
+// "secuencia + base" da control total sobre los primeros consumos.
+
+// Rng que devuelve los valores de `sequence` en orden y, una vez agotada,
+// propaga a `fallback`. Útil para tests donde queremos forzar el valor del
+// primer/segundo rng() y dejar el resto al RNG normal.
+function rngWithPrefix(sequence: readonly number[], fallback: Rng): Rng {
+  let i = 0;
+  return () => {
+    if (i < sequence.length) {
+      return sequence[i++]!;
+    }
+    return fallback();
+  };
+}
+
+describe('combat-flow / flee (sub-paso 4c, decisión C1)', () => {
+  // Buscar una seed donde el PJ vaya primero, sin tener que escribir N tests
+  // distintos. Reutilizable.
+  function findSeedWithPjFirst(character: Character): number {
+    for (let s = 1; s < 100; s++) {
+      const h = startCombatFlow({
+        character,
+        enemies: [loboInstance()],
+        enemyTemplates: ENEMIES_BY_ID,
+        itemCatalog: ITEMS_BY_ID,
+        rng: createRng(s),
+        nowIso: NOW,
+        onEnd: () => {},
+      });
+      if (h.isCharacterTurn() && h.isOngoing()) return s;
+    }
+    throw new Error('test setup: no se encontró seed con PJ primero');
+  }
+
+  it('flee exitoso → status="fled", PJ vuelve vivo con HP actuales y SIN statuses', () => {
+    let character = buildOP();
+    // Le ponemos veneno para validar que se LIMPIA al cerrar (4a.4 +
+    // limpieza universal de 4c).
+    character = {
+      ...character,
+      statuses: [{ kind: 'poisoned', remaining: 3, magnitude: 1 }],
+    };
+    const seed = findSeedWithPjFirst(character);
+    let result: CombatResult | null = null;
+    const handle = startCombatFlow({
+      character,
+      enemies: [loboInstance()],
+      enemyTemplates: ENEMIES_BY_ID,
+      itemCatalog: ITEMS_BY_ID,
+      // Inyectamos 0.1 como primer valor: lo consumirá resolveCharacterFlee
+      // → 0.1 < 0.5 → éxito. El resto del rng arranca con createRng(seed)
+      // pero startCombat ya consumió las iniciativas; aquí volvemos a
+      // construir un rng nuevo con la misma seed para mantener determinismo
+      // visible. Lo importante es que el primer valor consumido tras
+      // submitAction sea el 0.1 que controla flee.
+      //
+      // OJO: startCombat consume RNG (iniciativas) ANTES de que la rng se
+      // pase a la closure. Para asegurarnos de que el 0.1 sea consumido
+      // por flee y no por la iniciativa, hacemos que rngWithPrefix tenga
+      // su prefix DESPUÉS de las iniciativas. Solución pragmática:
+      // construimos primero un handle con rng normal para consumir
+      // iniciativas, lo descartamos, y para el handle real inyectamos un
+      // rng que ya tiene N valores consumidos del prefix.
+      //
+      // Más simple aún: dejamos que el orquestador consuma initiatives
+      // desde el rng base, y justo antes del primer submitAction PJ
+      // sobrescribimos. Pero el rng se pasa una vez en construct.
+      //
+      // Lo cleanest: construimos un rng prefix que inserta el 0.1 como
+      // primer valor TRAS los consumos de iniciativa. El número de
+      // consumos de iniciativa = #enemigos + 1 (PJ). Aquí 1 enemigo → 2
+      // tiradas d20. Cada rollD20 consume 1 rng() → 2 consumos.
+      rng: rngWithPrefix([0.5, 0.5, 0.1], createRng(seed)),
+      nowIso: NOW,
+      onEnd: (r) => {
+        result = r;
+      },
+    });
+    expect(handle.isCharacterTurn()).toBe(true);
+    handle.submitAction({ kind: 'flee' });
+    expect(handle.isOngoing()).toBe(false);
+    expect(result).not.toBeNull();
+    const r = result as unknown as CombatResult;
+    expect(r.status).toBe('fled');
+    expect(r.character.alive).toBe(true);
+    // El PJ pudo haber recibido daño por el tick start (poisoned NO ticka
+    // al inicio, pero por defensa en profundidad: HP > 0). Y los statuses
+    // deben venir LIMPIOS — clearAllStatuses en finalizeIfClosed.
+    expect(r.character.hp.current).toBeGreaterThan(0);
+    expect(r.character.statuses).toEqual([]);
+    // Sin loot ni epitafio.
+    expect(r.loot.gold).toBe(0);
+    expect(r.loot.items).toEqual([]);
+    expect(r.character.epitaph).toBeNull();
+    // Log: hay flee_attempted con success=true y combat_end con status='fled'.
+    const log = handle.getLog();
+    const flee = log.find((e) => e.kind === 'flee_attempted');
+    expect(flee).toBeDefined();
+    if (flee?.kind === 'flee_attempted') expect(flee.success).toBe(true);
+    const end = log.at(-1);
+    expect(end?.kind).toBe('combat_end');
+    if (end?.kind === 'combat_end') expect(end.status).toBe('fled');
+  });
+
+  it('flee fallido → consume turno, enemigo ataca, combate sigue ongoing (o cierra si el lobo mata al PJ)', () => {
+    const character = buildOP();
+    const seed = findSeedWithPjFirst(character);
+    let result: CombatResult | null = null;
+    const handle = startCombatFlow({
+      // 2 valores para iniciativas + 0.7 para flee (≥ 0.5 → fallo).
+      character,
+      enemies: [loboInstance()],
+      enemyTemplates: ENEMIES_BY_ID,
+      itemCatalog: ITEMS_BY_ID,
+      rng: rngWithPrefix([0.5, 0.5, 0.7], createRng(seed)),
+      nowIso: NOW,
+      onEnd: (r) => {
+        result = r;
+      },
+    });
+    expect(handle.isCharacterTurn()).toBe(true);
+    const tail = handle.submitAction({ kind: 'flee' });
+    // Log debe contener flee_attempted con success=false.
+    const flee = tail.find((e) => e.kind === 'flee_attempted');
+    expect(flee).toBeDefined();
+    if (flee?.kind === 'flee_attempted') expect(flee.success).toBe(false);
+    // El lobo debió actuar (turno consumido + advance al enemigo).
+    // Ya sea ataque (intent=attack para el lobo agresivo) o muerte por DoT.
+    const enemyTurnStart = tail.find(
+      (e) => e.kind === 'turn_start' && e.actor !== 'character',
+    );
+    expect(enemyTurnStart).toBeDefined();
+    // Si el combate sigue, es turno PJ otra vez. Si no, alguno de los
+    // resultados terminales (defeat o victory si el lobo se hubiera
+    // suicidado por DoT, improbable aquí).
+    if (handle.isOngoing()) {
+      expect(handle.isCharacterTurn()).toBe(true);
+    } else {
+      // Cast a CombatResult: la captured closure no propaga el tipo bien.
+      const r = result as unknown as CombatResult | null;
+      expect(r).not.toBeNull();
+      expect(['defeat', 'victory']).toContain(r!.status);
+    }
+  });
+});
+
+describe('combat-flow / intent log (sub-paso 4c)', () => {
+  it('emite enemy_intent antes de cada turno enemigo', () => {
+    // Encontramos seed donde el lobo va antes que el PJ → el orquestador
+    // resuelve el turno enemigo en la inicialización y debemos ver el
+    // enemy_intent en el log inicial.
+    const character = buildOP();
+    let seed = -1;
+    for (let s = 1; s < 100; s++) {
+      const h = startCombatFlow({
+        character,
+        enemies: [loboInstance()],
+        enemyTemplates: ENEMIES_BY_ID,
+        itemCatalog: ITEMS_BY_ID,
+        rng: createRng(s),
+        nowIso: NOW,
+        onEnd: () => {},
+      });
+      // Buscamos seed donde el PRIMER turno fue enemigo (eso fuerza al
+      // orquestador a resolverlo durante el bootstrap → enemy_intent en log).
+      const log = h.getLog();
+      const firstTurnStart = log.find((e) => e.kind === 'turn_start');
+      if (
+        firstTurnStart?.kind === 'turn_start'
+        && firstTurnStart.actor_kind === 'enemy'
+      ) {
+        seed = s;
+        break;
+      }
+    }
+    if (seed === -1) {
+      // No se encontró seed con primer turno enemigo: salta el caso
+      // específico — el otro test cubre intent durante el flow.
+      return;
+    }
+    const handle = startCombatFlow({
+      character,
+      enemies: [loboInstance()],
+      enemyTemplates: ENEMIES_BY_ID,
+      itemCatalog: ITEMS_BY_ID,
+      rng: createRng(seed),
+      nowIso: NOW,
+      onEnd: () => {},
+    });
+    const log = handle.getLog();
+    const intentEntry = log.find((e) => e.kind === 'enemy_intent');
+    expect(intentEntry).toBeDefined();
+    if (intentEntry?.kind === 'enemy_intent') {
+      // El lobo es agresivo → intent attack al PJ.
+      expect(intentEntry.intent.kind).toBe('attack');
+    }
+  });
+
+  it('tras turno PJ, el siguiente turno enemigo emite enemy_intent antes del attack_resolved', () => {
+    // PJ primero por seed; tras submitAction, el lobo debe actuar y
+    // emitir enemy_intent antes de su attack_resolved.
+    const character = buildOP();
+    let seed = -1;
+    for (let s = 1; s < 100; s++) {
+      const h = startCombatFlow({
+        character,
+        enemies: [loboInstance()],
+        enemyTemplates: ENEMIES_BY_ID,
+        itemCatalog: ITEMS_BY_ID,
+        rng: createRng(s),
+        nowIso: NOW,
+        onEnd: () => {},
+      });
+      if (h.isCharacterTurn() && h.isOngoing()) {
+        seed = s;
+        break;
+      }
+    }
+    expect(seed).toBeGreaterThan(0);
+    const handle = startCombatFlow({
+      character,
+      enemies: [loboInstance()],
+      enemyTemplates: ENEMIES_BY_ID,
+      itemCatalog: ITEMS_BY_ID,
+      rng: createRng(seed),
+      nowIso: NOW,
+      onEnd: () => {},
+    });
+    const tail = handle.submitAction({ kind: 'attack', target_instance_id: 'lobo#1' });
+    // Si el lobo no murió, debe haber enemy_intent en el tail.
+    const intent = tail.find((e) => e.kind === 'enemy_intent');
+    if (handle.isOngoing()) {
+      // El lobo está vivo y actuó → enemy_intent debe estar.
+      expect(intent).toBeDefined();
+      // Buscamos la posición del enemy_intent y del attack_resolved del lobo:
+      // intent debe ir ANTES del attack_resolved del enemigo.
+      const intentIdx = tail.findIndex((e) => e.kind === 'enemy_intent');
+      const enemyAttackIdx = tail.findIndex(
+        (e) => e.kind === 'attack_resolved' && e.attacker_kind === 'enemy',
+      );
+      if (intentIdx >= 0 && enemyAttackIdx >= 0) {
+        expect(intentIdx).toBeLessThan(enemyAttackIdx);
+      }
+    }
+  });
+
+  it('limpieza universal: tras combat_end victoria, statuses del PJ vienen vacíos', () => {
+    // PJ con bleeding al iniciar combate. Tras victoria, statuses limpios
+    // (decisión 4c: clearAllStatuses universal en finalizeIfClosed).
+    let character = buildOP();
+    character = {
+      ...character,
+      statuses: [{ kind: 'bleeding', remaining: 5, magnitude: 1 }],
+    };
+    let result: CombatResult | null = null;
+    const handle = startCombatFlow({
+      character,
+      enemies: [loboInstance()],
+      enemyTemplates: ENEMIES_BY_ID,
+      itemCatalog: ITEMS_BY_ID,
+      rng: createRng(42),
+      nowIso: NOW,
+      onEnd: (r) => {
+        result = r;
+      },
+    });
+    let safety = 50;
+    while (handle.isOngoing() && safety-- > 0) {
+      handle.submitAction({ kind: 'attack', target_instance_id: 'lobo#1' });
+    }
+    expect(handle.isOngoing()).toBe(false);
+    expect(result).not.toBeNull();
+    const r = result as unknown as CombatResult;
+    if (r.status === 'victory') {
+      expect(r.character.statuses).toEqual([]);
     }
   });
 });

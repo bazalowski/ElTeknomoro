@@ -43,6 +43,7 @@ function makeEnemyState(overrides: Partial<EnemyState> = {}): EnemyState {
     hp: 10,
     alive: true,
     statuses: [],
+    intent: null,
     ...overrides,
   };
 }

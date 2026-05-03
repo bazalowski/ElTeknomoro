@@ -67,6 +67,7 @@ import type {
   CombatState,
   Enemy,
   EnemyId,
+  EnemyIntent,
   EnemyState,
   StatusEffect,
 } from '../rules/combat';
@@ -82,11 +83,14 @@ import {
   computeCharacterDefense,
   computeHitThreshold,
   defensiveThresholdBonus,
+  FLEE_SUCCESS_PROBABILITY,
   resolveAttack,
   startCombat,
 } from '../rules/combat';
+import { decideEnemyAction } from '../rules/ai';
 import {
   applyStatus,
+  clearAllStatuses,
   hasStatus,
   STATUS_DEFAULT_DURATION,
   STATUS_DEFAULT_MAGNITUDE,
@@ -192,8 +196,31 @@ export type CombatLogEntry =
       reason: 'inventory_full';
     }
   | {
+      // Sub-paso 4c: declaración de intención del enemigo. Emitido al INICIO
+      // de cada turno enemigo, ANTES de ejecutar la acción. La UI lo lee
+      // para telegrafiar al jugador "el lobo va a atacarte por 3-5 daño" o
+      // "el lobo se prepara a esquivar". El intent ya vive en
+      // EnemyState.intent (motor); este log es la versión consumible para
+      // animación + log textual.
+      kind: 'enemy_intent';
+      actor: string;       // instance_id
+      intent: EnemyIntent; // copia inmutable del intent decidido
+    }
+  | {
+      // Sub-paso 4c: resultado de la acción `flee` del PJ (decisión C1).
+      // El motor ya devuelve status='fled' o continúa el combate; este log
+      // permite a la UI mostrar la tirada concreta (éxito/fallo) y, en
+      // fallo, prefigurar que los enemigos atacarán a continuación.
+      kind: 'flee_attempted';
+      success: boolean;
+    }
+  | {
       kind: 'combat_end';
-      status: 'victory' | 'defeat';
+      // Sub-paso 4c: añadido 'fled' (decisión D1). El cierre por huida no
+      // tiene loot ni epitafio: el PJ vuelve a home con HP actuales y
+      // statuses limpios. La UI distingue las tres ramas para presentar
+      // overlays distintos.
+      status: 'victory' | 'defeat' | 'fled';
     };
 
 // -----------------------------------------------------------------------------
@@ -209,11 +236,16 @@ export interface CombatLootSummary {
 }
 
 export interface CombatResult {
-  status: 'victory' | 'defeat';
-  // Character final, ya con loot aplicado (si victoria) o con epitafio escrito
-  // (si derrota). El caller lo persiste tal cual.
+  // Sub-paso 4c: añadido 'fled' (decisión D1). El PJ huyó con éxito; vuelve
+  // a home vivo con HP actuales y statuses limpios. Sin loot, sin epitafio.
+  status: 'victory' | 'defeat' | 'fled';
+  // Character final:
+  //   - victoria → con loot aplicado (gold, items en slots).
+  //   - derrota  → con epitafio escrito.
+  //   - fled     → vivo con HP actuales y statuses limpios (sin marca).
+  // El caller lo persiste tal cual.
   character: Character;
-  // Loot resuelto. En derrota viene { gold: 0, items: [], dropped: [] }.
+  // Loot resuelto. En derrota y en fled viene { gold: 0, items: [], dropped: [] }.
   loot: CombatLootSummary;
 }
 
@@ -462,6 +494,26 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
       magnitude: DODGE_LOG_MAGNITUDE,
       duration: DODGE_LOG_DURATION,
     });
+  };
+
+  // Sub-paso 4c (decisión C1): tirada de huida con la MISMA rng inyectada
+  // (no Math.random). Probabilidad fija FLEE_SUCCESS_PROBABILITY (50%, en
+  // rules/combat.ts). Si éxito → cierra combate marcando state.status='fled'.
+  // Si fallo → no muta state (el caller llama a advanceTurn). Loguea
+  // siempre el resultado para que la UI sepa qué pasó.
+  //
+  // Mantengo simetría con el motor (rules/combat.ts rama flee de
+  // applyCharacterAction): mismo umbral, misma constante. Una sola fuente
+  // de verdad para el número.
+  const resolveCharacterFlee = (): boolean => {
+    const success = rng() < FLEE_SUCCESS_PROBABILITY;
+    pushLog({ kind: 'flee_attempted', success });
+    if (success) {
+      // Cierre por huida. character ya tiene tick start aplicado por el
+      // caller (submitAction); statuses se limpian en finalizeIfClosed.
+      state = { ...state, status: 'fled' };
+    }
+    return success;
   };
 
   const resolveCharacterUseItem = (slotIndex: number): void => {
@@ -737,8 +789,26 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
     let result: CombatResult;
     if (state.status === 'victory') {
       const { character: charWithLoot, loot } = resolveLoot();
+      // Sub-paso 4c: limpieza de statuses al cierre. Cubre la deuda de 4a.4
+      // (los statuses no persisten entre combates en H3) para CUALQUIER vía
+      // de cierre: victoria, derrota, huida. Antes solo se cubría parcialmente
+      // y dependía del caller (main.ts/saveCharacterUpdate). Ahora la
+      // garantía vive aquí, una sola fuente de verdad.
+      const cleanCharacter = clearAllStatuses(charWithLoot);
       pushLog({ kind: 'combat_end', status: 'victory' });
-      result = { status: 'victory', character: charWithLoot, loot };
+      result = { status: 'victory', character: cleanCharacter, loot };
+    } else if (state.status === 'fled') {
+      // Sub-paso 4c (decisión D1): huida exitosa. PJ vuelve a home vivo
+      // con HP actuales y statuses limpios. Sin loot, sin epitafio, sin
+      // marca narrativa. El caller (main.ts) persiste con saveCharacterUpdate
+      // tal cual; la home reflejará el HP actual.
+      const cleanCharacter = clearAllStatuses(state.character);
+      pushLog({ kind: 'combat_end', status: 'fled' });
+      result = {
+        status: 'fled',
+        character: cleanCharacter,
+        loot: { gold: 0, items: [], dropped: [] },
+      };
     } else {
       // Derrota. Se asume que character.hp.current === 0 ya (applyDamage*
       // lo bajó). El epitafio se escribe con el causante: el último enemigo
@@ -751,7 +821,11 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
       const cause: EndOfRunCause = causeTpl !== undefined
         ? deathByEnemy(causeTpl.id, causeTpl.name)
         : { kind: 'killed_by_enemy', agent_id: causeAgent, description: `Caído ante ${causeAgent}.` };
-      const finalChar = killCharacter(state.character, cause, nowIso());
+      // Limpiar statuses ANTES de escribir el epitafio: el PJ caído no
+      // necesita arrastrar veneno/sangrado en el cadáver. La identidad
+      // narrativa queda en el epitafio.
+      const cleanCharacter = clearAllStatuses(state.character);
+      const finalChar = killCharacter(cleanCharacter, cause, nowIso());
       pushLog({ kind: 'combat_end', status: 'defeat' });
       result = {
         status: 'defeat',
@@ -785,16 +859,26 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
   // statuses del PJ viven ahora en state.character.statuses (campo añadido
   // en sub-paso 4a.1). Una sola fuente de verdad.
 
-  // Resuelve un turno enemigo completo (tick start + ataque + tick end + advance).
-  // Devuelve sin más si el combate ya cerró o si no hay enemigo vivo en ese
-  // slot (skip silencioso). Loguea turn_start sólo si el enemigo de ese slot
-  // está vivo al ENTRAR (ya pasó posibles cierres anteriores).
+  // Resuelve un turno enemigo completo (tick start + decisión IA + ejecución
+  // del intent + tick end + advance). Devuelve sin más si el combate ya
+  // cerró o si no hay enemigo vivo en ese slot (skip silencioso). Loguea
+  // turn_start sólo si el enemigo de ese slot está vivo al ENTRAR.
+  //
+  // Sub-paso 4c: el bloque "(3) Ataca al PJ" se reemplaza por:
+  //   (3a) Calcular intent vía decideEnemyAction.
+  //   (3b) Emitir log enemy_intent (la UI lo telegrafía).
+  //   (3c) Ejecutar el intent: attack | apply_status_self | apply_status_target.
+  // Tras ejecutar, se LIMPIA el intent del EnemyState (intent: null).
   const runEnemyTurn = (instanceId: string): void => {
     const enemy = findEnemyState(instanceId);
     if (!enemy.alive) {
       // Slot muerto al llegar su turno: no hay tick (no actúa), no hay log.
       // El advanceTurn del caller pasa al siguiente.
       return;
+    }
+    const template = enemyTemplates[enemy.enemy_id];
+    if (template === undefined) {
+      throw new Error(`combat-flow: template "${enemy.enemy_id}" no encontrado.`);
     }
     pushLog({ kind: 'turn_start', actor: instanceId, actor_kind: 'enemy' });
 
@@ -806,28 +890,73 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
     }
     let liveEnemy = start.enemyAfter;
 
-    // (2) ¿Stunned? Pierde el turno: tick end + advance, sin atacar.
+    // (2) ¿Stunned? Pierde el turno: tick end + advance, sin actuar.
     if (hasStatus(liveEnemy, 'stunned')) {
       tickEndOnEnemy(liveEnemy);
       state = advanceTurn(state);
       return;
     }
 
-    // (3) Ataca al PJ.
-    resolveEnemyAttack(instanceId);
-    // El PJ puede haber muerto. resolveEnemyAttack ya actualizó state.
-    if (!state.character.alive) {
-      state = advanceTurn(state);
-      return;
+    // (3a) Calcular intent vía la IA. Pure, no consume RNG. La decisión
+    // depende del estado actual: HP del enemigo, statuses propios y del PJ.
+    const intent = decideEnemyAction(liveEnemy, template, state.character, template.ai_profile);
+    // Asignar el intent al EnemyState VIVO. La UI lo lee de state.enemies,
+    // no del log: el log es para historial textual.
+    liveEnemy = { ...liveEnemy, intent };
+    state = { ...state, enemies: replaceEnemyInState(liveEnemy) };
+
+    // (3b) Emitir log enemy_intent. Copia inmutable del intent.
+    pushLog({ kind: 'enemy_intent', actor: instanceId, intent });
+
+    // (3c) Ejecutar el intent.
+    if (intent.kind === 'attack') {
+      resolveEnemyAttack(instanceId);
+      // El PJ puede haber muerto. resolveEnemyAttack ya actualizó state.
+      if (!state.character.alive) {
+        state = advanceTurn(state);
+        return;
+      }
+    } else if (intent.kind === 'apply_status_self') {
+      // Aplicar status al propio enemigo. Magnitud y duración del catálogo
+      // de defaults: misma fuente de verdad que dodge del PJ. El "+1" sobre
+      // la duración compensa el tickEnd del propio turno.
+      const effect: StatusEffect = {
+        kind: intent.status,
+        remaining: STATUS_DEFAULT_DURATION[intent.status] + 1,
+        magnitude: STATUS_DEFAULT_MAGNITUDE[intent.status],
+      };
+      const enemyAfter = applyStatus(liveEnemy, effect);
+      liveEnemy = enemyAfter;
+      state = { ...state, enemies: replaceEnemyInState(enemyAfter) };
+    } else {
+      // intent.kind === 'apply_status_target'. Aplica status al PJ. NO ataca.
+      // F1 explícita: el perfil toxico aplica `poisoned` como acción
+      // separada (gasta el turno aplicando el status, NO ataca y aplica al
+      // mismo tiempo).
+      const effect: StatusEffect = {
+        kind: intent.status,
+        remaining: STATUS_DEFAULT_DURATION[intent.status] + 1,
+        magnitude: STATUS_DEFAULT_MAGNITUDE[intent.status],
+      };
+      const newCharacter = applyStatus(state.character, effect);
+      state = { ...state, character: newCharacter };
     }
 
-    // (4) Tick end (poisoned + decremento). El enemigo puede haber sufrido
-    // cambios externos durante el ataque (no en H3, pero releemos la
-    // referencia viva por si acaso). Si muere por DoT al final, sólo afecta
-    // a su propio slot.
-    const liveEnemyAfterAttack = state.enemies.find((e) => e.instance_id === instanceId);
-    if (liveEnemyAfterAttack !== undefined && liveEnemyAfterAttack.alive) {
-      tickEndOnEnemy(liveEnemyAfterAttack);
+    // (4) Tick end (poisoned + decremento). Releemos la referencia viva del
+    // enemigo por si fue mutado durante (3c); si murió por DoT al final, sólo
+    // afecta a su propio slot.
+    const liveEnemyAfterAction = state.enemies.find((e) => e.instance_id === instanceId);
+    if (liveEnemyAfterAction !== undefined && liveEnemyAfterAction.alive) {
+      tickEndOnEnemy(liveEnemyAfterAction);
+    }
+
+    // (5) Limpiar intent ejecutado. El próximo turno enemigo recalculará uno.
+    const finalEnemy = state.enemies.find((e) => e.instance_id === instanceId);
+    if (finalEnemy !== undefined) {
+      state = {
+        ...state,
+        enemies: replaceEnemyInState({ ...finalEnemy, intent: null }),
+      };
     }
 
     state = advanceTurn(state);
@@ -903,6 +1032,29 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
       }
 
       // (3) Procesa la acción.
+      //
+      // Sub-paso 4c: rama `flee`. C1 cerrada — tirada 50% con la rng
+      // inyectada. Si éxito, state.status='fled' y el cierre ocurre en
+      // finalizeIfClosed más abajo. Si fallo, NO se aplica tick end y NO
+      // se procesa daño: el turno se consume y se avanza al enemigo.
+      // Auditoría: la asimetría del tick end (no se aplica en flee) es
+      // intencional y simétrica con la rama flee de rules/combat.ts.
+      if (action.kind === 'flee') {
+        const success = resolveCharacterFlee();
+        if (success) {
+          // state.status ya es 'fled'. finalizeIfClosed lo procesa.
+          finalizeIfClosed();
+          return log.slice(tailStart);
+        }
+        // Fallo: consume turno sin tick end. Avanza al enemigo.
+        state = advanceTurn(state);
+        if (!finalizeIfClosed()) {
+          runUntilCharacterTurnOrEnd();
+          finalizeIfClosed();
+        }
+        return log.slice(tailStart);
+      }
+
       switch (action.kind) {
         case 'attack':
           resolveCharacterAttack(action.target_instance_id);
@@ -914,7 +1066,6 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
           resolveCharacterUseItem(action.slot_index);
           break;
         case 'use_skill':
-        case 'flee':
           throw new Error(
             `combat-flow: acción "${action.kind}" no implementada en H3.`,
           );

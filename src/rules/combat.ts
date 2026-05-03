@@ -44,6 +44,9 @@ import {
   tickStatusesAtTurnEnd,
   tickStatusesAtTurnStart,
 } from './statuses';
+// IA táctica (sub-paso 4c). Cada enemigo declara un perfil; el motor consulta
+// `decideEnemyAction` al inicio del turno enemigo y ejecuta el intent.
+import { decideEnemyAction, type AIProfile, type EnemyIntent } from './ai';
 
 // -----------------------------------------------------------------------------
 // Enemigos (biblia §4.8 + scope §1.5/§1.9)
@@ -64,6 +67,14 @@ export interface Enemy {
   weapon_damage: number;     // daño base si impacta
   initiative_base: number;   // estadística pasiva, ver rollInitiative
   hp_max: number;
+  // Perfil de IA (sub-paso 4c, decisión E2). Determina cómo decide el
+  // enemigo qué acción tomar en cada turno: agresivo (siempre ataca),
+  // evasor (alterna defender/atacar), cauteloso (defiende cuando lo
+  // hieren), toxico (envenena al PJ una vez, luego ataca). El catálogo
+  // (`data/enemies.ts`) lo declara obligatoriamente para cada Enemy. La
+  // lógica de decisión vive en `rules/ai.ts`. Es propiedad del TIPO, no
+  // de la instancia: dos lobos del mismo template comparten perfil.
+  ai_profile: AIProfile;
 }
 
 // Estado in-flight de un enemigo dentro de un combate. La instancia del Enemy
@@ -76,7 +87,19 @@ export interface EnemyState {
   hp: number;
   alive: boolean;
   statuses: readonly StatusEffect[];
+  // Próxima acción que el enemigo va a tomar en su turno (sub-paso 4c).
+  // Calculado al INICIO de cada turno enemigo por `decideEnemyAction` y
+  // expuesto a la UI para que telegrafíe al jugador qué viene ("el lobo va
+  // a atacarte por 3-5 daño"). NULL fuera del turno enemigo o cuando el
+  // intent ya se ejecutó (motor lo limpia tras ejecutar). NULL al crear
+  // el EnemyState; el motor lo rellena.
+  intent: EnemyIntent | null;
 }
+
+// Re-export de los tipos de IA para que los consumidores del motor (UI,
+// orquestador) no dependan directamente de `rules/ai.ts`. Misma política que
+// con StatusEffect/StatusKind: combat.ts es la fachada del motor.
+export type { AIProfile, EnemyIntent } from './ai';
 
 // -----------------------------------------------------------------------------
 // Estados (biblia §4.8: iconos sobre sprite)
@@ -111,6 +134,15 @@ export type { StatusKind, StatusEffect } from './statuses';
 //     final (el último mile antes del dado). Eso garantiza que cualquier
 //     modificador futuro (cobertura, ceguera) se apile en el mismo sitio.
 const DODGING_THRESHOLD_BONUS = 1;
+
+// Probabilidad de éxito de la acción `flee` (sub-paso 4c, decisión C1).
+// 50% fijo. Si falla, el PJ pierde el turno y los enemigos atacan
+// normalmente. Si éxito, el combate cierra con status='fled' (sin loot,
+// sin epitafio — D1). Constante exportada para que el orquestador y los
+// tests puedan referenciarla sin redescubrir el número, y para que un
+// futuro perk del tipo "+10% flee" tenga un punto de extensión claro
+// (capa externa, igual que con dodge: la base 0.5 no se modifica aquí).
+export const FLEE_SUCCESS_PROBABILITY = 0.5;
 
 // Devuelve el bono total al threshold por statuses defensivos del portador.
 // Hoy solo dodging contribuye. Genérico para que un futuro `covered` o
@@ -380,9 +412,23 @@ export function startCombat(
     });
   }
   order.sort((a, b) => compareInitiative(a.contestant, b.contestant));
+
+  // Sub-paso 4c: pre-calcular el intent inicial de cada enemigo vivo. La
+  // UI necesita un intent visible desde el arranque del combate (telegrafía
+  // "el lobo va a atacarte por X daño" antes de cualquier acción). El
+  // intent es DETERMINISTA y no consume RNG: pasarlo aquí no rompe el
+  // determinismo de las iniciativas. Se vuelve a recalcular al inicio de
+  // cada turno enemigo en applyEnemyTurn por si el estado cambió.
+  const enemiesWithIntent = enemies.map((enemy) => {
+    if (!enemy.alive) return enemy;
+    const tpl = enemyTemplates[enemy.enemy_id]!;
+    const intent = decideEnemyAction(enemy, tpl, character, tpl.ai_profile);
+    return { ...enemy, intent };
+  });
+
   return {
     character,
-    enemies,
+    enemies: enemiesWithIntent,
     turn_order: order.map(({ actor, initiative }) => ({ actor, initiative })),
     current_turn_index: 0,
     status: 'ongoing',
@@ -484,12 +530,41 @@ export function applyCharacterAction(
     return checkVictoryOrAdvance({ ...state, character: stunnedChar });
   }
 
-  // Validamos las acciones NO implementadas ANTES de procesarlas. attack y dodge
-  // son acciones de primera clase del motor en 4a.3. El resto siguen lanzando
-  // hasta que se cierren reglas (use_item necesita inventory; use_skill
-  // necesita catálogo de habilidades; flee es regla diferida).
-  if (action.kind === 'use_item' || action.kind === 'use_skill' || action.kind === 'flee') {
+  // Validamos las acciones NO implementadas ANTES de procesarlas. attack y
+  // dodge son acciones de primera clase del motor en 4a.3. flee entra en 4c
+  // como acción de primera clase con tirada 50% (decisión C1, briefing 4c).
+  // use_item necesita inventory y use_skill necesita catálogo de habilidades:
+  // siguen lanzando hasta que se cierren sus reglas en hitos posteriores.
+  if (action.kind === 'use_item' || action.kind === 'use_skill') {
     throw new Error(`applyCharacterAction: acción "${action.kind}" no implementada en H3.`);
+  }
+
+  // (3a) Rama flee (sub-paso 4c, decisión C1):
+  //   - Tirada con la misma rng inyectada (no Math.random).
+  //   - Si rng() < FLEE_SUCCESS_PROBABILITY → éxito: cierra combate con
+  //     status 'fled'. NO se aplica tick start/end (el PJ huye, no se queda
+  //     a sangrar). NO se procesa loot (D1 cerrada en briefing).
+  //   - Si fallo → consume el turno: NO daño, NO ataque, NO tick end. El
+  //     orquestador avanza al siguiente actor (enemigos atacarán normalmente).
+  //
+  // Auditoría timing del tick: en éxito SE OMITE tick end intencionadamente
+  // — la regla narrativa es "huyes inmediatamente, sin esperar a que la
+  // sangre fluya un turno más". En fallo TAMPOCO se aplica tick end: el PJ
+  // intentó algo, fracasó, y el turno termina sin más. La asimetría con
+  // attack/dodge (que SÍ aplican tick end) es deliberada: flee es una
+  // tirada-acción binaria, no una acción que requiera procesamiento extra
+  // del estado del PJ.
+  if (action.kind === 'flee') {
+    const success = rng() < FLEE_SUCCESS_PROBABILITY;
+    if (success) {
+      // Éxito: cierra combate. character ya tiene el tick start aplicado
+      // (bleeding consumido). El estado final es {...state, character, status:'fled'}.
+      return { ...state, character, status: 'fled' };
+    }
+    // Fallo: consume turno. character ya tiene el tick start aplicado.
+    // checkVictoryOrAdvance avanzará al siguiente actor vivo (que en H3
+    // típicamente es el enemigo).
+    return checkVictoryOrAdvance({ ...state, character });
   }
 
   // (3) Procesa la acción según el kind. Cada rama prepara las mutaciones
@@ -574,16 +649,26 @@ export function applyCharacterAction(
 }
 
 // Resuelve el turno del enemigo cuyo turno está en current_turn_index.
-// IA básica de H3: ataca al PJ siempre. La IA táctica (target preference,
-// huida, uso de habilidad) entra en H7.
 //
-// Integración del tick de statuses (sub-paso 4a.2, simétrica con applyCharacterAction):
-//   1. tickStatusesAtTurnStart sobre el enemigo → daño de bleeding. Si muere
-//      → checkVictoryOrAdvance (puede cerrar combate si era el último).
+// IA táctica (sub-paso 4c): la decisión QUÉ hace el enemigo vive en
+// `rules/ai.ts` (`decideEnemyAction`). Aquí EJECUTAMOS el intent:
+//   - 'attack'              → ataca al PJ con resolveAttack.
+//   - 'apply_status_self'   → aplica el status al propio enemigo, NO ataca.
+//   - 'apply_status_target' → aplica el status al PJ, NO ataca.
+//
+// El intent se calcula al inicio del turno (justo después del tick start),
+// porque el tick puede matar al enemigo por DoT antes de que decida nada.
+// Tras ejecutarlo se LIMPIA (intent=null) para no confundir a la UI: el
+// próximo turno enemigo recalculará uno nuevo.
+//
+// Integración del tick de statuses (sub-paso 4a.2):
+//   1. tickStatusesAtTurnStart sobre el enemigo → daño de bleeding. Si
+//      muere → checkVictoryOrAdvance.
 //   2. Si tiene `stunned`, consume el turno: tickStatusesAtTurnEnd, avanza.
-//   3. Procesa el ataque.
-//   4. tickStatusesAtTurnEnd sobre el enemigo → poisoned + decremento. Si muere → idem (1).
-//   5. checkVictoryOrAdvance.
+//   3. Calcular intent vía decideEnemyAction(...) y asignarlo al enemy.
+//   4. Ejecutar el intent (attack | apply_status_self | apply_status_target).
+//   5. tickStatusesAtTurnEnd sobre el enemigo → poisoned + decremento.
+//   6. Limpiar intent (null) y checkVictoryOrAdvance.
 export function applyEnemyTurn(
   state: CombatState,
   enemyTemplates: Readonly<Record<EnemyId, Enemy>>,
@@ -618,56 +703,92 @@ export function applyEnemyTurn(
     return arr;
   };
 
-  // (1) Tick de inicio: bleeding sobre el enemigo antes de atacar.
+  // (1) Tick de inicio: bleeding sobre el enemigo antes de actuar.
   const startTick = tickStatusesAtTurnStart(found.state);
   let enemyState = startTick.bearer;
   if (startTick.damage > 0) {
     enemyState = applyDamageToEnemy(enemyState, startTick.damage);
   }
   if (!enemyState.alive) {
-    // Muerto por DoT: NO ataca. Avanza turno y comprueba victoria.
+    // Muerto por DoT: NO actúa. Avanza turno y comprueba victoria.
     return checkVictoryOrAdvance({ ...state, enemies: replaceEnemy(state.enemies, enemyState) });
   }
 
-  // (2) ¿Stunned? Pierde el turno: tick fin de turno y avanza sin atacar.
+  // (2) ¿Stunned? Pierde el turno: tick fin de turno y avanza sin actuar.
   if (hasStatus(enemyState, 'stunned')) {
     const endTick = tickStatusesAtTurnEnd(enemyState);
     let stunnedEnemy = endTick.bearer;
     if (endTick.damage > 0) {
       stunnedEnemy = applyDamageToEnemy(stunnedEnemy, endTick.damage);
     }
+    // Limpiamos el intent: el enemigo no actúa este turno, así que el
+    // intent que tuviera asignado ya no aplica. Un turno futuro lo recalcula.
     return checkVictoryOrAdvance({
       ...state,
-      enemies: replaceEnemy(state.enemies, stunnedEnemy),
+      enemies: replaceEnemy(state.enemies, { ...stunnedEnemy, intent: null }),
     });
   }
 
-  // (3) Procesa el ataque.
-  const characterDef = computeCharacterDefense(state.character, catalog);
-  const baseEnemyInput = buildAttackInputFromEnemy(template, characterDef);
-  // Modificador externo: +1 si el defensor (PJ) tiene dodging. Mismo helper
-  // que la rama PJ→enemigo: una sola fuente de verdad para el bono.
-  const characterBonus = defensiveThresholdBonus(state.character);
-  const attackInput: AttackInput = {
-    attacker_pool: baseEnemyInput.attacker_pool,
-    defender_threshold: baseEnemyInput.defender_threshold + characterBonus,
-    weapon_damage: baseEnemyInput.weapon_damage,
-  };
-  const result = resolveAttack(rng, attackInput);
-  const newCharacter = applyDamageToCharacter(state.character, result.damage);
+  // (3) Calcular intent vía la IA. DETERMINISTA, no consume RNG.
+  const intent = decideEnemyAction(enemyState, template, state.character, template.ai_profile);
+  enemyState = { ...enemyState, intent };
 
-  // (4) Tick de fin: poisoned + decremento sobre el enemigo.
+  // (4) Ejecutar el intent.
+  let nextCharacter = state.character;
+
+  if (intent.kind === 'attack') {
+    const characterDef = computeCharacterDefense(state.character, catalog);
+    const baseEnemyInput = buildAttackInputFromEnemy(template, characterDef);
+    // Modificador externo: +1 si el defensor (PJ) tiene dodging. Mismo
+    // helper que la rama PJ→enemigo: una sola fuente de verdad para el bono.
+    const characterBonus = defensiveThresholdBonus(state.character);
+    const attackInput: AttackInput = {
+      attacker_pool: baseEnemyInput.attacker_pool,
+      defender_threshold: baseEnemyInput.defender_threshold + characterBonus,
+      weapon_damage: baseEnemyInput.weapon_damage,
+    };
+    const result = resolveAttack(rng, attackInput);
+    nextCharacter = applyDamageToCharacter(state.character, result.damage);
+  } else if (intent.kind === 'apply_status_self') {
+    // Aplicar status al propio enemigo. Magnitud y duración cogidas del
+    // catálogo de defaults: misma fuente de verdad que dodge del PJ
+    // (4a.3). El "+1" sobre la duración compensa el tickEnd del propio
+    // turno donde se aplica.
+    const effect: StatusEffect = {
+      kind: intent.status,
+      remaining: STATUS_DEFAULT_DURATION[intent.status] + 1,
+      magnitude: STATUS_DEFAULT_MAGNITUDE[intent.status],
+    };
+    enemyState = applyStatus(enemyState, effect);
+  } else {
+    // intent.kind === 'apply_status_target'. Aplica status al PJ. NO ataca.
+    // Mismas magnitudes/duraciones por defecto que apply_status_self.
+    // Auditoría: F1 explícita — el perfil toxico aplica `poisoned` como
+    // ACCIÓN SEPARADA. NO hay daño este turno.
+    const effect: StatusEffect = {
+      kind: intent.status,
+      remaining: STATUS_DEFAULT_DURATION[intent.status] + 1,
+      magnitude: STATUS_DEFAULT_MAGNITUDE[intent.status],
+    };
+    nextCharacter = applyStatus(state.character, effect);
+  }
+
+  // (5) Tick de fin: poisoned + decremento sobre el enemigo.
   const endTick = tickStatusesAtTurnEnd(enemyState);
   enemyState = endTick.bearer;
   if (endTick.damage > 0) {
     enemyState = applyDamageToEnemy(enemyState, endTick.damage);
   }
 
+  // (6) Limpiar intent (ya ejecutado). El próximo turno del mismo enemigo
+  // recalculará uno nuevo en el paso (3) anterior.
+  enemyState = { ...enemyState, intent: null };
+
   // El PJ puede haber muerto por el ataque del enemigo (no por DoT). Eso lo
   // detecta checkVictoryOrAdvance vía character.alive=false → status='defeat'.
   return checkVictoryOrAdvance({
     ...state,
-    character: newCharacter,
+    character: nextCharacter,
     enemies: replaceEnemy(state.enemies, enemyState),
   });
 }

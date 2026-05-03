@@ -34,7 +34,7 @@
 //     queda deshabilitado para evitar estados inválidos.
 
 import type { CombatFlowHandle, CombatLogEntry, CombatResult } from '../state/combat-flow';
-import type { CombatState } from '../rules/combat';
+import type { CombatState, EnemyIntent } from '../rules/combat';
 import type { Character } from '../rules/character';
 import type { Item, ItemId, ItemStack } from '../rules/inventory';
 import { showConfirmModal } from './confirm-modal';
@@ -124,6 +124,26 @@ function statusLabel(kind: string): string {
   return kind;
 }
 
+// Sub-paso 4c: descripción humana del intent del enemigo. La UI la pinta
+// en el panel del enemigo (próxima acción telegrafiada) y en el log
+// (`enemy_intent`). Texto plano, sin animación: alcance técnico, no
+// rediseño visual (eso requeriría MODOPIPELINE).
+function intentLabel(intent: EnemyIntent): string {
+  if (intent.kind === 'attack') {
+    const min = intent.estimated_damage_min;
+    const max = intent.estimated_damage_max;
+    if (min === max) return `Atacar (${min} daño)`;
+    return `Atacar (${min}-${max} daño)`;
+  }
+  if (intent.kind === 'apply_status_self') {
+    if (intent.status === 'dodging') return 'Esquivar';
+    return `Aplicarse ${statusLabel(intent.status)}`;
+  }
+  // apply_status_target
+  if (intent.status === 'poisoned') return 'Envenenarte';
+  return `Aplicarte ${statusLabel(intent.status)}`;
+}
+
 // -----------------------------------------------------------------------------
 // Render principal
 // -----------------------------------------------------------------------------
@@ -191,7 +211,7 @@ export function renderCombatView(
         <button type="button" class="combat-view__action" data-action="dodge">Esquivar</button>
         <button type="button" class="combat-view__action" data-action="item">Item</button>
         <button type="button" class="combat-view__action" data-action="skill" disabled aria-disabled="true">Habilidad</button>
-        <button type="button" class="combat-view__action" data-action="flee" disabled aria-disabled="true">Huir</button>
+        <button type="button" class="combat-view__action" data-action="flee">Huir</button>
       </footer>
 
       <div class="combat-view__overlay" data-combat-overlay hidden>
@@ -216,6 +236,7 @@ export function renderCombatView(
   const actionAttack = root.querySelector<HTMLButtonElement>('[data-action="attack"]')!;
   const actionDodge = root.querySelector<HTMLButtonElement>('[data-action="dodge"]')!;
   const actionItem = root.querySelector<HTMLButtonElement>('[data-action="item"]')!;
+  const actionFlee = root.querySelector<HTMLButtonElement>('[data-action="flee"]')!;
 
   // ---------------------------------------------------------------------------
   // Helpers de render
@@ -281,6 +302,16 @@ export function renderCombatView(
       // del propio nodo durante init.
       const isAlive = e.alive;
       const isCurrentTarget = state.turn_order[state.current_turn_index]?.actor === e.instance_id;
+      // Sub-paso 4c: telegrafía del intent. Si el enemigo tiene un intent
+      // asignado (motor lo calcula al inicio de su turno y lo limpia al
+      // terminar), la UI lo muestra como "Próxima acción: ...". Si está
+      // muerto o sin intent (estado entre turnos), no se renderiza la línea.
+      const intentHtml = isAlive && e.intent !== null
+        ? `<div class="combat-view__foe-intent">
+             <span class="combat-view__foe-intent-label">Próxima acción</span>
+             <span class="combat-view__foe-intent-value">${escapeHtml(intentLabel(e.intent))}</span>
+           </div>`
+        : '';
       return `
         <article
           class="combat-view__foe${isAlive ? '' : ' combat-view__foe--dead'}${isCurrentTarget ? ' combat-view__foe--turn' : ''}"
@@ -298,6 +329,7 @@ export function renderCombatView(
               <span class="combat-view__foe-hp-sep">/</span>
               <span class="combat-view__foe-hp-max" data-foe-hp-max>${getEnemyHpMax(e.instance_id)}</span>
             </div>
+            ${intentHtml}
           </div>
         </article>
       `;
@@ -354,7 +386,9 @@ export function renderCombatView(
       (s) => s !== null && s !== undefined && s.item_id === HEAL_POTION_ITEM_ID,
     );
     actionItem.disabled = !enabled || !hasPotion;
-    // Skill y Flee siguen disabled siempre en H3.
+    // Sub-paso 4c: Huir es acción de primera clase. Habilitada cuando es
+    // turno PJ y combate sigue ongoing. Skill sigue disabled (H7+).
+    actionFlee.disabled = !enabled;
     root$.dataset.combatStatus = handle.getState().status;
   };
 
@@ -402,6 +436,9 @@ export function renderCombatView(
         // Sub-paso 3c: la rama de victoria con finalResult disponible salta al
         // modal de loot real; el resto cae al overlay placeholder honesto
         // (D-3b-5) hasta que 3d cierre el epitafio de derrota.
+        // Sub-paso 4c: rama 'fled' usa el overlay simple (D1: sin marca
+        // narrativa). No necesita modal específico — solo una pantalla
+        // honesta de "has huido. Volver".
         if (entry.status === 'victory' && finalResult !== null) {
           showLootModal(finalResult);
         } else if (entry.status === 'defeat' && finalResult !== null) {
@@ -716,15 +753,20 @@ export function renderCombatView(
     backBtn.focus();
   };
 
-  const showFinalOverlay = (status: 'victory' | 'defeat'): void => {
-    const isWin = status === 'victory';
+  const showFinalOverlay = (status: 'victory' | 'defeat' | 'fled'): void => {
     overlayEl.hidden = false;
     // Copy provisional honesto. PRODUCT §Design Principles 5: placeholder, no
     // narrativa final. El epitafio real (3d) vendrá luego. En victoria sólo
     // entra aquí si finalResult === null (caso patológico: 3c salta al modal
     // de loot cuando hay datos); por eso el copy de victoria es "Botín no
     // disponible.", no narrativa de combate.
-    const title = isWin ? 'Botín no disponible.' : 'Has caído.';
+    //
+    // Sub-paso 4c: añadida rama 'fled' (decisión D1: sin marca narrativa,
+    // copy mínimo). El PJ vuelve a home con HP actuales y statuses limpios.
+    let title: string;
+    if (status === 'victory') title = 'Botín no disponible.';
+    else if (status === 'defeat') title = 'Has caído.';
+    else title = 'Has huido.';
     overlayEl.innerHTML = `
       <div class="combat-view__overlay-panel combat-view__overlay-panel--final" role="dialog" aria-modal="false" aria-label="Resultado del combate">
         <p class="combat-view__overlay-title combat-view__overlay-title--final">${escapeHtml(title)}</p>
@@ -737,8 +779,13 @@ export function renderCombatView(
     backBtn.addEventListener('click', () => {
       // Si no hay finalResult capturado (pre-init bug), construimos uno mínimo
       // a partir del state final. La firma exige `CombatResult` no-null.
+      const stateStatus = handle.getState().status;
+      const fallbackStatus: 'victory' | 'defeat' | 'fled' =
+        stateStatus === 'victory' ? 'victory'
+        : stateStatus === 'fled' ? 'fled'
+        : 'defeat';
       const fallback: CombatResult = {
-        status: handle.getState().status === 'victory' ? 'victory' : 'defeat',
+        status: fallbackStatus,
         character: handle.getState().character,
         loot: { gold: 0, items: [], dropped: [] },
       };
@@ -798,6 +845,16 @@ export function renderCombatView(
   actionItem.addEventListener('click', () => {
     if (actionItem.disabled) return;
     showItemSelection();
+  });
+
+  // Sub-paso 4c: Huir como acción de primera clase. Sin overlay de
+  // confirmación (el motor ya tiene 50% de fallar; añadir confirmación
+  // sería una segunda capa de "estás seguro?" sobre una mecánica que ya
+  // es probabilística). Si el usuario quiere salir SIN tirada, usa "Salir"
+  // top-right.
+  actionFlee.addEventListener('click', () => {
+    if (actionFlee.disabled) return;
+    void submitAction({ kind: 'flee' });
   });
 
   copyBtn.addEventListener('click', () => {
@@ -935,8 +992,23 @@ function formatLogEntry(
     }
     case 'loot_dropped':
       return `Drop perdido: ${escapeHtml(entry.item_id)} ×<span class="combat-view__num">${entry.quantity}</span> (inventario lleno).`;
+    case 'enemy_intent': {
+      // Sub-paso 4c: telegrafía. La línea del log replica lo que aparece en
+      // el panel del enemigo, para que quien lea el log más tarde reconstruya
+      // la decisión de la IA sin tener que mirar el panel.
+      const name = actorLabel(entry.actor, state, enemyNames);
+      return `${escapeHtml(name)} se prepara: ${escapeHtml(intentLabel(entry.intent))}.`;
+    }
+    case 'flee_attempted':
+      // Decisión C1: probabilidad fija 50%. La línea anuncia el intento y
+      // su resultado para que el log sea autocontenido.
+      return entry.success
+        ? 'Intentas huir... Lo consigues.'
+        : 'Intentas huir... Fallas.';
     case 'combat_end':
-      return entry.status === 'victory' ? 'Combate cerrado. Victoria.' : 'Combate cerrado. Derrota.';
+      if (entry.status === 'victory') return 'Combate cerrado. Victoria.';
+      if (entry.status === 'defeat') return 'Combate cerrado. Derrota.';
+      return 'Combate cerrado. Has huido.';
   }
 }
 

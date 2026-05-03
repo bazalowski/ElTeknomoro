@@ -22,6 +22,7 @@ import {
   applyCharacterAction,
   applyEnemyTurn,
   defensiveThresholdBonus,
+  startCombat,
   type CombatState,
   type CombatantTurn,
   type Enemy,
@@ -66,6 +67,12 @@ function makeDummyEnemy(overrides: Partial<Enemy> = {}): Enemy {
     weapon_damage: 0,
     initiative_base: 0,
     hp_max: 100,
+    // Sub-paso 4c: cualquier Enemy debe declarar ai_profile. El motor lo
+    // consulta en applyEnemyTurn. Para los tests de combat.ts (que NO testean
+    // IA, sino mecánica de turno/DoT) usamos `agresivo` como default
+    // benigno: el dummy tiene attack_pool=0, así que aunque "ataque" no
+    // hace daño. Cualquier test que quiera otro perfil pasa override.
+    ai_profile: 'agresivo',
     ...overrides,
   };
 }
@@ -82,6 +89,9 @@ function makeEnemyState(
     hp,
     alive: hp > 0,
     statuses,
+    // Sub-paso 4c: el intent se calcula al inicio del turno enemigo. Antes
+    // de eso, null. Los EnemyState de los tests arrancan en null.
+    intent: null,
   };
 }
 
@@ -1003,5 +1013,236 @@ describe('Sub-paso 4b — perks en el motor de combate', () => {
     expect(buildAttackInputFromCharacter(char, 4).attacker_pool).toBe(4);
     // Iniciativa: DES=3 + 11 (rollD20=0.5) = 14.
     expect(rollInitiativeForCharacter(char, fixedRng)).toBe(14);
+  });
+});
+
+// =============================================================================
+// Sub-paso 4c: flee + intents
+// =============================================================================
+//
+// La rama flee del motor consume rng() ANTES de cualquier otra operación
+// post-tickStart. Para testarla determinísticamente, construimos rngs que
+// devuelven el primer valor controlado y luego propagan a un rng base.
+// Si no probamos los siguientes valores, podemos usar rng constantes.
+
+// Devuelve un Rng cuya primera llamada da `firstValue` y las siguientes
+// `restValue` (defaults a 0.5 → caras 4 = hit determinista en pool d6).
+function rngFirstThen(firstValue: number, restValue = 0.5): Rng {
+  let called = false;
+  return () => {
+    if (!called) {
+      called = true;
+      return firstValue;
+    }
+    return restValue;
+  };
+}
+
+describe('flee (sub-paso 4c, decisión C1)', () => {
+  it('éxito: rng < 0.5 → status="fled" sin tick start/end ni daño al PJ', () => {
+    // PJ con bleeding magnitud 1 (3 turnos restantes). El tick start aplica
+    // bleeding ANTES de la rama flee, por contrato del motor (auditoría
+    // del código). Así que el PJ sufre 1 HP por bleeding al inicio del
+    // turno aunque vaya a huir. Documentamos esa interacción aquí.
+    const baseChar = makeCharacter();
+    let character: Character = withStatus(
+      { ...baseChar, hp: { current: 10, max: baseChar.hp.max } },
+      { kind: 'bleeding', remaining: 3, magnitude: 1 },
+    );
+    const enemy = makeDummyEnemy({ hp_max: 50 });
+    const enemyState = makeEnemyState(enemy, 'dummy#1', 50);
+    const state = makeCombatState(
+      character,
+      [enemyState],
+      [{ actor: 'character', initiative: 10 }, { actor: 'dummy#1', initiative: 0 }],
+    );
+    // rng() < 0.5 → éxito (FLEE_SUCCESS_PROBABILITY=0.5).
+    const after = applyCharacterAction(
+      state,
+      { kind: 'flee' },
+      templatesOf(enemy),
+      rngFirstThen(0.1),
+    );
+    expect(after.status).toBe('fled');
+    // El PJ NO recibió tick end (poisoned no aplicaba aquí; auditoría: si
+    // tuviera poisoned no se aplica tampoco — confirmar leyendo el código:
+    // la rama flee retorna ANTES del tick end). Documentamos la regla:
+    // bleeding del start sí aplicó (HP 10 → 9), pero NO se decrementó la
+    // duración del bleeding (eso es responsabilidad del tick end).
+    expect(after.character.hp.current).toBe(9); // 10 - bleeding
+    expect(after.character.statuses.find((s) => s.kind === 'bleeding')?.remaining).toBe(3);
+    // El enemigo no recibió daño (el PJ no atacó).
+    expect(after.enemies[0]!.hp).toBe(50);
+  });
+
+  it('fallo: rng ≥ 0.5 → consume turno, NO daño, advance al siguiente actor', () => {
+    const baseChar = makeCharacter();
+    const character: Character = { ...baseChar, hp: { current: 10, max: baseChar.hp.max } };
+    const enemy = makeDummyEnemy({ hp_max: 50 });
+    const enemyState = makeEnemyState(enemy, 'dummy#1', 50);
+    const state = makeCombatState(
+      character,
+      [enemyState],
+      [{ actor: 'character', initiative: 10 }, { actor: 'dummy#1', initiative: 0 }],
+    );
+    // rng() = 0.5 → no es < 0.5 → fallo.
+    const after = applyCharacterAction(
+      state,
+      { kind: 'flee' },
+      templatesOf(enemy),
+      rngFirstThen(0.5),
+    );
+    expect(after.status).toBe('ongoing');
+    // PJ sin daño (sin bleeding aquí; tick start no devuelve damage > 0).
+    expect(after.character.hp.current).toBe(10);
+    // Enemigo intacto: el PJ no atacó.
+    expect(after.enemies[0]!.hp).toBe(50);
+    // El turno avanzó al enemigo.
+    expect(after.turn_order[after.current_turn_index]!.actor).toBe('dummy#1');
+  });
+
+  it('éxito con poisoned activo: status="fled" SIN aplicar tick end del PJ (huye sin esperar)', () => {
+    // Auditoría timing: la rama flee éxito retorna SIN aplicar tick end.
+    // El PJ poisoned NO recibe daño esta vuelta y NO se decrementa el
+    // remaining. Es el contrato documentado en el código.
+    const baseChar = makeCharacter();
+    const character: Character = withStatus(
+      { ...baseChar, hp: { current: 10, max: baseChar.hp.max } },
+      { kind: 'poisoned', remaining: 3, magnitude: 1 },
+    );
+    const enemy = makeDummyEnemy({ hp_max: 50 });
+    const enemyState = makeEnemyState(enemy, 'dummy#1', 50);
+    const state = makeCombatState(
+      character,
+      [enemyState],
+      [{ actor: 'character', initiative: 10 }, { actor: 'dummy#1', initiative: 0 }],
+    );
+    const after = applyCharacterAction(
+      state,
+      { kind: 'flee' },
+      templatesOf(enemy),
+      rngFirstThen(0.1),
+    );
+    expect(after.status).toBe('fled');
+    // HP intacto (poisoned dispara en tickEnd, que NO se ejecutó).
+    expect(after.character.hp.current).toBe(10);
+    // El veneno conserva su duración (no decrementó).
+    expect(after.character.statuses.find((s) => s.kind === 'poisoned')?.remaining).toBe(3);
+  });
+});
+
+describe('intents de la IA (sub-paso 4c)', () => {
+  it('startCombat pre-calcula intent inicial para cada enemigo vivo', () => {
+    const character = makeCharacter();
+    const enemy = makeDummyEnemy({ hp_max: 16 });
+    const enemyState = makeEnemyState(enemy, 'dummy#1', 16);
+    const state = startCombat(
+      character,
+      [enemyState],
+      templatesOf(enemy),
+      createRng(1),
+    );
+    expect(state.enemies[0]!.intent).not.toBeNull();
+    // El dummy es agresivo por default → intent.kind === 'attack'.
+    expect(state.enemies[0]!.intent!.kind).toBe('attack');
+  });
+
+  it('applyEnemyTurn ejecuta intent kind="apply_status_self" sobre el enemigo (perfil evasor)', () => {
+    const character = makeCharacter();
+    const evasor = makeDummyEnemy({
+      hp_max: 50,
+      attack_pool: 0, // si por error atacara, no haría daño
+      ai_profile: 'evasor',
+    });
+    const enemyState = makeEnemyState(evasor, 'evasor#1', 50);
+    const state = makeCombatState(
+      character,
+      [enemyState],
+      [{ actor: 'evasor#1', initiative: 10 }, { actor: 'character', initiative: 0 }],
+    );
+    const after = applyEnemyTurn(state, templatesOf(evasor), RNG_ALL_FOURS());
+    // El enemigo aplicó dodging a sí mismo: status presente.
+    expect(after.enemies[0]!.statuses.some((s) => s.kind === 'dodging')).toBe(true);
+    // El PJ NO recibió daño (no hubo ataque).
+    expect(after.character.hp.current).toBe(character.hp.current);
+    // El intent se LIMPIA tras ejecutar (null hasta el próximo turno).
+    expect(after.enemies[0]!.intent).toBeNull();
+  });
+
+  it('applyEnemyTurn ejecuta intent kind="apply_status_target" sobre el PJ (perfil toxico, F1)', () => {
+    const character = makeCharacter();
+    const toxico = makeDummyEnemy({
+      hp_max: 50,
+      attack_pool: 0,
+      ai_profile: 'toxico',
+    });
+    const enemyState = makeEnemyState(toxico, 'toxico#1', 50);
+    const state = makeCombatState(
+      character,
+      [enemyState],
+      [{ actor: 'toxico#1', initiative: 10 }, { actor: 'character', initiative: 0 }],
+    );
+    const after = applyEnemyTurn(state, templatesOf(toxico), RNG_ALL_FOURS());
+    // El PJ recibió `poisoned` (acción separada — F1).
+    expect(after.character.statuses.some((s) => s.kind === 'poisoned')).toBe(true);
+    // SIN daño este turno (la regla F1 es explícita: gasta el turno
+    // aplicando el status, NO ataca y aplica al mismo tiempo).
+    expect(after.character.hp.current).toBe(character.hp.current);
+  });
+
+  it('applyEnemyTurn con intent attack: PJ recibe daño normal (regresión del comportamiento previo)', () => {
+    // Test antiregresión: si el perfil agresivo se comporta como antes,
+    // el ataque resuelve igual que antes de añadir intents. Mismo número
+    // de daño, mismo flujo.
+    const character = makeCharacter({
+      // Suma 12 (regla biblia §4.1). DES 1 minimiza DEF (= 2 + floor(1/2) = 2).
+      attributes: { fue: 4, des: 1, con: 4, int: 2, vol: 1 },
+      skills: {},
+    });
+    const agresivo = makeDummyEnemy({
+      hp_max: 50,
+      attack_pool: 4,
+      weapon_damage: 3,
+      ai_profile: 'agresivo',
+    });
+    const enemyState = makeEnemyState(agresivo, 'agr#1', 50);
+    const state = makeCombatState(
+      character,
+      [enemyState],
+      [{ actor: 'agr#1', initiative: 10 }, { actor: 'character', initiative: 0 }],
+    );
+    const after = applyEnemyTurn(state, templatesOf(agresivo), RNG_ALL_FOURS());
+    // RNG_ALL_FOURS → todos los 4 dados sacan 4 → 4 éxitos. DEF PJ = 2 + 0 = 2
+    // → threshold ceil(2/3) = 1. Margen = 4-1 = 3. Daño = 3+3 = 6.
+    expect(after.character.hp.current).toBe(character.hp.current - 6);
+    // Intent del enemigo limpio tras ejecutar.
+    expect(after.enemies[0]!.intent).toBeNull();
+  });
+
+  it('cauteloso con HP > 50% ataca; con HP ≤ 50% defiende', () => {
+    const character = makeCharacter();
+    const cauteloso = makeDummyEnemy({
+      hp_max: 16,
+      attack_pool: 0,
+      ai_profile: 'cauteloso',
+    });
+    // HP > 50%: ataca.
+    const stateAlto = makeCombatState(
+      character,
+      [makeEnemyState(cauteloso, 'cau#1', 12)], // 12/16 = 0.75 > 0.5
+      [{ actor: 'cau#1', initiative: 10 }, { actor: 'character', initiative: 0 }],
+    );
+    const afterAlto = applyEnemyTurn(stateAlto, templatesOf(cauteloso), RNG_ALL_FOURS());
+    // Sin dodging aplicado (atacó).
+    expect(afterAlto.enemies[0]!.statuses.some((s) => s.kind === 'dodging')).toBe(false);
+
+    // HP ≤ 50%: defiende.
+    const stateBajo = makeCombatState(
+      character,
+      [makeEnemyState(cauteloso, 'cau#2', 4)], // 4/16 = 0.25 ≤ 0.5
+      [{ actor: 'cau#2', initiative: 10 }, { actor: 'character', initiative: 0 }],
+    );
+    const afterBajo = applyEnemyTurn(stateBajo, templatesOf(cauteloso), RNG_ALL_FOURS());
+    expect(afterBajo.enemies[0]!.statuses.some((s) => s.kind === 'dodging')).toBe(true);
   });
 });

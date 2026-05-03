@@ -7,6 +7,11 @@ import {
   type LootDrop,
 } from './enemies';
 import { ITEMS_BY_ID } from './items';
+import type { AIProfile } from '../rules/ai';
+
+// Sub-paso 4c: catálogo cerrado de perfiles de IA. Sincronizado con
+// `rules/ai.ts` (`AIProfile`). Si añades un perfil allí, añádelo aquí.
+const ALL_AI_PROFILES: readonly AIProfile[] = ['agresivo', 'evasor', 'cauteloso', 'toxico'];
 
 describe('catálogo de enemigos', () => {
   it('no está vacío (al menos el Lobo del Bosque)', () => {
@@ -69,6 +74,26 @@ describe('Lobo del Bosque (sub-paso H3.2d)', () => {
     expect(lobo.weapon_damage).toBe(2);
     expect(lobo.initiative_base).toBe(4);
     expect(lobo.hp_max).toBe(16);
+  });
+
+  it('tiene ai_profile = "agresivo" (decisión 4c, perfil default del lobo)', () => {
+    const lobo = ENEMIES_BY_ID['lobo_del_bosque']!;
+    expect(lobo.ai_profile).toBe('agresivo');
+  });
+});
+
+describe('ai_profile de cada enemigo (sub-paso 4c)', () => {
+  it('cada enemy declara un ai_profile presente en el catálogo cerrado', () => {
+    for (const enemy of ENEMIES) {
+      expect(ALL_AI_PROFILES).toContain(enemy.ai_profile);
+    }
+  });
+
+  it('cada enemy tiene ai_profile como string no vacío', () => {
+    for (const enemy of ENEMIES) {
+      expect(typeof enemy.ai_profile).toBe('string');
+      expect((enemy.ai_profile as string).trim()).not.toBe('');
+    }
   });
 });
 

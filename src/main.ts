@@ -41,6 +41,9 @@ function startCombatRun(root: HTMLElement, character: Character): void {
     hp: loboTpl.hp_max,
     alive: true,
     statuses: [],
+    // Sub-paso 4c: el motor calcula el intent al inicio del turno enemigo.
+    // En arranque: null. La UI lo pinta cuando el motor lo asigna.
+    intent: null,
   };
 
   const seed = Math.floor(Math.random() * 1_000_000);
