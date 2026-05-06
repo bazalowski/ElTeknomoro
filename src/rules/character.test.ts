@@ -402,3 +402,35 @@ describe('createCharacter — perks con efecto al crear (sub-paso 4b)', () => {
     expect(c.hp.max).toBe(computeBaseMaxHp(c.attributes)); // 12
   });
 });
+
+// =============================================================================
+// Sub-paso 4a H4 — campos nuevos top-level: last_damage_source y tutorial_lobo_completed
+// =============================================================================
+//
+// Ambos son top-level no opcionales con default:
+//   - last_damage_source: null (lo escribirán los hooks de daño en H3/H4)
+//   - tutorial_lobo_completed: false (lo escribirá el cierre del combate
+//     tutorial del lobo en el Hogar, sub-paso 4b cuando entre la UI)
+//
+// La justificación de "no opcional con default" vs "opcional con ?": evitar
+// checks `?.` en cada call site que mire estos campos. Los call sites de UI
+// y narrativización pueden leer character.tutorial_lobo_completed sin
+// defensas y siempre obtienen un boolean.
+
+describe('createCharacter — campos nuevos sub-paso 4a H4', () => {
+  it('inicializa last_damage_source a null', () => {
+    const c = createCharacter(baseInput());
+    expect(c.last_damage_source).toBeNull();
+  });
+
+  it('inicializa tutorial_lobo_completed a false', () => {
+    const c = createCharacter(baseInput());
+    expect(c.tutorial_lobo_completed).toBe(false);
+  });
+
+  it('los nuevos campos están presentes (no son undefined) tras crear PJ', () => {
+    const c = createCharacter(baseInput());
+    expect('last_damage_source' in c).toBe(true);
+    expect('tutorial_lobo_completed' in c).toBe(true);
+  });
+});

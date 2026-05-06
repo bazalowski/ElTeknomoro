@@ -1,0 +1,1802 @@
+[
+  {
+    "id": "centro-001",
+    "regionId": "centro",
+    "position": {
+      "x": 0,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-002",
+    "regionId": "centro",
+    "position": {
+      "x": 1,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-003",
+    "regionId": "centro",
+    "position": {
+      "x": 2,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-004",
+    "regionId": "centro",
+    "position": {
+      "x": 3,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-005",
+    "regionId": "centro",
+    "position": {
+      "x": 4,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-006",
+    "regionId": "centro",
+    "position": {
+      "x": 5,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-007",
+    "regionId": "centro",
+    "position": {
+      "x": 6,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-008",
+    "regionId": "centro",
+    "position": {
+      "x": 7,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-009",
+    "regionId": "centro",
+    "position": {
+      "x": 8,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-010",
+    "regionId": "centro",
+    "position": {
+      "x": 9,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-011",
+    "regionId": "centro",
+    "position": {
+      "x": 0,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-012",
+    "regionId": "centro",
+    "position": {
+      "x": 1,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-013",
+    "regionId": "centro",
+    "position": {
+      "x": 2,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-014",
+    "regionId": "centro",
+    "position": {
+      "x": 3,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-015",
+    "regionId": "centro",
+    "position": {
+      "x": 4,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-016",
+    "regionId": "centro",
+    "position": {
+      "x": 5,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-017",
+    "regionId": "centro",
+    "position": {
+      "x": 6,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-018",
+    "regionId": "centro",
+    "position": {
+      "x": 7,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-019",
+    "regionId": "centro",
+    "position": {
+      "x": 8,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-020",
+    "regionId": "centro",
+    "position": {
+      "x": 9,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-021",
+    "regionId": "centro",
+    "position": {
+      "x": 0,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-022",
+    "regionId": "centro",
+    "position": {
+      "x": 1,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-023",
+    "regionId": "centro",
+    "position": {
+      "x": 2,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-024",
+    "regionId": "centro",
+    "position": {
+      "x": 3,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-025",
+    "regionId": "centro",
+    "position": {
+      "x": 4,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-026",
+    "regionId": "centro",
+    "position": {
+      "x": 5,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-027",
+    "regionId": "centro",
+    "position": {
+      "x": 6,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-028",
+    "regionId": "centro",
+    "position": {
+      "x": 7,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-029",
+    "regionId": "centro",
+    "position": {
+      "x": 8,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-030",
+    "regionId": "centro",
+    "position": {
+      "x": 9,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-031",
+    "regionId": "centro",
+    "position": {
+      "x": 0,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-032",
+    "regionId": "centro",
+    "position": {
+      "x": 1,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-033",
+    "regionId": "centro",
+    "position": {
+      "x": 2,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-034",
+    "regionId": "centro",
+    "position": {
+      "x": 3,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-035",
+    "regionId": "centro",
+    "position": {
+      "x": 4,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-036",
+    "regionId": "centro",
+    "position": {
+      "x": 5,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-037",
+    "regionId": "centro",
+    "position": {
+      "x": 6,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-038",
+    "regionId": "centro",
+    "position": {
+      "x": 7,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-039",
+    "regionId": "centro",
+    "position": {
+      "x": 8,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-040",
+    "regionId": "centro",
+    "position": {
+      "x": 9,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-041",
+    "regionId": "centro",
+    "position": {
+      "x": 0,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-042",
+    "regionId": "centro",
+    "position": {
+      "x": 1,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-043",
+    "regionId": "centro",
+    "position": {
+      "x": 2,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-044",
+    "regionId": "centro",
+    "position": {
+      "x": 3,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-045",
+    "regionId": "centro",
+    "position": {
+      "x": 4,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-046",
+    "regionId": "centro",
+    "position": {
+      "x": 5,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-047",
+    "regionId": "centro",
+    "position": {
+      "x": 6,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-048",
+    "regionId": "centro",
+    "position": {
+      "x": 7,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-049",
+    "regionId": "centro",
+    "position": {
+      "x": 8,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "centro-050",
+    "regionId": "centro",
+    "position": {
+      "x": 9,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-001",
+    "regionId": "norte",
+    "position": {
+      "x": 0,
+      "y": 0
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-002",
+    "regionId": "norte",
+    "position": {
+      "x": 1,
+      "y": 0
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-003",
+    "regionId": "norte",
+    "position": {
+      "x": 2,
+      "y": 0
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-004",
+    "regionId": "norte",
+    "position": {
+      "x": 3,
+      "y": 0
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-005",
+    "regionId": "norte",
+    "position": {
+      "x": 4,
+      "y": 0
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-006",
+    "regionId": "norte",
+    "position": {
+      "x": 5,
+      "y": 0
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-007",
+    "regionId": "norte",
+    "position": {
+      "x": 6,
+      "y": 0
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-008",
+    "regionId": "norte",
+    "position": {
+      "x": 0,
+      "y": 1
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-009",
+    "regionId": "norte",
+    "position": {
+      "x": 1,
+      "y": 1
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-010",
+    "regionId": "norte",
+    "position": {
+      "x": 2,
+      "y": 1
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-011",
+    "regionId": "norte",
+    "position": {
+      "x": 3,
+      "y": 1
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-012",
+    "regionId": "norte",
+    "position": {
+      "x": 4,
+      "y": 1
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-013",
+    "regionId": "norte",
+    "position": {
+      "x": 5,
+      "y": 1
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-014",
+    "regionId": "norte",
+    "position": {
+      "x": 6,
+      "y": 1
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-015",
+    "regionId": "norte",
+    "position": {
+      "x": 0,
+      "y": 2
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-016",
+    "regionId": "norte",
+    "position": {
+      "x": 1,
+      "y": 2
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-017",
+    "regionId": "norte",
+    "position": {
+      "x": 2,
+      "y": 2
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-018",
+    "regionId": "norte",
+    "position": {
+      "x": 3,
+      "y": 2
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-019",
+    "regionId": "norte",
+    "position": {
+      "x": 4,
+      "y": 2
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-020",
+    "regionId": "norte",
+    "position": {
+      "x": 5,
+      "y": 2
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-021",
+    "regionId": "norte",
+    "position": {
+      "x": 6,
+      "y": 2
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-022",
+    "regionId": "norte",
+    "position": {
+      "x": 0,
+      "y": 3
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-023",
+    "regionId": "norte",
+    "position": {
+      "x": 1,
+      "y": 3
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-024",
+    "regionId": "norte",
+    "position": {
+      "x": 2,
+      "y": 3
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-025",
+    "regionId": "norte",
+    "position": {
+      "x": 3,
+      "y": 3
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-026",
+    "regionId": "norte",
+    "position": {
+      "x": 4,
+      "y": 3
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-027",
+    "regionId": "norte",
+    "position": {
+      "x": 5,
+      "y": 3
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-028",
+    "regionId": "norte",
+    "position": {
+      "x": 6,
+      "y": 3
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-029",
+    "regionId": "norte",
+    "position": {
+      "x": 0,
+      "y": 4
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-030",
+    "regionId": "norte",
+    "position": {
+      "x": 1,
+      "y": 4
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-031",
+    "regionId": "norte",
+    "position": {
+      "x": 2,
+      "y": 4
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-032",
+    "regionId": "norte",
+    "position": {
+      "x": 3,
+      "y": 4
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-033",
+    "regionId": "norte",
+    "position": {
+      "x": 4,
+      "y": 4
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-034",
+    "regionId": "norte",
+    "position": {
+      "x": 5,
+      "y": 4
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "norte-035",
+    "regionId": "norte",
+    "position": {
+      "x": 6,
+      "y": 4
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-001",
+    "regionId": "sur",
+    "position": {
+      "x": 0,
+      "y": 10
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": true
+  },
+  {
+    "id": "sur-002",
+    "regionId": "sur",
+    "position": {
+      "x": 1,
+      "y": 10
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-003",
+    "regionId": "sur",
+    "position": {
+      "x": 2,
+      "y": 10
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-004",
+    "regionId": "sur",
+    "position": {
+      "x": 3,
+      "y": 10
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-005",
+    "regionId": "sur",
+    "position": {
+      "x": 4,
+      "y": 10
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-006",
+    "regionId": "sur",
+    "position": {
+      "x": 5,
+      "y": 10
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-007",
+    "regionId": "sur",
+    "position": {
+      "x": 6,
+      "y": 10
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-008",
+    "regionId": "sur",
+    "position": {
+      "x": 0,
+      "y": 11
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-009",
+    "regionId": "sur",
+    "position": {
+      "x": 1,
+      "y": 11
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-010",
+    "regionId": "sur",
+    "position": {
+      "x": 2,
+      "y": 11
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-011",
+    "regionId": "sur",
+    "position": {
+      "x": 3,
+      "y": 11
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-012",
+    "regionId": "sur",
+    "position": {
+      "x": 4,
+      "y": 11
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-013",
+    "regionId": "sur",
+    "position": {
+      "x": 5,
+      "y": 11
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-014",
+    "regionId": "sur",
+    "position": {
+      "x": 6,
+      "y": 11
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-015",
+    "regionId": "sur",
+    "position": {
+      "x": 0,
+      "y": 12
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-016",
+    "regionId": "sur",
+    "position": {
+      "x": 1,
+      "y": 12
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-017",
+    "regionId": "sur",
+    "position": {
+      "x": 2,
+      "y": 12
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-018",
+    "regionId": "sur",
+    "position": {
+      "x": 3,
+      "y": 12
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-019",
+    "regionId": "sur",
+    "position": {
+      "x": 4,
+      "y": 12
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-020",
+    "regionId": "sur",
+    "position": {
+      "x": 5,
+      "y": 12
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-021",
+    "regionId": "sur",
+    "position": {
+      "x": 6,
+      "y": 12
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-022",
+    "regionId": "sur",
+    "position": {
+      "x": 0,
+      "y": 13
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-023",
+    "regionId": "sur",
+    "position": {
+      "x": 1,
+      "y": 13
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-024",
+    "regionId": "sur",
+    "position": {
+      "x": 2,
+      "y": 13
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-025",
+    "regionId": "sur",
+    "position": {
+      "x": 3,
+      "y": 13
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-026",
+    "regionId": "sur",
+    "position": {
+      "x": 4,
+      "y": 13
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-027",
+    "regionId": "sur",
+    "position": {
+      "x": 5,
+      "y": 13
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-028",
+    "regionId": "sur",
+    "position": {
+      "x": 6,
+      "y": 13
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-029",
+    "regionId": "sur",
+    "position": {
+      "x": 0,
+      "y": 14
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-030",
+    "regionId": "sur",
+    "position": {
+      "x": 1,
+      "y": 14
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-031",
+    "regionId": "sur",
+    "position": {
+      "x": 2,
+      "y": 14
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-032",
+    "regionId": "sur",
+    "position": {
+      "x": 3,
+      "y": 14
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-033",
+    "regionId": "sur",
+    "position": {
+      "x": 4,
+      "y": 14
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-034",
+    "regionId": "sur",
+    "position": {
+      "x": 5,
+      "y": 14
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "sur-035",
+    "regionId": "sur",
+    "position": {
+      "x": 6,
+      "y": 14
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-001",
+    "regionId": "este",
+    "position": {
+      "x": 10,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-002",
+    "regionId": "este",
+    "position": {
+      "x": 11,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-003",
+    "regionId": "este",
+    "position": {
+      "x": 12,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-004",
+    "regionId": "este",
+    "position": {
+      "x": 13,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-005",
+    "regionId": "este",
+    "position": {
+      "x": 14,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-006",
+    "regionId": "este",
+    "position": {
+      "x": 15,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-007",
+    "regionId": "este",
+    "position": {
+      "x": 10,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-008",
+    "regionId": "este",
+    "position": {
+      "x": 11,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-009",
+    "regionId": "este",
+    "position": {
+      "x": 12,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-010",
+    "regionId": "este",
+    "position": {
+      "x": 13,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-011",
+    "regionId": "este",
+    "position": {
+      "x": 14,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-012",
+    "regionId": "este",
+    "position": {
+      "x": 15,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-013",
+    "regionId": "este",
+    "position": {
+      "x": 10,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-014",
+    "regionId": "este",
+    "position": {
+      "x": 11,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-015",
+    "regionId": "este",
+    "position": {
+      "x": 12,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-016",
+    "regionId": "este",
+    "position": {
+      "x": 13,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-017",
+    "regionId": "este",
+    "position": {
+      "x": 14,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-018",
+    "regionId": "este",
+    "position": {
+      "x": 15,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-019",
+    "regionId": "este",
+    "position": {
+      "x": 10,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-020",
+    "regionId": "este",
+    "position": {
+      "x": 11,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-021",
+    "regionId": "este",
+    "position": {
+      "x": 12,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-022",
+    "regionId": "este",
+    "position": {
+      "x": 13,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-023",
+    "regionId": "este",
+    "position": {
+      "x": 14,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-024",
+    "regionId": "este",
+    "position": {
+      "x": 15,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-025",
+    "regionId": "este",
+    "position": {
+      "x": 10,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-026",
+    "regionId": "este",
+    "position": {
+      "x": 11,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-027",
+    "regionId": "este",
+    "position": {
+      "x": 12,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-028",
+    "regionId": "este",
+    "position": {
+      "x": 13,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-029",
+    "regionId": "este",
+    "position": {
+      "x": 14,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "este-030",
+    "regionId": "este",
+    "position": {
+      "x": 15,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-001",
+    "regionId": "oeste",
+    "position": {
+      "x": -6,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-002",
+    "regionId": "oeste",
+    "position": {
+      "x": -5,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-003",
+    "regionId": "oeste",
+    "position": {
+      "x": -4,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-004",
+    "regionId": "oeste",
+    "position": {
+      "x": -3,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-005",
+    "regionId": "oeste",
+    "position": {
+      "x": -2,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-006",
+    "regionId": "oeste",
+    "position": {
+      "x": -1,
+      "y": 5
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-007",
+    "regionId": "oeste",
+    "position": {
+      "x": -6,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-008",
+    "regionId": "oeste",
+    "position": {
+      "x": -5,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-009",
+    "regionId": "oeste",
+    "position": {
+      "x": -4,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-010",
+    "regionId": "oeste",
+    "position": {
+      "x": -3,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-011",
+    "regionId": "oeste",
+    "position": {
+      "x": -2,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-012",
+    "regionId": "oeste",
+    "position": {
+      "x": -1,
+      "y": 6
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-013",
+    "regionId": "oeste",
+    "position": {
+      "x": -6,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-014",
+    "regionId": "oeste",
+    "position": {
+      "x": -5,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-015",
+    "regionId": "oeste",
+    "position": {
+      "x": -4,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-016",
+    "regionId": "oeste",
+    "position": {
+      "x": -3,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-017",
+    "regionId": "oeste",
+    "position": {
+      "x": -2,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-018",
+    "regionId": "oeste",
+    "position": {
+      "x": -1,
+      "y": 7
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-019",
+    "regionId": "oeste",
+    "position": {
+      "x": -6,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-020",
+    "regionId": "oeste",
+    "position": {
+      "x": -5,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-021",
+    "regionId": "oeste",
+    "position": {
+      "x": -4,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-022",
+    "regionId": "oeste",
+    "position": {
+      "x": -3,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-023",
+    "regionId": "oeste",
+    "position": {
+      "x": -2,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-024",
+    "regionId": "oeste",
+    "position": {
+      "x": -1,
+      "y": 8
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-025",
+    "regionId": "oeste",
+    "position": {
+      "x": -6,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-026",
+    "regionId": "oeste",
+    "position": {
+      "x": -5,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-027",
+    "regionId": "oeste",
+    "position": {
+      "x": -4,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-028",
+    "regionId": "oeste",
+    "position": {
+      "x": -3,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-029",
+    "regionId": "oeste",
+    "position": {
+      "x": -2,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  },
+  {
+    "id": "oeste-030",
+    "regionId": "oeste",
+    "position": {
+      "x": -1,
+      "y": 9
+    },
+    "initialState": "inexplorado",
+    "isStartingGrid": false
+  }
+]

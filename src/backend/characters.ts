@@ -89,6 +89,23 @@ export async function saveCharacterUpdate(character: Character): Promise<void> {
   if (error) throw error;
 }
 
+// Hidrata un Character cargado de Supabase con defaults para campos añadidos
+// posteriormente al esquema. Esto evita romper saves antiguos cuando el motor
+// añade un campo nuevo top-level entre versiones (sub-paso 4a H4 añadió
+// `last_damage_source` y `tutorial_lobo_completed`). Es prototipo en
+// desarrollo: aceptamos que los saves crezcan con valores por defecto.
+//
+// El cast intermedio a Record permite leer campos que no están en Character
+// hoy sin recurrir a `any`. El resultado es un Character bien tipado.
+function hydrateLoadedCharacter(raw: unknown): Character {
+  const r = raw as Record<string, unknown>;
+  return {
+    ...(raw as Character),
+    last_damage_source: (r.last_damage_source as Character['last_damage_source']) ?? null,
+    tutorial_lobo_completed: (r.tutorial_lobo_completed as boolean | undefined) ?? false,
+  };
+}
+
 // Devuelve el último PJ del slot 0 sea vivo o muerto. Lo usa home (3e.2) para
 // pintar la lápida cuando el PJ ha caído (permadeath) sin perder la
 // identidad: nombre, arquetipo, nivel y epitafio siguen accesibles hasta que
@@ -106,5 +123,5 @@ export async function loadLastCharacter(): Promise<Character | null> {
   if (error) throw error;
   if (!data) return null;
 
-  return data.character_data as Character;
+  return hydrateLoadedCharacter(data.character_data);
 }

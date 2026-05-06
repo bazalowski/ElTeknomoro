@@ -1,0 +1,7202 @@
+[
+  {
+    "id": "centro-001-poi-1",
+    "gridId": "centro-001",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-001-poi-2",
+    "gridId": "centro-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-001-poi-3",
+    "gridId": "centro-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-001-poi-4",
+    "gridId": "centro-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-002-poi-1",
+    "gridId": "centro-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-002-poi-2",
+    "gridId": "centro-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-002-poi-3",
+    "gridId": "centro-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-002-poi-4",
+    "gridId": "centro-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-003-poi-1",
+    "gridId": "centro-003",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-003-poi-2",
+    "gridId": "centro-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-003-poi-3",
+    "gridId": "centro-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-003-poi-4",
+    "gridId": "centro-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-004-poi-1",
+    "gridId": "centro-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-004-poi-2",
+    "gridId": "centro-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-004-poi-3",
+    "gridId": "centro-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-004-poi-4",
+    "gridId": "centro-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-005-poi-1",
+    "gridId": "centro-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-005-poi-2",
+    "gridId": "centro-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-005-poi-3",
+    "gridId": "centro-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-005-poi-4",
+    "gridId": "centro-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-006-poi-1",
+    "gridId": "centro-006",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-006-poi-2",
+    "gridId": "centro-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-006-poi-3",
+    "gridId": "centro-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-006-poi-4",
+    "gridId": "centro-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-007-poi-1",
+    "gridId": "centro-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-007-poi-2",
+    "gridId": "centro-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-007-poi-3",
+    "gridId": "centro-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-007-poi-4",
+    "gridId": "centro-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-008-poi-1",
+    "gridId": "centro-008",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-008-poi-2",
+    "gridId": "centro-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-008-poi-3",
+    "gridId": "centro-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-008-poi-4",
+    "gridId": "centro-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-009-poi-1",
+    "gridId": "centro-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-009-poi-2",
+    "gridId": "centro-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-009-poi-3",
+    "gridId": "centro-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-009-poi-4",
+    "gridId": "centro-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-010-poi-1",
+    "gridId": "centro-010",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-010-poi-2",
+    "gridId": "centro-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-010-poi-3",
+    "gridId": "centro-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-010-poi-4",
+    "gridId": "centro-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-011-poi-1",
+    "gridId": "centro-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-011-poi-2",
+    "gridId": "centro-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-011-poi-3",
+    "gridId": "centro-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-011-poi-4",
+    "gridId": "centro-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-012-poi-1",
+    "gridId": "centro-012",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-012-poi-2",
+    "gridId": "centro-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-012-poi-3",
+    "gridId": "centro-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-012-poi-4",
+    "gridId": "centro-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-013-poi-1",
+    "gridId": "centro-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-013-poi-2",
+    "gridId": "centro-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-013-poi-3",
+    "gridId": "centro-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-013-poi-4",
+    "gridId": "centro-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-014-poi-1",
+    "gridId": "centro-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-014-poi-2",
+    "gridId": "centro-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-014-poi-3",
+    "gridId": "centro-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-014-poi-4",
+    "gridId": "centro-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-015-poi-1",
+    "gridId": "centro-015",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-015-poi-2",
+    "gridId": "centro-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-015-poi-3",
+    "gridId": "centro-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-015-poi-4",
+    "gridId": "centro-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-016-poi-1",
+    "gridId": "centro-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-016-poi-2",
+    "gridId": "centro-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-016-poi-3",
+    "gridId": "centro-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-016-poi-4",
+    "gridId": "centro-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-017-poi-1",
+    "gridId": "centro-017",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-017-poi-2",
+    "gridId": "centro-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-017-poi-3",
+    "gridId": "centro-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-017-poi-4",
+    "gridId": "centro-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-018-poi-1",
+    "gridId": "centro-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-018-poi-2",
+    "gridId": "centro-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-018-poi-3",
+    "gridId": "centro-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-018-poi-4",
+    "gridId": "centro-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-019-poi-1",
+    "gridId": "centro-019",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-019-poi-2",
+    "gridId": "centro-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-019-poi-3",
+    "gridId": "centro-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-019-poi-4",
+    "gridId": "centro-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-020-poi-1",
+    "gridId": "centro-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-020-poi-2",
+    "gridId": "centro-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-020-poi-3",
+    "gridId": "centro-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-020-poi-4",
+    "gridId": "centro-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-021-poi-1",
+    "gridId": "centro-021",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-021-poi-2",
+    "gridId": "centro-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-021-poi-3",
+    "gridId": "centro-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-021-poi-4",
+    "gridId": "centro-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-022-poi-1",
+    "gridId": "centro-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-022-poi-2",
+    "gridId": "centro-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-022-poi-3",
+    "gridId": "centro-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-022-poi-4",
+    "gridId": "centro-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-023-poi-1",
+    "gridId": "centro-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-023-poi-2",
+    "gridId": "centro-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-023-poi-3",
+    "gridId": "centro-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-023-poi-4",
+    "gridId": "centro-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-024-poi-1",
+    "gridId": "centro-024",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-024-poi-2",
+    "gridId": "centro-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-024-poi-3",
+    "gridId": "centro-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-024-poi-4",
+    "gridId": "centro-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-025-poi-1",
+    "gridId": "centro-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-025-poi-2",
+    "gridId": "centro-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-025-poi-3",
+    "gridId": "centro-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-025-poi-4",
+    "gridId": "centro-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-026-poi-1",
+    "gridId": "centro-026",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-026-poi-2",
+    "gridId": "centro-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-026-poi-3",
+    "gridId": "centro-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-026-poi-4",
+    "gridId": "centro-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-027-poi-1",
+    "gridId": "centro-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-027-poi-2",
+    "gridId": "centro-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-027-poi-3",
+    "gridId": "centro-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-027-poi-4",
+    "gridId": "centro-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-028-poi-1",
+    "gridId": "centro-028",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-028-poi-2",
+    "gridId": "centro-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-028-poi-3",
+    "gridId": "centro-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-028-poi-4",
+    "gridId": "centro-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-029-poi-1",
+    "gridId": "centro-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-029-poi-2",
+    "gridId": "centro-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-029-poi-3",
+    "gridId": "centro-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-029-poi-4",
+    "gridId": "centro-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-030-poi-1",
+    "gridId": "centro-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-030-poi-2",
+    "gridId": "centro-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-030-poi-3",
+    "gridId": "centro-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-030-poi-4",
+    "gridId": "centro-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-031-poi-1",
+    "gridId": "centro-031",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-031-poi-2",
+    "gridId": "centro-031",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-031-poi-3",
+    "gridId": "centro-031",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-031-poi-4",
+    "gridId": "centro-031",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-032-poi-1",
+    "gridId": "centro-032",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-032-poi-2",
+    "gridId": "centro-032",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-032-poi-3",
+    "gridId": "centro-032",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-032-poi-4",
+    "gridId": "centro-032",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-033-poi-1",
+    "gridId": "centro-033",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-033-poi-2",
+    "gridId": "centro-033",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-033-poi-3",
+    "gridId": "centro-033",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-033-poi-4",
+    "gridId": "centro-033",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-034-poi-1",
+    "gridId": "centro-034",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-034-poi-2",
+    "gridId": "centro-034",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-034-poi-3",
+    "gridId": "centro-034",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-034-poi-4",
+    "gridId": "centro-034",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-035-poi-1",
+    "gridId": "centro-035",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-035-poi-2",
+    "gridId": "centro-035",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-035-poi-3",
+    "gridId": "centro-035",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-035-poi-4",
+    "gridId": "centro-035",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-036-poi-1",
+    "gridId": "centro-036",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-036-poi-2",
+    "gridId": "centro-036",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-036-poi-3",
+    "gridId": "centro-036",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-036-poi-4",
+    "gridId": "centro-036",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-037-poi-1",
+    "gridId": "centro-037",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-037-poi-2",
+    "gridId": "centro-037",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-037-poi-3",
+    "gridId": "centro-037",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-037-poi-4",
+    "gridId": "centro-037",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-038-poi-1",
+    "gridId": "centro-038",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-038-poi-2",
+    "gridId": "centro-038",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-038-poi-3",
+    "gridId": "centro-038",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-038-poi-4",
+    "gridId": "centro-038",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-039-poi-1",
+    "gridId": "centro-039",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-039-poi-2",
+    "gridId": "centro-039",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-039-poi-3",
+    "gridId": "centro-039",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-039-poi-4",
+    "gridId": "centro-039",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-040-poi-1",
+    "gridId": "centro-040",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-040-poi-2",
+    "gridId": "centro-040",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-040-poi-3",
+    "gridId": "centro-040",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-040-poi-4",
+    "gridId": "centro-040",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-041-poi-1",
+    "gridId": "centro-041",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-041-poi-2",
+    "gridId": "centro-041",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-041-poi-3",
+    "gridId": "centro-041",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-041-poi-4",
+    "gridId": "centro-041",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-042-poi-1",
+    "gridId": "centro-042",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-042-poi-2",
+    "gridId": "centro-042",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-042-poi-3",
+    "gridId": "centro-042",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-042-poi-4",
+    "gridId": "centro-042",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-043-poi-1",
+    "gridId": "centro-043",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-043-poi-2",
+    "gridId": "centro-043",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-043-poi-3",
+    "gridId": "centro-043",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-043-poi-4",
+    "gridId": "centro-043",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-044-poi-1",
+    "gridId": "centro-044",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-044-poi-2",
+    "gridId": "centro-044",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-044-poi-3",
+    "gridId": "centro-044",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-044-poi-4",
+    "gridId": "centro-044",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-045-poi-1",
+    "gridId": "centro-045",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-045-poi-2",
+    "gridId": "centro-045",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-045-poi-3",
+    "gridId": "centro-045",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-045-poi-4",
+    "gridId": "centro-045",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-046-poi-1",
+    "gridId": "centro-046",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-046-poi-2",
+    "gridId": "centro-046",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-046-poi-3",
+    "gridId": "centro-046",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-046-poi-4",
+    "gridId": "centro-046",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-047-poi-1",
+    "gridId": "centro-047",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-047-poi-2",
+    "gridId": "centro-047",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-047-poi-3",
+    "gridId": "centro-047",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-047-poi-4",
+    "gridId": "centro-047",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-048-poi-1",
+    "gridId": "centro-048",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-048-poi-2",
+    "gridId": "centro-048",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-048-poi-3",
+    "gridId": "centro-048",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-048-poi-4",
+    "gridId": "centro-048",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-049-poi-1",
+    "gridId": "centro-049",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-049-poi-2",
+    "gridId": "centro-049",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-049-poi-3",
+    "gridId": "centro-049",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-049-poi-4",
+    "gridId": "centro-049",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-050-poi-1",
+    "gridId": "centro-050",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-050-poi-2",
+    "gridId": "centro-050",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "centro-050-poi-3",
+    "gridId": "centro-050",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "centro-050-poi-4",
+    "gridId": "centro-050",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-001-poi-1",
+    "gridId": "norte-001",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-001-poi-2",
+    "gridId": "norte-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-001-poi-3",
+    "gridId": "norte-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-001-poi-4",
+    "gridId": "norte-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-002-poi-1",
+    "gridId": "norte-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-002-poi-2",
+    "gridId": "norte-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-002-poi-3",
+    "gridId": "norte-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-002-poi-4",
+    "gridId": "norte-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-003-poi-1",
+    "gridId": "norte-003",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-003-poi-2",
+    "gridId": "norte-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-003-poi-3",
+    "gridId": "norte-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-003-poi-4",
+    "gridId": "norte-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-004-poi-1",
+    "gridId": "norte-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-004-poi-2",
+    "gridId": "norte-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-004-poi-3",
+    "gridId": "norte-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-004-poi-4",
+    "gridId": "norte-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-005-poi-1",
+    "gridId": "norte-005",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-005-poi-2",
+    "gridId": "norte-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-005-poi-3",
+    "gridId": "norte-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-005-poi-4",
+    "gridId": "norte-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-006-poi-1",
+    "gridId": "norte-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-006-poi-2",
+    "gridId": "norte-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-006-poi-3",
+    "gridId": "norte-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-006-poi-4",
+    "gridId": "norte-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-007-poi-1",
+    "gridId": "norte-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-007-poi-2",
+    "gridId": "norte-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-007-poi-3",
+    "gridId": "norte-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-007-poi-4",
+    "gridId": "norte-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-008-poi-1",
+    "gridId": "norte-008",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-008-poi-2",
+    "gridId": "norte-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-008-poi-3",
+    "gridId": "norte-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-008-poi-4",
+    "gridId": "norte-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-009-poi-1",
+    "gridId": "norte-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-009-poi-2",
+    "gridId": "norte-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-009-poi-3",
+    "gridId": "norte-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-009-poi-4",
+    "gridId": "norte-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-010-poi-1",
+    "gridId": "norte-010",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-010-poi-2",
+    "gridId": "norte-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-010-poi-3",
+    "gridId": "norte-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-010-poi-4",
+    "gridId": "norte-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-011-poi-1",
+    "gridId": "norte-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-011-poi-2",
+    "gridId": "norte-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-011-poi-3",
+    "gridId": "norte-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-011-poi-4",
+    "gridId": "norte-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-012-poi-1",
+    "gridId": "norte-012",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-012-poi-2",
+    "gridId": "norte-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-012-poi-3",
+    "gridId": "norte-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-012-poi-4",
+    "gridId": "norte-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-013-poi-1",
+    "gridId": "norte-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-013-poi-2",
+    "gridId": "norte-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-013-poi-3",
+    "gridId": "norte-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-013-poi-4",
+    "gridId": "norte-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-014-poi-1",
+    "gridId": "norte-014",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-014-poi-2",
+    "gridId": "norte-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-014-poi-3",
+    "gridId": "norte-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-014-poi-4",
+    "gridId": "norte-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-015-poi-1",
+    "gridId": "norte-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-015-poi-2",
+    "gridId": "norte-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-015-poi-3",
+    "gridId": "norte-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-015-poi-4",
+    "gridId": "norte-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-016-poi-1",
+    "gridId": "norte-016",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-016-poi-2",
+    "gridId": "norte-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-016-poi-3",
+    "gridId": "norte-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-016-poi-4",
+    "gridId": "norte-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-017-poi-1",
+    "gridId": "norte-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-017-poi-2",
+    "gridId": "norte-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-017-poi-3",
+    "gridId": "norte-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-017-poi-4",
+    "gridId": "norte-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-018-poi-1",
+    "gridId": "norte-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-018-poi-2",
+    "gridId": "norte-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-018-poi-3",
+    "gridId": "norte-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-018-poi-4",
+    "gridId": "norte-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-019-poi-1",
+    "gridId": "norte-019",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-019-poi-2",
+    "gridId": "norte-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-019-poi-3",
+    "gridId": "norte-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-019-poi-4",
+    "gridId": "norte-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-020-poi-1",
+    "gridId": "norte-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-020-poi-2",
+    "gridId": "norte-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-020-poi-3",
+    "gridId": "norte-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-020-poi-4",
+    "gridId": "norte-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-021-poi-1",
+    "gridId": "norte-021",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-021-poi-2",
+    "gridId": "norte-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-021-poi-3",
+    "gridId": "norte-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-021-poi-4",
+    "gridId": "norte-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-022-poi-1",
+    "gridId": "norte-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-022-poi-2",
+    "gridId": "norte-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-022-poi-3",
+    "gridId": "norte-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-022-poi-4",
+    "gridId": "norte-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-023-poi-1",
+    "gridId": "norte-023",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-023-poi-2",
+    "gridId": "norte-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-023-poi-3",
+    "gridId": "norte-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-023-poi-4",
+    "gridId": "norte-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-024-poi-1",
+    "gridId": "norte-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-024-poi-2",
+    "gridId": "norte-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-024-poi-3",
+    "gridId": "norte-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-024-poi-4",
+    "gridId": "norte-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-025-poi-1",
+    "gridId": "norte-025",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-025-poi-2",
+    "gridId": "norte-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-025-poi-3",
+    "gridId": "norte-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-025-poi-4",
+    "gridId": "norte-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-026-poi-1",
+    "gridId": "norte-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-026-poi-2",
+    "gridId": "norte-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-026-poi-3",
+    "gridId": "norte-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-026-poi-4",
+    "gridId": "norte-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-027-poi-1",
+    "gridId": "norte-027",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-027-poi-2",
+    "gridId": "norte-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-027-poi-3",
+    "gridId": "norte-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-027-poi-4",
+    "gridId": "norte-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-028-poi-1",
+    "gridId": "norte-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-028-poi-2",
+    "gridId": "norte-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-028-poi-3",
+    "gridId": "norte-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-028-poi-4",
+    "gridId": "norte-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-029-poi-1",
+    "gridId": "norte-029",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-029-poi-2",
+    "gridId": "norte-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-029-poi-3",
+    "gridId": "norte-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-029-poi-4",
+    "gridId": "norte-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-030-poi-1",
+    "gridId": "norte-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-030-poi-2",
+    "gridId": "norte-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-030-poi-3",
+    "gridId": "norte-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-030-poi-4",
+    "gridId": "norte-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-031-poi-1",
+    "gridId": "norte-031",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-031-poi-2",
+    "gridId": "norte-031",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-031-poi-3",
+    "gridId": "norte-031",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-031-poi-4",
+    "gridId": "norte-031",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-032-poi-1",
+    "gridId": "norte-032",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-032-poi-2",
+    "gridId": "norte-032",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-032-poi-3",
+    "gridId": "norte-032",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-032-poi-4",
+    "gridId": "norte-032",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-033-poi-1",
+    "gridId": "norte-033",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-033-poi-2",
+    "gridId": "norte-033",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-033-poi-3",
+    "gridId": "norte-033",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-033-poi-4",
+    "gridId": "norte-033",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-034-poi-1",
+    "gridId": "norte-034",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-034-poi-2",
+    "gridId": "norte-034",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-034-poi-3",
+    "gridId": "norte-034",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-034-poi-4",
+    "gridId": "norte-034",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-035-poi-1",
+    "gridId": "norte-035",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-035-poi-2",
+    "gridId": "norte-035",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "norte-035-poi-3",
+    "gridId": "norte-035",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "norte-035-poi-4",
+    "gridId": "norte-035",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-001-poi-1",
+    "gridId": "sur-001",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-001-poi-2",
+    "gridId": "sur-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-001-poi-3",
+    "gridId": "sur-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-001-poi-4",
+    "gridId": "sur-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-002-poi-1",
+    "gridId": "sur-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-002-poi-2",
+    "gridId": "sur-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-002-poi-3",
+    "gridId": "sur-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-002-poi-4",
+    "gridId": "sur-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-003-poi-1",
+    "gridId": "sur-003",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-003-poi-2",
+    "gridId": "sur-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-003-poi-3",
+    "gridId": "sur-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-003-poi-4",
+    "gridId": "sur-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-004-poi-1",
+    "gridId": "sur-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-004-poi-2",
+    "gridId": "sur-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-004-poi-3",
+    "gridId": "sur-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-004-poi-4",
+    "gridId": "sur-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-005-poi-1",
+    "gridId": "sur-005",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-005-poi-2",
+    "gridId": "sur-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-005-poi-3",
+    "gridId": "sur-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-005-poi-4",
+    "gridId": "sur-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-006-poi-1",
+    "gridId": "sur-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-006-poi-2",
+    "gridId": "sur-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-006-poi-3",
+    "gridId": "sur-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-006-poi-4",
+    "gridId": "sur-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-007-poi-1",
+    "gridId": "sur-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-007-poi-2",
+    "gridId": "sur-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-007-poi-3",
+    "gridId": "sur-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-007-poi-4",
+    "gridId": "sur-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-008-poi-1",
+    "gridId": "sur-008",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-008-poi-2",
+    "gridId": "sur-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-008-poi-3",
+    "gridId": "sur-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-008-poi-4",
+    "gridId": "sur-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-009-poi-1",
+    "gridId": "sur-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-009-poi-2",
+    "gridId": "sur-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-009-poi-3",
+    "gridId": "sur-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-009-poi-4",
+    "gridId": "sur-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-010-poi-1",
+    "gridId": "sur-010",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-010-poi-2",
+    "gridId": "sur-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-010-poi-3",
+    "gridId": "sur-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-010-poi-4",
+    "gridId": "sur-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-011-poi-1",
+    "gridId": "sur-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-011-poi-2",
+    "gridId": "sur-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-011-poi-3",
+    "gridId": "sur-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-011-poi-4",
+    "gridId": "sur-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-012-poi-1",
+    "gridId": "sur-012",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-012-poi-2",
+    "gridId": "sur-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-012-poi-3",
+    "gridId": "sur-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-012-poi-4",
+    "gridId": "sur-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-013-poi-1",
+    "gridId": "sur-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-013-poi-2",
+    "gridId": "sur-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-013-poi-3",
+    "gridId": "sur-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-013-poi-4",
+    "gridId": "sur-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-014-poi-1",
+    "gridId": "sur-014",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-014-poi-2",
+    "gridId": "sur-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-014-poi-3",
+    "gridId": "sur-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-014-poi-4",
+    "gridId": "sur-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-015-poi-1",
+    "gridId": "sur-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-015-poi-2",
+    "gridId": "sur-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-015-poi-3",
+    "gridId": "sur-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-015-poi-4",
+    "gridId": "sur-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-016-poi-1",
+    "gridId": "sur-016",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-016-poi-2",
+    "gridId": "sur-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-016-poi-3",
+    "gridId": "sur-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-016-poi-4",
+    "gridId": "sur-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-017-poi-1",
+    "gridId": "sur-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-017-poi-2",
+    "gridId": "sur-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-017-poi-3",
+    "gridId": "sur-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-017-poi-4",
+    "gridId": "sur-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-018-poi-1",
+    "gridId": "sur-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-018-poi-2",
+    "gridId": "sur-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-018-poi-3",
+    "gridId": "sur-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-018-poi-4",
+    "gridId": "sur-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-019-poi-1",
+    "gridId": "sur-019",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-019-poi-2",
+    "gridId": "sur-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-019-poi-3",
+    "gridId": "sur-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-019-poi-4",
+    "gridId": "sur-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-020-poi-1",
+    "gridId": "sur-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-020-poi-2",
+    "gridId": "sur-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-020-poi-3",
+    "gridId": "sur-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-020-poi-4",
+    "gridId": "sur-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-021-poi-1",
+    "gridId": "sur-021",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-021-poi-2",
+    "gridId": "sur-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-021-poi-3",
+    "gridId": "sur-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-021-poi-4",
+    "gridId": "sur-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-022-poi-1",
+    "gridId": "sur-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-022-poi-2",
+    "gridId": "sur-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-022-poi-3",
+    "gridId": "sur-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-022-poi-4",
+    "gridId": "sur-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-023-poi-1",
+    "gridId": "sur-023",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-023-poi-2",
+    "gridId": "sur-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-023-poi-3",
+    "gridId": "sur-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-023-poi-4",
+    "gridId": "sur-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-024-poi-1",
+    "gridId": "sur-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-024-poi-2",
+    "gridId": "sur-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-024-poi-3",
+    "gridId": "sur-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-024-poi-4",
+    "gridId": "sur-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-025-poi-1",
+    "gridId": "sur-025",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-025-poi-2",
+    "gridId": "sur-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-025-poi-3",
+    "gridId": "sur-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-025-poi-4",
+    "gridId": "sur-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-026-poi-1",
+    "gridId": "sur-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-026-poi-2",
+    "gridId": "sur-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-026-poi-3",
+    "gridId": "sur-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-026-poi-4",
+    "gridId": "sur-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-027-poi-1",
+    "gridId": "sur-027",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-027-poi-2",
+    "gridId": "sur-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-027-poi-3",
+    "gridId": "sur-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-027-poi-4",
+    "gridId": "sur-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-028-poi-1",
+    "gridId": "sur-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-028-poi-2",
+    "gridId": "sur-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-028-poi-3",
+    "gridId": "sur-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-028-poi-4",
+    "gridId": "sur-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-029-poi-1",
+    "gridId": "sur-029",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-029-poi-2",
+    "gridId": "sur-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-029-poi-3",
+    "gridId": "sur-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-029-poi-4",
+    "gridId": "sur-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-030-poi-1",
+    "gridId": "sur-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-030-poi-2",
+    "gridId": "sur-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-030-poi-3",
+    "gridId": "sur-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-030-poi-4",
+    "gridId": "sur-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-031-poi-1",
+    "gridId": "sur-031",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-031-poi-2",
+    "gridId": "sur-031",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-031-poi-3",
+    "gridId": "sur-031",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-031-poi-4",
+    "gridId": "sur-031",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-032-poi-1",
+    "gridId": "sur-032",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-032-poi-2",
+    "gridId": "sur-032",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-032-poi-3",
+    "gridId": "sur-032",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-032-poi-4",
+    "gridId": "sur-032",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-033-poi-1",
+    "gridId": "sur-033",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-033-poi-2",
+    "gridId": "sur-033",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-033-poi-3",
+    "gridId": "sur-033",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-033-poi-4",
+    "gridId": "sur-033",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-034-poi-1",
+    "gridId": "sur-034",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-034-poi-2",
+    "gridId": "sur-034",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-034-poi-3",
+    "gridId": "sur-034",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-034-poi-4",
+    "gridId": "sur-034",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-035-poi-1",
+    "gridId": "sur-035",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-035-poi-2",
+    "gridId": "sur-035",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "sur-035-poi-3",
+    "gridId": "sur-035",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "sur-035-poi-4",
+    "gridId": "sur-035",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-001-poi-1",
+    "gridId": "este-001",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-001-poi-2",
+    "gridId": "este-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-001-poi-3",
+    "gridId": "este-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-001-poi-4",
+    "gridId": "este-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-002-poi-1",
+    "gridId": "este-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-002-poi-2",
+    "gridId": "este-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-002-poi-3",
+    "gridId": "este-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-002-poi-4",
+    "gridId": "este-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-003-poi-1",
+    "gridId": "este-003",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-003-poi-2",
+    "gridId": "este-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-003-poi-3",
+    "gridId": "este-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-003-poi-4",
+    "gridId": "este-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-004-poi-1",
+    "gridId": "este-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-004-poi-2",
+    "gridId": "este-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-004-poi-3",
+    "gridId": "este-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-004-poi-4",
+    "gridId": "este-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-005-poi-1",
+    "gridId": "este-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-005-poi-2",
+    "gridId": "este-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-005-poi-3",
+    "gridId": "este-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-005-poi-4",
+    "gridId": "este-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-006-poi-1",
+    "gridId": "este-006",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-006-poi-2",
+    "gridId": "este-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-006-poi-3",
+    "gridId": "este-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-006-poi-4",
+    "gridId": "este-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-007-poi-1",
+    "gridId": "este-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-007-poi-2",
+    "gridId": "este-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-007-poi-3",
+    "gridId": "este-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-007-poi-4",
+    "gridId": "este-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-008-poi-1",
+    "gridId": "este-008",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-008-poi-2",
+    "gridId": "este-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-008-poi-3",
+    "gridId": "este-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-008-poi-4",
+    "gridId": "este-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-009-poi-1",
+    "gridId": "este-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-009-poi-2",
+    "gridId": "este-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-009-poi-3",
+    "gridId": "este-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-009-poi-4",
+    "gridId": "este-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-010-poi-1",
+    "gridId": "este-010",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-010-poi-2",
+    "gridId": "este-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-010-poi-3",
+    "gridId": "este-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-010-poi-4",
+    "gridId": "este-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-011-poi-1",
+    "gridId": "este-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-011-poi-2",
+    "gridId": "este-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-011-poi-3",
+    "gridId": "este-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-011-poi-4",
+    "gridId": "este-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-012-poi-1",
+    "gridId": "este-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-012-poi-2",
+    "gridId": "este-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-012-poi-3",
+    "gridId": "este-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-012-poi-4",
+    "gridId": "este-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-013-poi-1",
+    "gridId": "este-013",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-013-poi-2",
+    "gridId": "este-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-013-poi-3",
+    "gridId": "este-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-013-poi-4",
+    "gridId": "este-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-014-poi-1",
+    "gridId": "este-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-014-poi-2",
+    "gridId": "este-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-014-poi-3",
+    "gridId": "este-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-014-poi-4",
+    "gridId": "este-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-015-poi-1",
+    "gridId": "este-015",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-015-poi-2",
+    "gridId": "este-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-015-poi-3",
+    "gridId": "este-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-015-poi-4",
+    "gridId": "este-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-016-poi-1",
+    "gridId": "este-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-016-poi-2",
+    "gridId": "este-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-016-poi-3",
+    "gridId": "este-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-016-poi-4",
+    "gridId": "este-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-017-poi-1",
+    "gridId": "este-017",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-017-poi-2",
+    "gridId": "este-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-017-poi-3",
+    "gridId": "este-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-017-poi-4",
+    "gridId": "este-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-018-poi-1",
+    "gridId": "este-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-018-poi-2",
+    "gridId": "este-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-018-poi-3",
+    "gridId": "este-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-018-poi-4",
+    "gridId": "este-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-019-poi-1",
+    "gridId": "este-019",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-019-poi-2",
+    "gridId": "este-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-019-poi-3",
+    "gridId": "este-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-019-poi-4",
+    "gridId": "este-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-020-poi-1",
+    "gridId": "este-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-020-poi-2",
+    "gridId": "este-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-020-poi-3",
+    "gridId": "este-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-020-poi-4",
+    "gridId": "este-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-021-poi-1",
+    "gridId": "este-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-021-poi-2",
+    "gridId": "este-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-021-poi-3",
+    "gridId": "este-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-021-poi-4",
+    "gridId": "este-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-022-poi-1",
+    "gridId": "este-022",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-022-poi-2",
+    "gridId": "este-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-022-poi-3",
+    "gridId": "este-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-022-poi-4",
+    "gridId": "este-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-023-poi-1",
+    "gridId": "este-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-023-poi-2",
+    "gridId": "este-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-023-poi-3",
+    "gridId": "este-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-023-poi-4",
+    "gridId": "este-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-024-poi-1",
+    "gridId": "este-024",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-024-poi-2",
+    "gridId": "este-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-024-poi-3",
+    "gridId": "este-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-024-poi-4",
+    "gridId": "este-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-025-poi-1",
+    "gridId": "este-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-025-poi-2",
+    "gridId": "este-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-025-poi-3",
+    "gridId": "este-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-025-poi-4",
+    "gridId": "este-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-026-poi-1",
+    "gridId": "este-026",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-026-poi-2",
+    "gridId": "este-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-026-poi-3",
+    "gridId": "este-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-026-poi-4",
+    "gridId": "este-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-027-poi-1",
+    "gridId": "este-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-027-poi-2",
+    "gridId": "este-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-027-poi-3",
+    "gridId": "este-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-027-poi-4",
+    "gridId": "este-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-028-poi-1",
+    "gridId": "este-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-028-poi-2",
+    "gridId": "este-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-028-poi-3",
+    "gridId": "este-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-028-poi-4",
+    "gridId": "este-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-029-poi-1",
+    "gridId": "este-029",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-029-poi-2",
+    "gridId": "este-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-029-poi-3",
+    "gridId": "este-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-029-poi-4",
+    "gridId": "este-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-030-poi-1",
+    "gridId": "este-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-030-poi-2",
+    "gridId": "este-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "este-030-poi-3",
+    "gridId": "este-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "este-030-poi-4",
+    "gridId": "este-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-001-poi-1",
+    "gridId": "oeste-001",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-001-poi-2",
+    "gridId": "oeste-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-001-poi-3",
+    "gridId": "oeste-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-001-poi-4",
+    "gridId": "oeste-001",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-002-poi-1",
+    "gridId": "oeste-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-002-poi-2",
+    "gridId": "oeste-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-002-poi-3",
+    "gridId": "oeste-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-002-poi-4",
+    "gridId": "oeste-002",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-003-poi-1",
+    "gridId": "oeste-003",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-003-poi-2",
+    "gridId": "oeste-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-003-poi-3",
+    "gridId": "oeste-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-003-poi-4",
+    "gridId": "oeste-003",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-004-poi-1",
+    "gridId": "oeste-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-004-poi-2",
+    "gridId": "oeste-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-004-poi-3",
+    "gridId": "oeste-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-004-poi-4",
+    "gridId": "oeste-004",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-005-poi-1",
+    "gridId": "oeste-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-005-poi-2",
+    "gridId": "oeste-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-005-poi-3",
+    "gridId": "oeste-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-005-poi-4",
+    "gridId": "oeste-005",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-006-poi-1",
+    "gridId": "oeste-006",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-006-poi-2",
+    "gridId": "oeste-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-006-poi-3",
+    "gridId": "oeste-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-006-poi-4",
+    "gridId": "oeste-006",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-007-poi-1",
+    "gridId": "oeste-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-007-poi-2",
+    "gridId": "oeste-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-007-poi-3",
+    "gridId": "oeste-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-007-poi-4",
+    "gridId": "oeste-007",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-008-poi-1",
+    "gridId": "oeste-008",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-008-poi-2",
+    "gridId": "oeste-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-008-poi-3",
+    "gridId": "oeste-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-008-poi-4",
+    "gridId": "oeste-008",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-009-poi-1",
+    "gridId": "oeste-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-009-poi-2",
+    "gridId": "oeste-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-009-poi-3",
+    "gridId": "oeste-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-009-poi-4",
+    "gridId": "oeste-009",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-010-poi-1",
+    "gridId": "oeste-010",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-010-poi-2",
+    "gridId": "oeste-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-010-poi-3",
+    "gridId": "oeste-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-010-poi-4",
+    "gridId": "oeste-010",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-011-poi-1",
+    "gridId": "oeste-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-011-poi-2",
+    "gridId": "oeste-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-011-poi-3",
+    "gridId": "oeste-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-011-poi-4",
+    "gridId": "oeste-011",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-012-poi-1",
+    "gridId": "oeste-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-012-poi-2",
+    "gridId": "oeste-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-012-poi-3",
+    "gridId": "oeste-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-012-poi-4",
+    "gridId": "oeste-012",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-013-poi-1",
+    "gridId": "oeste-013",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-013-poi-2",
+    "gridId": "oeste-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-013-poi-3",
+    "gridId": "oeste-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-013-poi-4",
+    "gridId": "oeste-013",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-014-poi-1",
+    "gridId": "oeste-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-014-poi-2",
+    "gridId": "oeste-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-014-poi-3",
+    "gridId": "oeste-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-014-poi-4",
+    "gridId": "oeste-014",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-015-poi-1",
+    "gridId": "oeste-015",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-015-poi-2",
+    "gridId": "oeste-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-015-poi-3",
+    "gridId": "oeste-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-015-poi-4",
+    "gridId": "oeste-015",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-016-poi-1",
+    "gridId": "oeste-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-016-poi-2",
+    "gridId": "oeste-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-016-poi-3",
+    "gridId": "oeste-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-016-poi-4",
+    "gridId": "oeste-016",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-017-poi-1",
+    "gridId": "oeste-017",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-017-poi-2",
+    "gridId": "oeste-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-017-poi-3",
+    "gridId": "oeste-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-017-poi-4",
+    "gridId": "oeste-017",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-018-poi-1",
+    "gridId": "oeste-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-018-poi-2",
+    "gridId": "oeste-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-018-poi-3",
+    "gridId": "oeste-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-018-poi-4",
+    "gridId": "oeste-018",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-019-poi-1",
+    "gridId": "oeste-019",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-019-poi-2",
+    "gridId": "oeste-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-019-poi-3",
+    "gridId": "oeste-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-019-poi-4",
+    "gridId": "oeste-019",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-020-poi-1",
+    "gridId": "oeste-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-020-poi-2",
+    "gridId": "oeste-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-020-poi-3",
+    "gridId": "oeste-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-020-poi-4",
+    "gridId": "oeste-020",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-021-poi-1",
+    "gridId": "oeste-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-021-poi-2",
+    "gridId": "oeste-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-021-poi-3",
+    "gridId": "oeste-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-021-poi-4",
+    "gridId": "oeste-021",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-022-poi-1",
+    "gridId": "oeste-022",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-022-poi-2",
+    "gridId": "oeste-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-022-poi-3",
+    "gridId": "oeste-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-022-poi-4",
+    "gridId": "oeste-022",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-023-poi-1",
+    "gridId": "oeste-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-023-poi-2",
+    "gridId": "oeste-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-023-poi-3",
+    "gridId": "oeste-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-023-poi-4",
+    "gridId": "oeste-023",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-024-poi-1",
+    "gridId": "oeste-024",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-024-poi-2",
+    "gridId": "oeste-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-024-poi-3",
+    "gridId": "oeste-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-024-poi-4",
+    "gridId": "oeste-024",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-025-poi-1",
+    "gridId": "oeste-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-025-poi-2",
+    "gridId": "oeste-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-025-poi-3",
+    "gridId": "oeste-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-025-poi-4",
+    "gridId": "oeste-025",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-026-poi-1",
+    "gridId": "oeste-026",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-026-poi-2",
+    "gridId": "oeste-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-026-poi-3",
+    "gridId": "oeste-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-026-poi-4",
+    "gridId": "oeste-026",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-027-poi-1",
+    "gridId": "oeste-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-027-poi-2",
+    "gridId": "oeste-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-027-poi-3",
+    "gridId": "oeste-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-027-poi-4",
+    "gridId": "oeste-027",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-028-poi-1",
+    "gridId": "oeste-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-028-poi-2",
+    "gridId": "oeste-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-028-poi-3",
+    "gridId": "oeste-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-028-poi-4",
+    "gridId": "oeste-028",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-029-poi-1",
+    "gridId": "oeste-029",
+    "archetype": "natural",
+    "hasCuratedSlot": true,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-029-poi-2",
+    "gridId": "oeste-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-029-poi-3",
+    "gridId": "oeste-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-029-poi-4",
+    "gridId": "oeste-029",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-030-poi-1",
+    "gridId": "oeste-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-030-poi-2",
+    "gridId": "oeste-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 1
+    }
+  },
+  {
+    "id": "oeste-030-poi-3",
+    "gridId": "oeste-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 1,
+      "y": 3
+    }
+  },
+  {
+    "id": "oeste-030-poi-4",
+    "gridId": "oeste-030",
+    "archetype": "natural",
+    "hasCuratedSlot": false,
+    "position": {
+      "x": 3,
+      "y": 3
+    }
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "centro",
+    "displayName": "Cuenca Central",
+    "gridCount": 50,
+    "colorHex": "#8B7355",
+    "function": "pendiente_fase_2"
+  },
+  {
+    "id": "norte",
+    "displayName": "Estepas del Norte",
+    "gridCount": 35,
+    "colorHex": "#6B8AA8",
+    "function": "pendiente_fase_2"
+  },
+  {
+    "id": "sur",
+    "displayName": "Marismas del Sur",
+    "gridCount": 35,
+    "colorHex": "#7A8B5C",
+    "function": "hub_estructural"
+  },
+  {
+    "id": "este",
+    "displayName": "Bosques del Este",
+    "gridCount": 30,
+    "colorHex": "#A87B5C",
+    "function": "pendiente_fase_2"
+  },
+  {
+    "id": "oeste",
+    "displayName": "Costa del Oeste",
+    "gridCount": 30,
+    "colorHex": "#7A6B8B",
+    "function": "pendiente_fase_2"
+  }
+]

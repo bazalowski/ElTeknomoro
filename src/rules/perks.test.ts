@@ -46,6 +46,8 @@ function makeChar(perks: readonly string[]): Character {
     epitaph: null,
     pending: { skill: 0, attribute: 0, perk: 0 },
     statuses: [],
+    last_damage_source: null,
+    tutorial_lobo_completed: false,
   };
 }
 

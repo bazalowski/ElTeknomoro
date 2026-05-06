@@ -107,6 +107,21 @@ export interface Character {
   // entre combates en H3. La fuente de verdad de los tipos vive en
   // rules/statuses.ts; aquí sólo se almacena el contenedor inmutable.
   statuses: readonly StatusEffect[];
+  // Última fuente de daño aplicada al personaje. Lo escriben los hooks de
+  // daño (combat.ts en H3, exploration.ts cuando active trampas/ambiente,
+  // fatiga en H4 sub-paso 4d). Se consulta desde la pantalla de muerte para
+  // narrativizar el final ("caíste en una trampa", "moriste extenuado") sin
+  // tener que reconstruirlo del epitafio. H4 sub-paso 4a (decisión sub-paso):
+  // top-level no opcional con default null (vs opcional con `?`) para evitar
+  // checks `?.` en cada call site que mire el campo.
+  last_damage_source: 'enemy' | 'trap' | 'fatigue' | 'environment' | null;
+  // Flag de tutorial: se pone a true cuando el jugador completa el combate
+  // tutorial del lobo en el Hogar (POI estructural del Sur). Mientras esté
+  // false la home muestra "Explorar" (lanza tutorial). Cuando pase a true,
+  // home muestra "Salir al mundo" (lleva al overworld). Lo consumirá la UI
+  // del Hogar en 4b. Top-level no opcional con default false: la UI lee
+  // sin defensas y el booleano es siempre coherente.
+  tutorial_lobo_completed: boolean;
 }
 
 // -----------------------------------------------------------------------------
@@ -352,6 +367,11 @@ export function createCharacter(input: CreateCharacterInput): Character {
     epitaph: null,
     pending: { skill: 0, attribute: 0, perk: 0 },
     statuses: [],
+    // Sub-paso 4a H4: dos campos nuevos top-level con defaults seguros.
+    // Ningún flow del juego los lee al crear PJ; los rellenan los hooks
+    // correspondientes durante la run.
+    last_damage_source: null,
+    tutorial_lobo_completed: false,
   };
 }
 
