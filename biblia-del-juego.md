@@ -1,7 +1,7 @@
 # El Teknomoro — Biblia del juego
 
 > Documento vivo. Consolida todo lo que sabemos (y lo que no sabemos) sobre el proyecto.
-> **Versión:** v0.21 · **Fecha:** 3 de mayo de 2026 · **Autor:** Bazalo con dirección de el-teknomoro-director
+> **Versión:** v0.22 · **Fecha:** 6 de mayo de 2026 · **Autor:** Bazalo con dirección de el-teknomoro-director
 
 ---
 
@@ -89,17 +89,17 @@ El marco lore queda fijado en decisión #47 (§5). Cualquier contenido, paleta, 
 
 ## 3. Estado actual y roadmap
 
-**Estado hoy (3 mayo 2026):** biblia en v0.21. **H0, H1, H2 y H3 cerrados, PASO 4 del H3 archivado.** El primer loop completo del juego (crear PJ → home → combate al Lobo → loot/epitafio → persistencia → home) corre en producción con statuses funcionales, 10 perks cableados, IA con 4 perfiles + intent visible, y `flee` 50% implementado. **390/390 tests verde**, `tsc --noEmit` limpio, `vite build` limpio. Los 5 bloqueantes de diseño que restaban (v0.8) están cerrados (decisiones #41-#45 más #46 emergente). Lore (#47), reordenamiento de hitos (#62) y decisiones del cuestionario de visión (#63 en adelante) cerradas en v0.20. Decisiones del PASO 4 (#78-#80) cerradas en v0.21.
+**Estado hoy (6 mayo 2026):** biblia en v0.22. **H0, H1, H2 y H3 cerrados, PASO 4 del H3 archivado, cuestionario de scope de H4 cerrado.** El primer loop completo del juego (crear PJ → home → combate al Lobo → loot/epitafio → persistencia → home) corre en producción con statuses funcionales, 10 perks cableados, IA con 4 perfiles + intent visible, y `flee` 50% implementado. **390/390 tests verde**, `tsc --noEmit` limpio, `vite build` limpio. Los 5 bloqueantes de diseño que restaban (v0.8) están cerrados (decisiones #41-#45 más #46 emergente). Lore (#47), reordenamiento de hitos (#62) y decisiones del cuestionario de visión (#63 en adelante) cerradas en v0.20. Decisiones del PASO 4 del H3 (#78-#80) cerradas en v0.21. Decisiones del cuestionario de scope de H4 (#81-#85) cerradas en v0.22.
 
-**Próximo:** cuestionario de scope de **H4** (mapa + exploración + cierre por muerte, sin quest principal — la quest principal vive en H5 desde el reordenamiento de v0.19). Tras cerrar el cuestionario de H4, arrancar el sub-paso 4a de H4 (identidad de las 3 regiones jugables de v1).
+**Próximo:** arrancar **sub-paso 4a de H4** (modelo de datos del mundo: `src/data/world/regiones.json` + `grids.json` + `pois.json` con 180 grids + 720 POIs, módulo SAGRADO `src/rules/world.ts` con tipos + validación + selectores, campo `last_damage_source` en `Character`, flag `tutorial_lobo_completed`). Sin UI. Tras 4a, arrancar 4b por MODOPIPELINE (vista regional + zoom continuo a vista de grid).
 
 ### 3.1 Inventario binario de v1 (8 elementos)
 
 v1 se considera completable cuando estos 8 elementos están cerrados extremo a extremo:
 
 1. ✅ **Motor d20** con statuses, perks aplicados e IA (PASO 4 a/b/c del H3, cerrado en v0.21). 4 statuses funcionales (`bleeding | poisoned | stunned | dodging`), 10 perks cableados (5 reanclados + 5 nuevos canon), IA con 4 perfiles (`agresivo | evasor | cauteloso | toxico`) + intent visible en `EnemyState`, `flee` 50% implementado.
-2. **3 regiones jugables** (de las 5 del overworld, ver §9). Las 2 periféricas se reservan para v1.1.
-3. **40 POIs curados** (de los 80 totales planeados en §9).
+2. **5 regiones jugables** del overworld (decisión #81, ver §9). Curaduría densa equivalente entre las cinco. Funciones dramáticas concretas y biomas dominantes diferidos a fase 2.
+3. **80 POIs curados** (los 80 totales planeados en §9.3, decisión #81). Distribución proporcional a grids con leve refuerzo en Centro: ~22 Centro / ~16 Norte / ~16 Sur / ~13 Este / ~13 Oeste = 80.
 4. **15 enemigos** con stat-line y loot tabulado.
 5. **20 items + 8 recetas** (catálogo provisional fase 1, calibrado en H6).
 6. **Persistencia entre runs** (meta-progresión + lore + nombres POI + recetas + stats globales).
@@ -107,10 +107,9 @@ v1 se considera completable cuando estos 8 elementos están cerrados extremo a e
 8. **Hitos roguelike** desbloqueables entre runs (ver §2.3; cantidad por categoría se calibra en cierre de v1).
 
 Lo que NO entra en v1 (queda para v1.1+):
-- 2 regiones periféricas restantes.
 - Sandbox post-final con NG+.
 - Música compuesta (v1 va con silencio + SFX UI CC0).
-- Mapa completo, editor, exportación a motor externo, multijugador (?), 2 expansiones (ver §10).
+- Editor, exportación a motor externo, multijugador (?), 2 expansiones (ver §10).
 
 ### 3.2 Roadmap original (mantenido para trazabilidad)
 
@@ -352,7 +351,7 @@ Texto exacto de la decisión binaria, enemigo concreto del primer combate y nodo
 
 **Estado: estructura cerrada, contenido abierto.**
 
-- **Modelo:** mapa-mundi con nodos (ciudades, mazmorras, puntos de interés). Cada nodo al entrar abre un sub-mapa en grid. El mapa-mundi en sí es también navegable por grid entre nodos.
+- **Modelo:** overworld único con zoom semántico continuo. Tres niveles visuales (regional / grid / POI) sobre un mismo dataset, sin pantallas modales separadas. Detalle completo en §9.1. Esta línea sustituye conceptualmente la lectura previa a v0.20 ("mapa-mundi con nodos + sub-mapas en grid"), conservada aquí sólo como traza histórica.
 - **Cámara:** top-down 2D con tiles cuadrados. La isométrica queda descartada para MVP (duplicaba coste de assets sin aportar).
 - **Modos de partida:**
   - **Historia:** mapa fijo, narrativa guiada.
@@ -693,6 +692,11 @@ Estas no se reabren sin motivo fuerte. Si Bazalo las cuestiona, la dirección le
 | 78 | **Statuses como capa externa al dado SAGRADO (cerrado en PASO 4a).** Catálogo cerrado en 4 entradas para v1: `bleeding` (DoT al inicio del turno, magnitud y duración por defecto en `STATUS_DEFAULT_*`), `poisoned` (DoT al final del turno, simetría temporal con bleeding), `stunned` (consume el próximo turno, cap 1 instancia), `dodging` (+1 al threshold del atacante mientras esté activo, dura semánticamente "hasta el siguiente ataque enemigo"). Stacking: refresca duración al máximo, magnitud no acumula, cap 1 instancia por kind. Tick PJ ↔ enemigo simétrico (`StatusBearer` genérico). El tick devuelve `{ bearer, damage }` para mantener `statuses.ts` agnóstico al modelo de HP (`Character` con `{current,max}` vs `EnemyState` con `number`). Si muere por DoT al inicio, no se procesa la acción ni el tick end (bleeding NO decrementa en turno fatal). `clearAllStatuses` se invoca en las 3 vías de cierre de combate (victoria, derrota, fled): los statuses NO persisten entre combates en H3. Catálogo abierto a ampliación en H4+ (trampas, miedo/pánico, frozen, burning) cuando emisores nuevos lo justifiquen. Módulo SAGRADO: `src/rules/statuses.ts`. | v0.21 |
 | 79 | **Perks aplicados con catálogo de 10 + schema escalable (cerrado en PASO 4b).** Schema: `effect: PerkEffect` singular, discriminated union de 7 kinds (`damage_bonus`, `def_bonus`, `hp_max_bonus`, `attribute_bonus`, `attack_pool_bonus`, `skill_pool_bonus`, `initiative_bonus`). 5 perks legacy reanclados al schema con efectos finales: `golpe_brutal` (+1 pool, degradado de "primer ataque +1 éxito" — triggers se difieren a H7), `pies_ligeros` (+2 iniciativa), `piel_dura` (+2 HP máx), `ojo_clinico` (+1 pool, reinterpretado sin tocar regla del crítico), `temple` (+2 HP máx, sin referencia a miedo/pánico). 5 perks nuevos canon: `callo_de_intemperie` (+1 DEF, mutación física), `pulmon_de_ceniza` (+1 CON, mutación post-humana, aplicado en `createCharacter`), `lectura_de_huellas` (+1 dado al pool de skill `rastreo`, latente en H3, activo en H7), `filo_paciente` (+1 daño plano post-impacto, técnica marcial), `sello_del_humo` (+2 iniciativa, único arcano del catálogo, tono reverencial cumpliendo #47). #75 sagrado: `rollCombatPool`, `computeHitThreshold`, `resolveAttack` y la regla del crítico (2+ seises) intactos; los perks se aplican como capa externa en 5 sitios (HP máx, DEF, pool ataque, daño post-impacto si `result.hit`, iniciativa) + atributo en creación. Helper `src/rules/perks.ts` (SAGRADO) con `sumPerkBonuses` genérico parametrizado por kind. Soporta N perks aunque MVP entrega 1 por PJ (H7 abrirá árbol). Números provisionales por #61: calibración real en H6+. Enemigos NO llevan perks; "perfiles enemigos" se resolvió en #80 como sistema separado. | v0.21 |
 | 80 | **IA enemiga con 4 perfiles + intent visible + `flee` 50% (cerrado en PASO 4c).** Cuatro perfiles deterministas declarados en cada enemigo (`Enemy.ai_profile`): `agresivo` (siempre `attack`, default del lobo), `evasor` (alterna `dodging` cuando no lo tiene activo y `attack` cuando sí lo tiene), `cauteloso` (`attack` si HP propio > 50%, `dodging` si HP propio ≤ 50%), `toxico` (aplica `poisoned` al PJ si no lo tiene activo, `attack` si lo tiene). Función pura `decideEnemyAction` en `src/rules/ai.ts` (SAGRADO), sin RNG. **Intent expuesto en `EnemyState.intent`** (decisión B1: motor expone, no UI deduce — beneficia simulación masiva IA vs IA del modo Privado). Intent calculado al inicio del turno enemigo, ejecutado en uno de 3 kinds (`attack` / `apply_status_self` / `apply_status_target`), limpiado al final del turno. `startCombat` pre-calcula intents iniciales para que la UI tenga algo que pintar desde el primer render. Magnitudes de status aplicados por IA usan `STATUS_DEFAULT_DURATION+1` y `STATUS_DEFAULT_MAGNITUDE` (consistencia con dodge del PJ en 4a.3, simetría preservada). **`flee` con probabilidad fija 50%** (`FLEE_SUCCESS_PROBABILITY=0.5`): si éxito, combate cierra con `status='fled'` SIN tick end (asimetría intencional: huir es escape limpio, evita caso borde "muere poisoned al huir → ¿fled o defeat?"); si fallo, consume el turno (los enemigos atacan ese turno normalmente). `fled` cierra sin loot, sin epitafio, PJ vuelve a home con HP actuales y statuses limpios. Sin coste, sin marca narrativa (decisión D1, esqueleto puro). Botón "Huir" añadido en panel de acciones; intent del enemigo pintado bajo HP en su panel. **Sistema de "objetivos de victoria por escena"** mencionado en #75 (texto antiguo) se difiere a H4+ cuando existan escenas reales con mapa: el motor SOPORTA hoy los 3 cierres (victory/defeat/fled), las condiciones por escena son diseño de encuentros, no de motor. | v0.21 |
+| 81 | **v1 entrega las 5 regiones del overworld con curaduría densa equivalente (cerrado en cuestionario de scope H4).** Decisión de producto del autor: "que el jugador pueda perderse en el mundo creado". Sustituye el modelo previo de v0.20 ("3 regiones jugables, 2 reservadas a v1.1+"). Coste asumido: ×1.5 grids activos (180 vs 120 antes), ×1.5 POIs activos (720 vs 480), ×2 POIs curados de v1 (80 vs 40 antes), ×1.66 biomas y funciones dramáticas a diseñar. Justificación honesta: proyecto sin deadline, cuello de botella es tiempo del autor (§3), riqueza del mundo prima sobre velocidad de cierre. Escala dura sólo el contenido (curaduría + tablas + balance), no el motor de exploración (que soporta 5 o 3 regiones sin esfuerzo extra). Lectura 1 del director ("v1 entrega 5 regiones con densidad equivalente") aceptada explícitamente por Bazalo tras lectura 2 propuesta como recomendación honesta del director. **Reescribe**: §3.1 elementos 2 y 3, §3.1 lista "Lo que NO entra en v1", §9.2 nota final, §9.3 nota final. | v0.22 |
+| 82 | **Centro reasignado a función no-hub. Sur asume rol Hub estructural y contiene el grid de inicio del PJ (cerrado en cuestionario de scope H4).** Lectura α de Bazalo en F2 del cuestionario: "El Centro no es el hub como exploras, es otra cosa". Sur pasa a ser la región con mayor densidad de asentamientos del overworld, contiene el grid de inicio fijo del PJ y el POI tipo Asentamiento que reinterpreta el "home" (decisión #85). El Centro mantiene sus 50 grids (los más del overworld) pero su función dramática concreta (santuario / capital perdida / foco arcano / ruina / lo que sea) queda diferida a fase 2 cuando se cierre lore. Esto preserva #61 (esqueleto > contenido > pulido): la decisión estructural se cierra ahora, la decisión narrativa concreta espera al hito de contenido. **Reescribe**: §9.2 tabla de regiones. **Sub-decisión técnica**: el grid de inicio concreto del Sur se elige durante 4a por director (estructura, no contenido). | v0.22 |
+| 83 | **H4 cierra los 3 niveles de zoom + tirada de exploración end-to-end + acciones por día + fast travel (cerrado en cuestionario de scope H4).** Alcance jugable de H4: regional + grid + POI minimalista, con `rollExplorationTick` cableado al final del hito (último sub-paso 4f) sustituyendo el "botón Combatir" del POI por tirada d20 con bandas (§9.5) → modal/banner correspondiente (§4.15.5). **Variables activas en runtime durante H4**: bioma + nivel + suerte (#43). Hora, clima, reputación, flags se declaran en formato JSON (§4.15.9) pero se ignoran en runtime hasta tener materia. **Acciones por día (§9.7) cableadas en H4** con números actuales (8/día, ración por acampar, penalización HP sin ración). Vía de muerte por fatiga cableada con `last_damage_source = 'fatigue'`. **Fast travel (§9.8) cableado en H4** con coste provisional plano de 1 ración + 2 acciones por viaje, parametrizado por distancia desde la primera implementación (`computeFastTravelCost(distanceInGrids)` devuelve hoy un valor plano, mañana uno proporcional, sin reescribir el sistema). Calibración fina de los tres sistemas (acciones, ración, coste de viaje) diferida a H6. **Punto técnico para MODOPIPELINE**: zoom continuo §9.1, no router con vistas modales (lectura Y de D3). Si en pipeline alguien propone "pantalla de overworld + pantalla de región + pantalla de grid + pantalla de POI" se rechaza y se vuelve a §9.1. | v0.22 |
+| 84 | **Combate Lobo promovido a tutorial obligatorio one-shot por PJ (cerrado en cuestionario de scope H4).** El primer (y único) salir del home dispara el combate Lobo como onboarding canónico. Tras superarlo, no se repite: el botón "Explorar" desaparece y queda "Salir al mundo" → vista regional. Encaja literal con #45 (onboarding cerrado: "combate forzado tier lobo sin red de seguridad + apertura de mapa") — el lobo del H3 se convierte en el lobo del onboarding canónico. **Flag técnica**: `tutorial_lobo_completed: boolean` en el modelo del PJ. Se reinicia al morir (cada PJ nuevo hace su primer combate Lobo como onboarding). Coherente con #44 (permadeath puro) y con la decisión C3b del cuestionario (nada se hereda entre runs). | v0.22 |
+| 85 | **Home reinterpretado como POI tipo Asentamiento del Sur. Sistema de pausa global (cerrado en cuestionario de scope H4).** Lectura F1 del cuestionario, opción 3: el home no es pantalla aparte sino un POI dentro del overworld, ubicado en el grid de inicio del Sur (#82). Salir del home = zoom out continuo al grid contenedor (§9.1). Estructuralmente uniforme con el resto del mundo: el "hub" sigue existiendo como concepto narrativo (el sitio donde el PJ guarda inventario, craftea, descansa voluntariamente) pero no rompe la geometría del overworld. **Persistencia entre cierres** (decisión C3a del cuestionario): todo persiste — PJ + estado del mundo (grids visitados, POIs revelados, anclas, día actual, acciones gastadas, posición). **Persistencia entre runs** (decisión C3b): nada hereda; permadeath puro como cierra #44. La meta-progresión entre runs (#65) se diseña propiamente en H8. **Sistema de pausa global**: botón "Pausa" siempre accesible mientras no haya modal abierto, con `[Continuar]` y `[Guardar y salir al menú]`. Es interfaz sobre la persistencia automática ya cerrada en #10 (servidor-autoritativa), no un sistema de guardado nuevo. **Campo nuevo en `Character`** (SAGRADO): `last_damage_source: 'enemy' \| 'trap' \| 'fatigue' \| 'environment'`. El epitafio lo lee en lugar del fallback `lastEnemyAttackerIdFromLog` anotado como punto de atención en v0.21. | v0.22 |
 
 ---
 
@@ -890,14 +894,14 @@ El cambio entre niveles es continuo (zoom), no modal.
 
 | Región | Grids | Notas |
 |---|---|---|
-| Centro | 50 | Hub geográfico, mayor densidad de asentamientos. |
-| Norte | 35 | — |
-| Sur | 35 | — |
-| Este | 30 | Periférica. v1.1+. |
-| Oeste | 30 | Periférica. v1.1+. |
+| Centro | 50 | Función no-hub (decisión #82). Función concreta diferida a fase 2 cuando se cierre lore + función dramática de las 5 regiones. |
+| Norte | 35 | Función dramática diferida a fase 2. |
+| Sur | 35 | Hub estructural (decisión #82). Mayor densidad de asentamientos. Contiene el grid de inicio del PJ y el POI tipo Asentamiento que reinterpreta el "home" (decisión #85). |
+| Este | 30 | Función dramática diferida a fase 2. |
+| Oeste | 30 | Función dramática diferida a fase 2. |
 | **Total** | **180** | |
 
-**v1 entrega 3 regiones jugables:** Centro + dos de las periféricas Norte/Sur (la elección concreta se cierra al arrancar H4). Las dos restantes se reservan para v1.1+.
+**v1 entrega las 5 regiones jugables** con curaduría densa equivalente (decisión #81). No hay regiones reservadas para v1.1+: el jugador puede explorar las 5 desde el primer minuto del juego con los 80 POIs curados distribuidos entre ellas.
 
 ### 9.3 POIs: 720 totales, 80 curados, 640 genéricos
 
@@ -906,7 +910,7 @@ Cada grid contiene ~4 POIs → **720 POIs** totales en el overworld completo.
 - **80 curados** (≈11% del total): evento fijo escrito a mano, encuentro narrativo único, recompensa singular. Distribución entre los 4 arquetipos por definir en H5.
 - **640 genéricos** (≈89%): resueltos por la **tabla d20 con bandas** (§9.5). Cada visita tira sobre la tabla activa del POI.
 
-**v1 entrega 40 POIs curados** (de los 80) y los 640 genéricos disponibles vía tabla. El resto de curados se reserva para v1.1+.
+**v1 entrega los 80 POIs curados completos** (decisión #81) y los 640 genéricos disponibles vía tabla. Los 80 huecos curados se marcan en datos desde H4 mediante el flag `has_curated_slot: true` en el POI (decisión #83), sin contenido placeholder; fase 2 rellena el contenido real. Distribución espacial: ~22 Centro / ~16 Norte / ~16 Sur / ~13 Este / ~13 Oeste, proporcional a grids con leve refuerzo en Centro.
 
 ### 9.4 Cuatro arquetipos de POI
 
@@ -957,7 +961,7 @@ Vías de muerte por fatiga: agotar acciones sin ración varios días seguidos �
 
 - Sólo entre grids con estado **Controlado**.
 - Se viaja a través de **anclas** colocadas explícitamente por el jugador (no nodos prediseñados).
-- Consume **recursos** (ración + tiempo de jornada). Coste exacto: TBD en H4 según calibración.
+- Consume **recursos** (ración + tiempo de jornada). Coste provisional cerrado en H4 (decisión #83): **1 ración + 2 acciones del día por viaje**, valor plano independiente de la distancia. La fórmula real se calibra en H6 parametrizada por distancia en grids; el sistema se implementa desde H4 ya parametrizado (un `computeFastTravelCost(distanceInGrids)` que hoy devuelve un valor plano y mañana devuelve uno proporcional, sin reescribir el sistema).
 - No salta tiradas: las acciones se gastan, los eventos peligrosos del trayecto se condensan (heredado del concepto #21).
 
 ### 9.9 Mapa visible desde inicio (decisión #69)
@@ -1490,3 +1494,49 @@ Próximo: **PASO 4 del Hito 3** (4a Statuses → 4b Perks aplicados → 4c IA co
 - Loop completo del juego con: 4 statuses funcionales + 10 perks cableados + IA con 4 perfiles + intent visible + flee 50%. Primer item del inventario binario v1 cerrado.
 - 0 deudas técnicas de cableado del PASO 4. Punto de atención anotado para H4: si aparecen efectos pasivos o trampas que apliquen status fuera de combate, revisar `lastEnemyAttackerIdFromLog` en epitafio (cae al fallback raro si el PJ muere ÚNICAMENTE por DoT sin ataque enemigo); hoy no es caso real.
 - Próximo: cuestionario de scope de **H4** (mapa + exploración + cierre por muerte, sin quest principal — la quest principal vive en H5 desde el reordenamiento de v0.19). Tras cerrar el cuestionario, arrancar 4a de H4 (identidad de las 3 regiones jugables de v1 — la elección concreta entre Norte / Sur / Este / Oeste como periféricas que se reservan para v1.1+ se cierra en ese cuestionario).
+
+**v0.22** — Cierre del **cuestionario de scope del Hito 4** (6/5/2026): mapa + exploración + cierre por muerte, sin quest principal. Siete bloques (A-G) con 21 decisiones individuales agrupadas en 5 decisiones formales nuevas (#81-#85). Reescritura selectiva de §3.1, §4.10, §9.2, §9.3, §9.8 para alinear con las decisiones nuevas. Sin cambios en §4 reglamento, §6 bloqueantes (siguen 0 abiertos), §7 arquitectura, §8 flujos, §10/§11/§12.
+
+**Movimiento 1 — Las 5 regiones del overworld entran en v1 con curaduría densa equivalente** (decisión #81). Sustituye el modelo previo de v0.20 ("3 regiones jugables, 2 reservadas a v1.1+"). Decisión de producto del autor: "que el jugador pueda perderse en el mundo creado". El director planteó tres lecturas con coste explícito (×1.5 grids, ×1.5 POIs, ×2 curados de v1) y recomendó la lectura intermedia (5 explorables, 3 con curaduría densa, 2 con curaduría ligera). Bazalo eligió la lectura más cara (curaduría equivalente en las 5) tras lectura honesta del coste. Sin deadline, riqueza > velocidad de cierre. **§3.1** elemento 2 ("3 regiones") → "5 regiones". Elemento 3 ("40 POIs curados") → "80 POIs curados". Lista "Lo que NO entra en v1": eliminada "2 regiones periféricas restantes". **§9.2** nota final reescrita: "v1 entrega las 5 regiones jugables".
+
+**Movimiento 2 — Centro reasignado a función no-hub, Sur asume rol Hub estructural** (decisión #82). Lectura α de Bazalo en F2 del cuestionario: "El Centro no es el hub como exploras, es otra cosa". El director planteó tres lecturas (α: reasignación estructural / β: grid de inicio en Sur sin reasignar Centro / γ: reorganizar geografía dramática entera) y recomendó β para preservar #61 (esqueleto > contenido). Bazalo eligió α explicitando que la decisión estructural se cierra ahora aunque la función concreta del Centro espere a fase 2. **§9.2 tabla**: Centro pasa a "función no-hub, función concreta diferida a fase 2". Sur pasa a "Hub estructural, mayor densidad de asentamientos, contiene grid de inicio del PJ y POI tipo Asentamiento que reinterpreta el home". Norte/Este/Oeste mantienen funciones diferidas a fase 2.
+
+**Movimiento 3 — H4 cierra los 3 niveles de zoom + tirada end-to-end + acciones por día + fast travel** (decisión #83). Alcance jugable de H4: regional + grid + POI minimalista, con `rollExplorationTick` cableado al final del hito (último sub-paso 4f). **Variables activas en runtime**: bioma + nivel + suerte (#43); las otras 4 declaradas en JSON pero ignoradas hasta tener materia. **Acciones por día (§9.7)** cableadas con números actuales (8/día, ración por acampar, penalización HP sin ración); muerte por fatiga cableada con `last_damage_source = 'fatigue'`. **Fast travel (§9.8)** cableado con coste provisional plano de 1 ración + 2 acciones por viaje, parametrizado por distancia desde la primera implementación. Calibración fina de los tres sistemas diferida a H6. **Lectura Y de D3 (zoom continuo, no router modal)** confirmada y promovida a punto técnico ejecutorio para MODOPIPELINE: si en pipeline alguien propone pantallas separadas por nivel, se rechaza y se vuelve a §9.1. **§9.8** nota "Coste exacto: TBD en H4" → "1 ración + 2 acciones por viaje, parametrizado por distancia, calibrado en H6".
+
+**Movimiento 4 — Combate Lobo promovido a tutorial obligatorio one-shot** (decisión #84). El primer salir del home dispara el combate Lobo como onboarding canónico. Tras superarlo, el botón "Explorar" desaparece y queda "Salir al mundo" → vista regional. Encaja literal con #45. Flag `tutorial_lobo_completed: boolean` en el PJ; se reinicia al morir (cada PJ nuevo hace su primer combate Lobo). Coherente con #44 + decisión C3b del cuestionario.
+
+**Movimiento 5 — Home reinterpretado como POI Asentamiento del Sur + sistema de pausa global + campo `last_damage_source`** (decisión #85). El home no es pantalla aparte sino POI dentro del overworld, en el grid de inicio del Sur. Salir del home = zoom out continuo al grid contenedor (§9.1). Estructuralmente uniforme con el resto del mundo. **Persistencia entre cierres**: todo persiste (decisión C3a del cuestionario). **Persistencia entre runs**: nada hereda; permadeath puro como #44 (decisión C3b); meta-progresión propia en H8. **Sistema de pausa**: botón siempre accesible mientras no haya modal abierto, con `[Continuar]` y `[Guardar y salir al menú]`. Interfaz sobre #10, no sistema nuevo. **Campo `last_damage_source`** añadido a `Character` SAGRADO con valores `'enemy' | 'trap' | 'fatigue' | 'environment'`; el epitafio lo lee y resuelve el punto de atención `lastEnemyAttackerIdFromLog` anotado en v0.21.
+
+**Desglose de H4 en sub-pasos (decisión G1+G2 del cuestionario):**
+
+| Sub-paso | Qué entrega | MODOPIPELINE |
+|---|---|---|
+| 4a | Modelo de datos del mundo: `regiones.json` + `grids.json` + `pois.json` con 180 grids + 720 POIs (~22/16/16/13/13 huecos curados con flag `has_curated_slot`). `src/rules/world.ts` SAGRADO con tipos + validación + selectores. Campo `last_damage_source` y flag `tutorial_lobo_completed`. Tests unitarios. | NO (motor + datos) |
+| 4b | Vista regional + zoom continuo a vista de grid. 180 grids con color por región e indicador del PJ. Vista de grid con ~4 POIs y niebla §9.9. Botón "Salir al mundo" sustituye "Explorar" tras `tutorial_lobo_completed=true`. Home navegable como POI del Sur. | SÍ |
+| 4c | Vista de POI minimalista + entrada al combate Lobo. Zoom continuo a vista de POI. Persistencia de POIs revelados. Sistema de pausa global. | SÍ |
+| 4d | Acciones por día + acampar. Contador 8/día visible. Penalización HP sin ración. | SÍ |
+| 4e | Fast travel + anclas. Condición de "Controlado" cerrada en este sub-paso. UI de anclas + lista de viaje. | SÍ |
+| 4f | Tirada de exploración con bandas + modal/banner de evento. `rollExplorationTick` sustituye "botón Combatir". Tirada visible (#75). Variables: bioma + nivel + suerte. | SÍ |
+
+Pipeline estricto: 4a directo (motor puro), 4b-4f por MODOPIPELINE completo (Prompt Master → director → impeccable). Coste asumido coherente con `feedback_modopipeline_ui`.
+
+**Cambios estructurales del documento:**
+
+- §1 sin cambios.
+- §2 sin cambios.
+- §3 actualizada: estado 6 mayo, cuestionario H4 cerrado, próximo PASO 4a. §3.1 elementos 2 y 3 reescritos a "5 regiones" y "80 POIs curados". Lista "Lo que NO entra en v1" sin la línea de regiones periféricas.
+- §4.10 línea de "Modelo: mapa-mundi con nodos" sustituida por referencia limpia a §9.1 (limpieza documental sin cambio semántico — la sustitución conceptual ya pasó en v0.20).
+- §5 ampliada: 5 decisiones nuevas (#81-#85). 85 decisiones cerradas (antes 80).
+- §6 sin cambios estructurales (sigue 0 bloqueantes).
+- §7 sin cambios estructurales (`src/rules/world.ts` y `src/data/world/` se añaden en 4a, no en biblia).
+- §8 sin cambios.
+- §9.2 tabla y nota reescritas. §9.3 nota reescrita. §9.8 nota de coste reescrita.
+- §10, §11, §12 sin cambios.
+- §13 ampliada con esta entrada v0.22.
+
+**Estado al cierre de v0.22:**
+
+- Biblia: 13 secciones, 85 decisiones cerradas (antes 80), 0 bloqueantes abiertos.
+- Código: sin cambios respecto a v0.21 (HEAD en `04a5b41`). 390/390 tests verde, `tsc --noEmit` limpio, `vite build` limpio.
+- Cuestionario H4 cerrado en 7 bloques (A-G) con 21 decisiones individuales agrupadas en 5 decisiones formales (#81-#85).
+- Próximo: arrancar **sub-paso 4a de H4** en sesión nueva (motor + datos puros, sin UI). Tras 4a, arrancar 4b por MODOPIPELINE.
