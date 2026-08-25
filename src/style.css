@@ -3387,3 +3387,491 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
      para centrar el botón Volver. */
   justify-content: center;
 }
+
+/* =============================================================================
+   world-view — vista de mundo H4 4b (vista regional + zoom continuo a grid)
+   Un solo SVG, cámara por transform (§9.1). Full-bleed como combat-view.
+   Colores de región = dato provisional de regiones.json (fill inline en el
+   SVG); el chrome de UI usa los tokens DESIGN. Sin glow, flat por defecto.
+   ========================================================================== */
+
+.world-view {
+  position: fixed;
+  inset: 0;
+  background: var(--c-tinta-tierra-humeda);
+  color: var(--c-hueso-descolorido);
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+}
+
+/* --- Cabecera ------------------------------------------------------------- */
+
+.world-view__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px 10px;
+  border-bottom: 1px solid var(--c-tinta-tierra-media);
+  z-index: 2;
+}
+
+.world-view__title-block {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  min-height: 34px;
+}
+
+/* Terra en serif display a tamaño moderado: el primer vistazo al mundo es
+   momento narrativo legítimo, pero no compite con la pantalla de muerte
+   (Display-Is-Sacred). */
+.world-view__title {
+  margin: 0;
+  font-family: 'Cormorant Garamond', 'GT Sectra', 'Source Serif', Georgia, serif;
+  font-weight: 400;
+  font-size: 1.75rem;
+  line-height: 1.05;
+  color: var(--c-hueso-claro);
+  letter-spacing: 0.01em;
+}
+
+.world-view__back {
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--c-corteza-palida);
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  cursor: pointer;
+  transition: color 150ms ease-out;
+}
+
+.world-view__back:hover {
+  color: var(--c-hueso-descolorido);
+}
+
+.world-view__back:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+.world-view__header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.world-view__home {
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--c-hueso-descolorido);
+  background: var(--c-tinta-tierra-baja);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.world-view__home:hover {
+  background: var(--c-tinta-tierra-media);
+}
+
+.world-view__home:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+/* HUD mínimo (#91): solo datos reales. Números en mono (Numbers-In-Mono). */
+.world-view__hud {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background: var(--c-tinta-tierra-baja);
+  border: 1px solid var(--c-tinta-tierra-media);
+  border-radius: 2px;
+  font-size: 0.85rem;
+}
+
+.world-view__hud-name {
+  font-weight: 500;
+  color: var(--c-hueso-claro);
+}
+
+.world-view__hud-sep {
+  width: 1px;
+  height: 14px;
+  background: var(--c-tinta-tierra-media);
+}
+
+.world-view__hud-stat {
+  color: var(--c-corteza-palida);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}
+
+.world-view__hud-num {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-hueso-descolorido);
+  margin-left: 2px;
+}
+
+/* --- Viewport y cámara ---------------------------------------------------- */
+
+.world-view__viewport {
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+
+.world-view__viewport:active {
+  cursor: grabbing;
+}
+
+.world-view__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.world-view__camera {
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+/* Zoom semántico: ease-out exponencial, 260ms. Un nuevo destino en mitad de
+   la animación la redirige (retargeting nativo de CSS transitions): cancela
+   y arranca, como pide #91. */
+.world-view__camera--animating {
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-view__camera--animating {
+    transition: none;
+  }
+}
+
+/* --- Grids de la regional -------------------------------------------------- */
+
+.world-view__cell {
+  stroke: var(--c-tinta-tierra-humeda);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  cursor: pointer;
+  transition: opacity 150ms ease-out;
+}
+
+/* Estados §9.6 / #91: la niebla es opacidad, el control es borde. */
+.world-view__cell[data-state='inexplorado'] {
+  opacity: 0.4;
+}
+
+.world-view__cell[data-state='explorado'] {
+  opacity: 1;
+}
+
+.world-view__cell[data-state='controlado'] {
+  opacity: 1;
+  stroke: var(--c-hueso-descolorido);
+  stroke-width: 2px;
+}
+
+.world-view__cell:hover {
+  opacity: 0.75;
+}
+
+.world-view__cell[data-state='explorado']:hover,
+.world-view__cell[data-state='controlado']:hover {
+  opacity: 0.9;
+}
+
+.world-view__cell--selected,
+.world-view__cell--selected:hover {
+  stroke: var(--c-hueso-descolorido);
+  stroke-width: 2.5px;
+  opacity: 1;
+}
+
+.world-view__cell:focus-visible {
+  outline: none;
+  stroke: var(--c-hueso-claro);
+  stroke-width: 2.5px;
+  opacity: 1;
+}
+
+/* --- Etiquetas de región (leves, #91) -------------------------------------- */
+
+.world-view__region-label {
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  font-size: 3.4px; /* unidades de mundo: escala con la cámara */
+  font-weight: 500;
+  letter-spacing: 0.28px;
+  text-transform: uppercase;
+  fill: var(--c-hueso-claro);
+  opacity: 0.4;
+  pointer-events: none;
+  transition: opacity 200ms ease-out;
+}
+
+.world-view__svg--grid-focus .world-view__region-label {
+  opacity: 0;
+}
+
+/* --- Marcador del PJ (regional): círculo sólido con anillo ------------------ */
+
+.world-view__marker {
+  pointer-events: none;
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-view__marker {
+    transition: none;
+  }
+}
+
+.world-view__marker--hidden {
+  /* display, no opacity: en vista de grid el PJ es el retrato del centro y el
+     círculo debe desaparecer en el mismo frame, sin desvanecerse encima. */
+  display: none;
+}
+
+.world-view__marker-ring {
+  fill: none;
+  stroke: var(--c-hueso-descolorido);
+  stroke-width: 1.5px;
+  vector-effect: non-scaling-stroke;
+}
+
+.world-view__marker-dot {
+  fill: var(--c-hueso-descolorido);
+}
+
+/* --- Detalle del grid enfocado (mini-grid 5×5) ------------------------------ */
+
+.world-view__detail-bg {
+  opacity: 0.55;
+}
+
+.world-view__detail-line {
+  stroke: var(--c-tinta-tierra-humeda);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.5;
+}
+
+/* --- POIs (§9.9): niebla por POI ------------------------------------------- */
+
+.world-view__poi {
+  cursor: pointer;
+}
+
+.world-view__icon-path {
+  fill: none;
+  stroke: var(--c-hueso-descolorido);
+  stroke-width: 1.6px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Silueta bajo niebla: el arquetipo se intuye, no se afirma. */
+.world-view__poi--fog .world-view__icon-path,
+.world-view__poi--fog use {
+  opacity: 0.5;
+}
+
+.world-view__poi-fog-mark {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.42px;
+  fill: var(--c-hueso-descolorido);
+  opacity: 0.75;
+  letter-spacing: 0.04px;
+  pointer-events: none;
+}
+
+.world-view__poi-name {
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  font-size: 0.34px;
+  font-weight: 500;
+  fill: var(--c-hueso-descolorido);
+  pointer-events: none;
+}
+
+/* Completado: anillo fino, sin ámbar (no es hallazgo), sin glow. */
+.world-view__poi-done {
+  fill: none;
+  stroke: var(--c-hueso-descolorido);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.7;
+}
+
+.world-view__poi:focus-visible {
+  outline: none;
+}
+
+.world-view__poi:focus-visible .world-view__icon-path {
+  stroke: var(--c-hueso-claro);
+  stroke-width: 2.4px;
+}
+
+/* --- Retrato miniatura del PJ en vista de grid (#91/Q28) -------------------- */
+
+.world-view__pj-swatch {
+  /* Anillo de hueso: el mismo lenguaje que el marcador de la vista regional,
+     para que "esto eres tú" se lea igual en los dos niveles de zoom. El color
+     del cuadrado es el placeholder de portraits.ts y no se toca. */
+  stroke: var(--c-hueso-descolorido);
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+}
+
+.world-view__pj-label {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.5px;
+  fill: var(--c-tinta-tierra-humeda);
+  pointer-events: none;
+}
+
+/* --- Panel de selección (tooltip graduado §9.9) ----------------------------- */
+
+.world-view__panel {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  min-width: 220px;
+  max-width: 280px;
+  padding: 14px 16px;
+  background: var(--c-tinta-tierra-baja);
+  border: 1px solid var(--c-tinta-tierra-media);
+  border-radius: 2px;
+  z-index: 2;
+}
+
+.world-view__panel-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--c-corteza-palida);
+}
+
+.world-view__panel-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--c-hueso-claro);
+}
+
+.world-view__panel-id {
+  margin: 2px 0 0;
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: var(--c-corteza-palida);
+}
+
+.world-view__panel-state {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+.world-view__panel-pois {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--c-hueso-descolorido);
+}
+
+.world-view__panel-num {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.world-view__panel-here {
+  margin: 0;
+  align-self: center;
+  font-size: 0.85rem;
+  color: var(--c-corteza-palida);
+}
+
+.world-view__panel-reason {
+  margin: 0;
+  flex-basis: 100%;
+  font-size: 0.75rem;
+  color: var(--c-corteza-palida);
+}
+
+.world-view__panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.world-view__panel-btn {
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--c-hueso-descolorido);
+  background: var(--c-tinta-tierra-media);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.world-view__panel-btn:hover:not(:disabled) {
+  background: var(--c-verde-musgo-profundo);
+}
+
+.world-view__panel-btn:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+.world-view__panel-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Viajar es la acción del mundo orgánico: verde-pantano en reposo es
+   semánticamente válido (el viaje ES meterse en el mundo). */
+.world-view__panel-btn--travel {
+  background: var(--c-verde-musgo-profundo);
+  border-color: var(--c-verde-pantano);
+}
+
+.world-view__panel-btn--travel:hover {
+  background: var(--c-verde-pantano);
+}
+
+/* --- Transición home → mundo (fade 300ms, decisión Q5) ---------------------- */
+
+.world-view--enter {
+  animation: world-view-enter 300ms ease-out;
+}
+
+@keyframes world-view-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-view--enter {
+    animation: none;
+  }
+}

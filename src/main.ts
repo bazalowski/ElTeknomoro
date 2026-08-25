@@ -1,10 +1,12 @@
 import { getSession, onSessionChange } from './backend/auth';
-import { loadLastCharacter, saveCharacterUpdate } from './backend/characters';
+import { loadLastCharacter, saveCharacterUpdate, loadWorldState, saveWorldState } from './backend/characters';
 import { renderLoginView } from './render/login-view';
 import { renderHomeView } from './render/home-view';
 import { renderCombatView } from './render/combat-view';
+import { renderWorldView } from './render/world-view';
 import { startH2Flow } from './state/h2-flow';
 import { startCombatFlow } from './state/combat-flow';
+import { createWorldFlow } from './state/world-flow';
 import { createRng } from './rules/dice';
 import { ENEMIES_BY_ID } from './data/enemies';
 import { ITEMS_BY_ID } from './data/items';
@@ -16,7 +18,7 @@ import './style.css';
 const app = document.getElementById('app');
 if (!app) throw new Error('No se encontró #app en el DOM.');
 
-type Mode = 'auth' | 'home' | 'h2-flow' | 'combat';
+type Mode = 'auth' | 'home' | 'h2-flow' | 'combat' | 'world';
 
 let mode: Mode = 'auth';
 let currentSession: Session | null = null;
@@ -59,13 +61,23 @@ function startCombatRun(root: HTMLElement, character: Character): void {
     nowIso: () => new Date().toISOString(),
     onEnd: (result) => {
       viewHandle?.notifyResult(result);
+      // Decisión #84/#87 (4b): superar el combate del Lobo completa el
+      // tutorial. La flag vive en el PJ y se persiste con él; home la lee
+      // para cambiar "Entrar al yermo" por "Salir al mundo". En H3-H4 el
+      // único combate lanzable desde home ES el tutorial del Lobo, así que
+      // victory ≡ tutorial completado. Cuando 4c cablee combates de POI,
+      // este set se mueve al camino del tutorial.
+      const finalCharacter: Character =
+        result.status === 'victory'
+          ? { ...result.character, tutorial_lobo_completed: true }
+          : result.character;
       // Persistencia post-combate: el PJ vivo con loot aplicado o el PJ
       // muerto con epitafio ya escrito. saveCharacterUpdate sobrescribe el
       // slot 0 sin la guard CharacterAlreadyAliveError. Si la red falla, lo
       // logueamos: H3 no tiene UI de error de red todavía (entra en hitos
       // posteriores cuando toque hardening de persistencia).
       persisting = true;
-      saveCharacterUpdate(result.character)
+      saveCharacterUpdate(finalCharacter)
         .catch((err) => {
           console.error('main: saveCharacterUpdate falló al cerrar combate:', err);
         })
@@ -102,6 +114,31 @@ function startCombatRun(root: HTMLElement, character: Character): void {
   );
 }
 
+// Arranca la vista de mundo (H4 4b): carga el estado persistido del slot,
+// monta el orquestador world-flow y pinta la vista. Fade de 300ms en la
+// entrada (decisión Q5 del cuestionario 4b, vía clase CSS).
+function startWorldRun(root: HTMLElement, character: Character): void {
+  loadWorldState()
+    .then((worldState) => {
+      const flow = createWorldFlow({ initialState: worldState, persist: saveWorldState });
+      root.innerHTML = '';
+      renderWorldView(root, {
+        flow,
+        character,
+        onExitToHome: () => {
+          mode = 'home';
+          render();
+        },
+      });
+      root.querySelector<HTMLElement>('[data-world-view]')?.classList.add('world-view--enter');
+    })
+    .catch((err) => {
+      console.error('main: loadWorldState falló al salir al mundo:', err);
+      mode = 'home';
+      render();
+    });
+}
+
 function render(): void {
   if (!app) return;
   if (!currentSession) {
@@ -117,11 +154,11 @@ function render(): void {
     });
     return;
   }
-  if (mode === 'combat') {
-    // El combate se monta vía startCombatRun antes de llegar aquí; este caso
-    // solo se daría si render() se vuelve a invocar mientras estamos en
-    // combate (p. ej. session change). En esa ventana mantenemos la pantalla
-    // de combate intacta — no remontar es la decisión correcta.
+  if (mode === 'combat' || mode === 'world') {
+    // Combate y mundo se montan vía startCombatRun/startWorldRun antes de
+    // llegar aquí; este caso solo se daría si render() se vuelve a invocar
+    // mientras estamos dentro (p. ej. session change). En esa ventana
+    // mantenemos la pantalla intacta — no remontar es la decisión correcta.
     return;
   }
   mode = 'home';
@@ -131,23 +168,27 @@ function render(): void {
       render();
       return;
     }
-    if (intent === 'enter-wilds') {
-      mode = 'combat';
-      // Recargamos el PJ vivo en el momento de entrar al combate. home ya lo
-      // mostró, pero el slot puede haber cambiado entre tabs; este load es
-      // la fuente de verdad inmediata antes del combate.
+    if (intent === 'enter-wilds' || intent === 'exit-to-world') {
+      mode = intent === 'enter-wilds' ? 'combat' : 'world';
+      // Recargamos el PJ vivo en el momento de entrar. home ya lo mostró,
+      // pero el slot puede haber cambiado entre tabs; este load es la
+      // fuente de verdad inmediata antes de combate o mundo.
       loadLastCharacter()
         .then((character) => {
           if (character === null || !character.alive) {
-            console.warn('main: enter-wilds sin PJ vivo en slot; volviendo a home.');
+            console.warn(`main: ${intent} sin PJ vivo en slot; volviendo a home.`);
             mode = 'home';
             render();
             return;
           }
-          startCombatRun(app, character);
+          if (intent === 'enter-wilds') {
+            startCombatRun(app, character);
+          } else {
+            startWorldRun(app, character);
+          }
         })
         .catch((err) => {
-          console.error('main: loadLastCharacter falló al entrar al yermo:', err);
+          console.error(`main: loadLastCharacter falló en ${intent}:`, err);
           mode = 'home';
           render();
         });
@@ -168,7 +209,7 @@ getSession()
 
 onSessionChange((session) => {
   currentSession = session;
-  if (!session && (mode === 'h2-flow' || mode === 'combat')) {
+  if (!session && (mode === 'h2-flow' || mode === 'combat' || mode === 'world')) {
     mode = 'auth';
   }
   render();

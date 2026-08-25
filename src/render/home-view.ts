@@ -3,7 +3,11 @@ import { signOut } from '../backend/auth';
 import { loadLastCharacter } from '../backend/characters';
 import type { Character } from '../rules/character';
 
-export type HomeIntent = 'create-character' | 'enter-wilds' | 'create-new-after-death';
+export type HomeIntent =
+  | 'create-character'
+  | 'enter-wilds'
+  | 'exit-to-world'
+  | 'create-new-after-death';
 
 type HomeBranch =
   | { kind: 'loading' }
@@ -67,10 +71,14 @@ export function renderHomeView(
     }
 
     if (branch.kind === 'alive') {
-      intent = 'enter-wilds';
+      // Decisión #87 (4b): tras superar el tutorial del Lobo, el botón pasa
+      // a "Salir al mundo" → vista regional. Sin tutorial, el flujo actual
+      // (combate del Lobo) se mantiene; el salto con coste (#86) entra en 4c.
+      const tutorialDone = branch.character.tutorial_lobo_completed;
+      intent = tutorialDone ? 'exit-to-world' : 'enter-wilds';
       screenEl.dataset.branch = 'alive';
       bodyEl.innerHTML = renderAlive(branch.character);
-      primaryBtn.textContent = 'Entrar al yermo';
+      primaryBtn.textContent = tutorialDone ? 'Salir al mundo' : 'Entrar al yermo';
       primaryBtn.disabled = false;
       return;
     }

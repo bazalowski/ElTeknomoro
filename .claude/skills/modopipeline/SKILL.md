@@ -5,89 +5,115 @@ description: Pipeline obligatorio para crear o modificar UI en El Teknomoro. Enc
 
 # MODO PIPELINE — UI El Teknomoro
 
-Protocolo fijo para producir UI premium +++ en El Teknomoro. Bazalo lo aprobó el 2026-04-26. No se salta ningún paso. No se reordena.
+Protocolo para producir UI premium +++ en El Teknomoro. Aprobado por Bazalo el 2026-04-26. **v2 (2026-05-06): tres carriles y un solo hilo.** El orden de los pasos sigue siendo sagrado; lo que cambia es cuántos pasos aplica cada tarea y cuánto contexto arrastra cada uno.
 
-## La cadena (en este orden, sin atajos)
+## La cadena
 
 ```
-[INPUT]   Bazalo escribe la intención en bruto.
+[INPUT]   Bazalo escribe la intención.
    ↓
-[PASO 1]  Prompt Master  → estructura el prompt UI
+[PUERTA]  Clasificas la entrada en carril A, B o C.
    ↓
-[PASO 2]  el-teknomoro-director  → valida reglamento / scope / biblia
+[PASO 1]  Prompt Master        → compila el brief UI     (carril A)
+[PASO 2]  el-teknomoro-director → valida contra biblia    (carriles A y B)
+[PASO 3]  impeccable           → diseña / implementa      (siempre)
    ↓
-[PASO 3]  impeccable  → diseña / implementa
-   ↓
-[OUTPUT]  Entrega revisable
+[OUTPUT]  Entrega revisable.
 ```
 
-Si te saltas un paso, Bazalo te lo va a echar en cara. La skill existe precisamente para que no lo hagas.
+Nunca al revés. Nunca saltando un paso que el carril sí exige.
 
 ---
 
-## Prerrequisitos (one-time, no se repiten cada tarea)
+## Regla de hilo único
 
-Antes de la PRIMERA invocación de la skill en el proyecto, verifica:
+**Los tres pasos corren en la MISMA sesión.** Nada de "abre chat nuevo entre paso y paso": eso era necesario cuando la ventana de contexto no daba para la biblia entera, y hoy sólo sirve para pagar tres veces la misma lectura. La biblia son ~46.500 tokens; `DESIGN.md` ~14.500. Partir el hilo los vuelve a cargar desde cero en cada corte.
 
-1. `PRODUCT.md` existe en raíz y no es placeholder.
-2. `DESIGN.md` existe en raíz (recomendado, no bloqueante).
-
-Si falta `PRODUCT.md`, detén el pipeline e indica a Bazalo:
-> "Falta PRODUCT.md. Antes de arrancar el pipeline, ejecutamos `$impeccable teach` una sola vez. Después seguimos con tu intención original."
-
-No avances al PASO 1 hasta que el setup esté listo.
+El artefacto `.claude/pipeline/<hito>-<subpaso>.md` se sigue escribiendo, pero como **registro de lo decidido**, no como mecanismo de traspaso entre chats.
 
 ---
 
-## PASO 1 — Prompt Master
+## PUERTA — clasificar la entrada
 
-**Objetivo**: convertir la intención bruta de Bazalo en un prompt UI quirúrgico, listo para ser validado por el director.
+Antes de invocar a nadie, decide el carril. Se decide por **cuán cerrada está la decisión de producto**, no por el tamaño de la pantalla.
 
-**Cómo se ejecuta**:
-- Invoca la skill `prompt-master` (vía la herramienta Skill) pasándole la intención de Bazalo y el contexto: target tool = `impeccable` (skill de diseño dentro de Claude Code, register=product, proyecto El Teknomoro).
-- Si Prompt Master pregunta hasta 3 clarificaciones, las trasladas a Bazalo tal cual. No respondes tú por él.
-- El output esperado es un prompt UI estructurado con: tarea, contexto del proyecto, restricciones, criterio de éxito, formato de salida.
+| Carril | Cuándo | Pasos |
+|---|---|---|
+| **A · intención bruta** | Bazalo describe un deseo ("que la pantalla de X se sienta Y") y no hay decisión cerrada que lo fije. | 1 → 2 → 3 |
+| **B · decisión cerrada** | El sub-paso ya tiene decisiones numeradas en biblia (#N) que fijan qué se pinta y cómo. | 2 → 3 |
+| **C · microajuste** | Retoque en UI existente: un label, un padding, un color ya cerrado. | 3 |
 
-**Antes de avanzar al PASO 2, muestra a Bazalo el prompt que ha producido Prompt Master.** Sin su OK, no avanzas. Esto no es opcional.
+**Por qué existe el carril B.** Cuando un cuestionario de scope ya se cerró y sus decisiones están escritas en la biblia, el PASO 1 no compila información nueva: la reescribe con otras palabras. En ese caso el brief se **compila citando** las decisiones, y el director valida la traducción decisión→UI en vez de revalidar la decisión.
 
----
+**Si dudas entre A y B, es A.** El coste de un paso de más es mucho menor que el de diseñar sobre una decisión que nadie cerró.
 
-## PASO 2 — Director El Teknomoro
-
-**Objetivo**: validar que el prompt del PASO 1 respeta reglamento, scope MVP, biblia y decisiones cerradas. El director es la última línea antes de que se mueva un píxel.
-
-**Cómo se ejecuta**:
-- Invoca el agente `el-teknomoro-director` (vía la herramienta Agent, `subagent_type: "el-teknomoro-director"`).
-- Pásale el prompt del PASO 1 íntegro y pídele explícitamente que conteste en este formato:
-  1. **Veredicto**: APTO / APTO CON CAMBIOS / NO APTO.
-  2. **Razones**: cita de biblia, scope o decisión cerrada.
-  3. **Cambios al prompt** (si APTO CON CAMBIOS): el prompt corregido, listo para PASO 3.
-  4. **Bloqueo** (si NO APTO): qué falta jugar, simular o cerrar antes de tocar UI.
-
-**Reglas de avance**:
-- APTO → avanzas al PASO 3 con el prompt original.
-- APTO CON CAMBIOS → avanzas al PASO 3 con el prompt corregido. Avisas a Bazalo del cambio en una línea.
-- NO APTO → **detienes el pipeline**. Le cuentas a Bazalo qué dijo el director y le devuelves la pelota. No improvises código.
+**Anuncia el carril a Bazalo en una línea antes de arrancar.** Él puede subirte de carril.
 
 ---
 
-## PASO 3 — Impeccable
+## PASO 1 — Prompt Master (sólo carril A)
 
-**Objetivo**: ejecutar el diseño/implementación con la skill `impeccable`, usando el prompt validado.
+Convierte la intención bruta en un brief UI quirúrgico.
 
-**Cómo se ejecuta**:
-- Invoca la skill `impeccable` (vía la herramienta Skill) pasando el prompt aprobado por el director.
-- Register esperado: **product** (El Teknomoro es app/juego, no marketing). Si en algún caso fuera brand (web pública, landing), el director lo habrá indicado en el PASO 2.
-- Sigue las reglas de impeccable al pie: shared design laws, register product, sin atajos.
+- Invoca la skill `prompt-master` con la intención de Bazalo y el contexto: target = `impeccable`, register = `product`, proyecto El Teknomoro.
+- Si pregunta clarificaciones (máx. 3), las trasladas a Bazalo tal cual. No respondes tú por él.
+- **Muestra el brief a Bazalo antes del PASO 2.** Sin su OK no avanzas.
+
+En carril B compilas tú el brief citando las decisiones. Mismo formato, misma exigencia, sin invocar a nadie.
+
+### Formato del brief (obligatorio en A y B)
+
+El brief es la pieza que hace barato el PASO 3: **lleva destilado lo que impeccable necesita para no abrir `DESIGN.md` ni la biblia.** Secciones fijas:
+
+1. **Contexto** — proyecto, register, tokens y reglas inviolables de `DESIGN.md` que apliquen (citados, no referenciados).
+2. **Estado de partida** — qué existe ya en el repo, contratos de los módulos que va a consumir, qué está testeado.
+3. **Tarea** — una frase.
+4. **Estructura interna requerida** — numerada.
+5. **Constraints** — lo que NO puede hacer.
+6. **Output format** — archivos exactos, firmas exactas.
+7. **Done when** — criterio verificable (`npm test`, `tsc --noEmit`, qué se ve en pantalla).
+8. **Out of scope** — lo que es de otro sub-paso.
+
+**Techo: ~250 líneas.** Si no cabe, el sub-paso es demasiado grande y se parte antes de diseñar nada.
+
+---
+
+## PASO 2 — Director El Teknomoro (carriles A y B)
+
+Última línea antes de que se mueva un píxel.
+
+- Invócalo vía Agent (`subagent_type: "el-teknomoro-director"`).
+- **Pásale el extracto, no la biblioteca.** El brief íntegro + las decisiones citadas **con su texto pegado** (no sólo el número). Un spawn arranca en frío: si le dices "valida contra biblia" se lee 46.500 tokens para comprobar seis párrafos.
+- Regla explícita para él: *si necesita abrir la biblia entera, que lo diga y por qué*. Es señal legítima — significa que sospecha un conflicto fuera de lo citado, y eso es exactamente su trabajo.
+
+Formato de respuesta que le exiges:
+
+1. **Veredicto**: APTO / APTO CON CAMBIOS / NO APTO.
+2. **Razones**: cita de biblia, scope o decisión cerrada.
+3. **Cambios al brief** (si APTO CON CAMBIOS): el brief corregido, listo para el PASO 3.
+4. **Bloqueo** (si NO APTO): qué falta jugar, simular o cerrar antes de tocar UI.
+
+**Avance:**
+- APTO → PASO 3 con el brief original.
+- APTO CON CAMBIOS → PASO 3 con el corregido. Avisas a Bazalo del cambio en una línea.
+- NO APTO → **detienes el pipeline.** Se lo cuentas a Bazalo y le devuelves la pelota. No improvisas código.
+
+---
+
+## PASO 3 — Impeccable (siempre)
+
+- Invoca la skill `impeccable` con el brief aprobado.
+- Register: **product**. Sólo sería brand si fuera landing pública, y en ese caso el director lo habrá dicho en el PASO 2.
+- Sigue sus reglas al pie: shared design laws, register product, sin atajos.
 
 ---
 
 ## OUTPUT
 
-Tras el PASO 3, entregas a Bazalo:
 1. Resumen de una frase de qué se ha producido.
 2. Archivos creados/modificados con rutas markdown clicables.
-3. Pasos de validación visual (qué abrir, qué probar).
+3. Pasos de validación visual: qué abrir, qué probar.
+4. Verificación real: `npm test`, `npx tsc --noEmit`. Si algo no se pudo correr, se dice.
 
 Nada más. Sin recapitular el pipeline, sin felicitarte.
 
@@ -95,17 +121,17 @@ Nada más. Sin recapitular el pipeline, sin felicitarte.
 
 ## Cuándo NO usar esta skill
 
-- Cambios de reglas, datos o motor (`rules.ts`, biblia, simulaciones) → director directo, sin impeccable.
-- Backend, supabase, scripts → director o trabajo normal.
-- Otros proyectos (Furbito, etc.) → la skill no aplica, ignórala.
-- Microajustes triviales en UI ya existente (renombrar un label, subir 2px un padding) → puedes hacerlo directo, pero si Bazalo dice "modo pipeline" lo respetas igualmente.
+- Reglas, datos o motor (`src/rules/`, biblia, simulaciones) → director directo.
+- Backend, Supabase, scripts → director o trabajo normal.
+- Otros proyectos (Furbito, etc.) → no aplica.
 
 ---
 
 ## Reglas de oro
 
-1. **El orden es sagrado**: Prompt Master → Director → Impeccable. Nunca al revés, nunca saltando.
-2. **Cada paso muestra su output a Bazalo antes de avanzar.** Él aprueba o corrige.
-3. **Si el director dice NO APTO, el pipeline se detiene.** Cero excepciones.
-4. **No mezcles roles**: Prompt Master no diseña, el director no escribe CSS, impeccable no valida reglas.
-5. **Una tarea = un pipeline completo.** No reutilizas el prompt del PASO 1 de la tarea anterior para una tarea nueva.
+1. **El orden es sagrado.** Prompt Master → director → impeccable. El carril decide cuántos pasos, nunca en qué orden.
+2. **Cada paso muestra su output a Bazalo antes de avanzar.**
+3. **NO APTO detiene el pipeline.** Cero excepciones.
+4. **No mezcles roles.** Prompt Master no diseña, el director no escribe CSS, impeccable no valida reglas.
+5. **Una tarea = un pipeline.** No reutilizas el brief de la tarea anterior.
+6. **El contexto se paga una vez.** Hilo único, extracto en vez de biblioteca, y el brief carga el destilado para que el ejecutor no abra el corpus.
