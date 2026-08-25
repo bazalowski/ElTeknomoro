@@ -5,6 +5,12 @@
       "source": "pbakaus/impeccable",
       "sourceType": "github",
       "computedHash": "bd24f9b2f67dfdac55f76a85877ce302fe75d6204d2b329d3d05342904abf336"
+    },
+    "prompt-master": {
+      "source": "nidhinjs/prompt-master",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "3af2b92182cad80b542ea1a5fb5ad8f3edfcc89817697b9a565f2c41d27c3492"
     }
   }
 }

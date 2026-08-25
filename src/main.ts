@@ -196,14 +196,26 @@ function render(): void {
   });
 }
 
+// Pintado inmediato antes de la primera respuesta del servidor. `getSession`
+// tarda lo que tarde la red, y hasta ahora la app no pintaba NADA en esa
+// ventana: el jugador veía la página en negro sin saber si estaba cargando o
+// roto. Es el mismo síntoma que una app rota, así que se distingue.
+app.innerHTML = `
+  <main class="app-boot" role="status" aria-live="polite">
+    <p class="app-boot__text">Cargando…</p>
+  </main>
+`;
+
 getSession()
   .then((session) => {
     currentSession = session;
     render();
   })
   .catch((err) => {
-    console.error(err);
+    console.error('main: getSession falló al arrancar:', err);
     currentSession = null;
+    // Sin sesión que restaurar se cae al login, que es la pantalla correcta
+    // tanto si el usuario no había entrado como si el servidor no responde.
     render();
   });
 

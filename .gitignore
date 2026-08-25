@@ -26,3 +26,6 @@ supabase/.temp/
 supabase/.branches/
 
 .agents/
+
+# Config local de la máquina (hooks de impeccable, overrides personales).
+.claude/settings.local.json

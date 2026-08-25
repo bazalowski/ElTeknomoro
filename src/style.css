@@ -3875,3 +3875,25 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
     animation: none;
   }
 }
+
+/* =============================================================================
+   app-boot — pintado inmediato mientras getSession resuelve.
+   Existe para que "cargando" y "roto" no se vean igual: hasta H4 4b la app no
+   pintaba nada hasta la primera respuesta del servidor.
+   ========================================================================== */
+
+.app-boot {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--c-tinta-tierra-humeda);
+}
+
+.app-boot__text {
+  margin: 0;
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: var(--c-corteza-palida);
+}
