@@ -547,6 +547,49 @@ export function getStartingGrid(): Grid {
   return g;
 }
 
+// -----------------------------------------------------------------------------
+// Topología: adyacencia cardinal (decisión #88)
+// -----------------------------------------------------------------------------
+// Mover al PJ es una acción de juego y sólo acepta destinos legales; en H4 el
+// destino legal es un vecino cardinal (4 direcciones, sin diagonales),
+// coherente con #71 ("una acción = mover al siguiente grid"). El fast travel
+// de #70/§9.8 es la excepción y llega en 4e.
+//
+// Las coordenadas de los grids son globales y disjuntas por región, así que la
+// adyacencia cruza fronteras de región sin caso especial. Verificado sobre el
+// dataset real: los 180 grids son alcanzables desde `sur-001` por saltos
+// cardinales, ningún grid queda aislado (grado mínimo 2).
+
+const CARDINAL_OFFSETS: readonly Position2D[] = [
+  { x: 1, y: 0 },
+  { x: -1, y: 0 },
+  { x: 0, y: 1 },
+  { x: 0, y: -1 },
+];
+
+// Vecinos cardinales de un grid. [] si el grid no existe (consistente con el
+// resto de selectores: la UI pinta "sin salidas" en vez de manejar excepción).
+// Orden estable: este, oeste, sur, norte según CARDINAL_OFFSETS.
+export function getCardinalNeighbours(gridId: string): readonly Grid[] {
+  const from = getGrid(gridId);
+  if (!from) return [];
+  const out: Grid[] = [];
+  for (const off of CARDINAL_OFFSETS) {
+    const x = from.position.x + off.x;
+    const y = from.position.y + off.y;
+    const found = GRIDS.find((g) => g.position.x === x && g.position.y === y);
+    if (found) out.push(found);
+  }
+  return out;
+}
+
+// ¿Son dos grids vecinos cardinales? Falso si alguno no existe y falso para
+// un grid consigo mismo (moverse a donde ya estás no es un movimiento).
+export function areGridsAdjacent(aId: string, bId: string): boolean {
+  if (aId === bId) return false;
+  return getCardinalNeighbours(aId).some((g) => g.id === bId);
+}
+
 // POIs de un arquetipo concreto en todo el overworld. Lo consumen la vista de
 // grid (iconos por arquetipo, #91) y fase 2 al repartir contenido curado.
 export function getPOIsByArchetype(archetype: POIArchetype): readonly POI[] {

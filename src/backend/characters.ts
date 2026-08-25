@@ -3,6 +3,8 @@
 
 import { supabase } from './supabase';
 import type { Character } from '../rules/character';
+import type { WorldState } from '../rules/world-state';
+import { createInitialWorldState, hydrateWorldState } from '../rules/world-state';
 
 export class CharacterAlreadyAliveError extends Error {
   constructor(message = 'Ya hay un personaje vivo en el slot 0.') {
@@ -124,4 +126,57 @@ export async function loadLastCharacter(): Promise<Character | null> {
   if (!data) return null;
 
   return hydrateLoadedCharacter(data.character_data);
+}
+
+// -----------------------------------------------------------------------------
+// Estado del mundo (sub-paso 4b.0, decisión #90)
+// -----------------------------------------------------------------------------
+// El `world_state` cuelga del slot, no del usuario: dos PJ del mismo usuario en
+// slots distintos no comparten grids explorados (#44 permadeath puro + C3b de
+// #85). Por eso estas dos funciones filtran por `slot_index` igual que el
+// resto del módulo, y no sólo por `user_id`.
+
+// Carga el estado del mundo del slot 0. Devuelve el estado inicial si el slot
+// no existe todavía o si la columna está a NULL (saves anteriores a 4b.0):
+// `hydrateWorldState` degrada en vez de romper, mismo criterio que
+// `hydrateLoadedCharacter`.
+export async function loadWorldState(): Promise<WorldState> {
+  const userId = await getCurrentUserId();
+
+  const { data, error } = await supabase
+    .from('save_slots')
+    .select('world_state')
+    .eq('user_id', userId)
+    .eq('slot_index', 0)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return createInitialWorldState();
+
+  return hydrateWorldState(data.world_state);
+}
+
+// Persiste el estado del mundo sobre un slot que YA existe. Lanza si no lo
+// hay: guardar mundo sin personaje sería un bug del caller (el slot lo crea
+// siempre `saveCharacter` antes de que exista mundo que guardar).
+export async function saveWorldState(worldState: WorldState): Promise<void> {
+  const userId = await getCurrentUserId();
+
+  const existing = await supabase
+    .from('save_slots')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('slot_index', 0)
+    .maybeSingle();
+
+  if (existing.error) throw existing.error;
+  if (!existing.data) {
+    throw new Error('saveWorldState: no hay slot 0 que actualizar.');
+  }
+
+  const { error } = await supabase
+    .from('save_slots')
+    .update({ world_state: worldState })
+    .eq('id', existing.data.id);
+  if (error) throw error;
 }
