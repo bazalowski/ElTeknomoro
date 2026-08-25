@@ -17,6 +17,9 @@ import {
   getAllPOIs,
   getCuratedSlots,
   getStartingGrid,
+  getPOIsByArchetype,
+  getHomePOI,
+  POI_ARCHETYPES,
   type Region,
   type Grid,
   type POI,
@@ -297,6 +300,152 @@ describe('world.ts — convenciones de id', () => {
 });
 
 // =============================================================================
+// (i) Pase de datos 4b.0 — arquetipos por región (decisión #89)
+// =============================================================================
+describe('world.ts — arquetipos de POI (4b.0)', () => {
+  it('los 4 arquetipos declarados son natural/ruina/asentamiento/arcano', () => {
+    expect([...POI_ARCHETYPES].sort()).toEqual(['arcano', 'asentamiento', 'natural', 'ruina']);
+  });
+
+  it('todo POI tiene un arquetipo del catálogo', () => {
+    for (const p of getAllPOIs()) {
+      expect(POI_ARCHETYPES).toContain(p.archetype);
+    }
+  });
+
+  it('cada región cumple exactamente su cuota de arquetipos', () => {
+    for (const rid of REGION_IDS) {
+      const gridIds = new Set(getGridsByRegion(rid).map((g) => g.id));
+      const pois = getAllPOIs().filter((p) => gridIds.has(p.gridId));
+      for (const arch of POI_ARCHETYPES) {
+        const actual = pois.filter((p) => p.archetype === arch).length;
+        expect(actual).toBe(WORLD_CIFRAS.archetypesByRegion[rid][arch]);
+      }
+    }
+  });
+
+  it('las cuotas por región suman los POIs de esa región y 720 en total', () => {
+    let total = 0;
+    for (const rid of REGION_IDS) {
+      const cuota = WORLD_CIFRAS.archetypesByRegion[rid];
+      const suma = POI_ARCHETYPES.reduce((acc, a) => acc + cuota[a], 0);
+      expect(suma).toBe(WORLD_CIFRAS.gridsByRegion[rid] * WORLD_CIFRAS.poisPerGrid);
+      total += suma;
+    }
+    expect(total).toBe(WORLD_CIFRAS.totalPOIs);
+  });
+
+  it('el Sur es la región con más asentamientos, en absoluto y en densidad (#82)', () => {
+    const densidad = (rid: RegionId): number =>
+      WORLD_CIFRAS.archetypesByRegion[rid].asentamiento /
+      (WORLD_CIFRAS.gridsByRegion[rid] * WORLD_CIFRAS.poisPerGrid);
+    for (const rid of REGION_IDS) {
+      if (rid === 'sur') continue;
+      expect(WORLD_CIFRAS.archetypesByRegion.sur.asentamiento).toBeGreaterThan(
+        WORLD_CIFRAS.archetypesByRegion[rid].asentamiento,
+      );
+      expect(densidad('sur')).toBeGreaterThan(densidad(rid));
+    }
+  });
+
+  it('arcano es raro en todo el overworld: menos del 3% de los POIs (#47)', () => {
+    const arcanos = getPOIsByArchetype('arcano').length;
+    expect(arcanos / WORLD_CIFRAS.totalPOIs).toBeLessThan(0.03);
+    expect(arcanos).toBeGreaterThan(0);
+  });
+
+  it('ningún grid tiene sus 4 POIs del mismo arquetipo', () => {
+    for (const g of getAllGrids()) {
+      const arqs = new Set(getPOIsByGrid(g.id).map((p) => p.archetype));
+      expect(arqs.size).toBeGreaterThan(1);
+    }
+  });
+
+  it('getPOIsByArchetype particiona el dataset completo', () => {
+    const suma = POI_ARCHETYPES.reduce((acc, a) => acc + getPOIsByArchetype(a).length, 0);
+    expect(suma).toBe(WORLD_CIFRAS.totalPOIs);
+  });
+});
+
+// =============================================================================
+// (j) Pase de datos 4b.0 — el Hogar (decisión #85)
+// =============================================================================
+describe('world.ts — el Hogar', () => {
+  it('getHomePOI devuelve un POI Asentamiento en el grid de inicio', () => {
+    const home = getHomePOI();
+    expect(home.id).toBe(WORLD_CIFRAS.homePOIId);
+    expect(home.archetype).toBe('asentamiento');
+    expect(home.gridId).toBe(WORLD_CIFRAS.startingGridId);
+  });
+
+  it('el Hogar lleva slot curado: fase 2 escribe ahí el contenido del hub', () => {
+    expect(getHomePOI().hasCuratedSlot).toBe(true);
+  });
+});
+
+// =============================================================================
+// (k) Pase de datos 4b.0 — posiciones en el mini-grid 5×5 (decisiones #89, #91)
+// =============================================================================
+describe('world.ts — posiciones de POI en el mini-grid', () => {
+  it('toda posición cae dentro de 0..4 y es entera', () => {
+    const max = WORLD_CIFRAS.miniGridSize - 1;
+    for (const p of getAllPOIs()) {
+      expect(Number.isInteger(p.position.x)).toBe(true);
+      expect(Number.isInteger(p.position.y)).toBe(true);
+      expect(p.position.x).toBeGreaterThanOrEqual(0);
+      expect(p.position.x).toBeLessThanOrEqual(max);
+      expect(p.position.y).toBeGreaterThanOrEqual(0);
+      expect(p.position.y).toBeLessThanOrEqual(max);
+    }
+  });
+
+  it('ningún POI ocupa la celda central reservada al PJ (#91)', () => {
+    for (const p of getAllPOIs()) {
+      expect(p.position).not.toEqual(WORLD_CIFRAS.playerCell);
+    }
+  });
+
+  it('los 4 POIs de un grid ocupan 4 celdas distintas', () => {
+    for (const g of getAllGrids()) {
+      const celdas = new Set(getPOIsByGrid(g.id).map((p) => `${p.position.x},${p.position.y}`));
+      expect(celdas.size).toBe(WORLD_CIFRAS.poisPerGrid);
+    }
+  });
+
+  it('cada POI se queda en el cuadrante que le toca por índice', () => {
+    // poi-1 arriba-izquierda, poi-2 arriba-derecha, poi-3 abajo-izquierda,
+    // poi-4 abajo-derecha. El jitter sólo mueve 1 celda dentro del cuadrante.
+    const base: Record<string, { x: number; y: number }> = {
+      '1': { x: 0, y: 0 },
+      '2': { x: 3, y: 0 },
+      '3': { x: 0, y: 3 },
+      '4': { x: 3, y: 3 },
+    };
+    for (const p of getAllPOIs()) {
+      const k = p.id.slice(p.id.lastIndexOf('-') + 1);
+      const b = base[k]!;
+      expect(p.position.x - b.x).toBeGreaterThanOrEqual(0);
+      expect(p.position.x - b.x).toBeLessThanOrEqual(1);
+      expect(p.position.y - b.y).toBeGreaterThanOrEqual(0);
+      expect(p.position.y - b.y).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('los 180 grids ya NO comparten un único layout (el problema que abrió 4b.0)', () => {
+    const layouts = new Set<string>();
+    for (const g of getAllGrids()) {
+      const firma = getPOIsByGrid(g.id)
+        .map((p) => `${p.position.x},${p.position.y}`)
+        .sort()
+        .join('|');
+      layouts.add(firma);
+    }
+    // 4a entregaba 1 layout para los 180 grids. Tras 4b.0 son 125.
+    expect(layouts.size).toBe(125);
+  });
+});
+
+// =============================================================================
 // Validador puro (validateWorldData) con datos sintéticos
 // =============================================================================
 // El validador es exportado: lo testeamos directamente con datos que rompen
@@ -402,6 +551,60 @@ describe('validateWorldData', () => {
     const gridsDup: Grid[] = [...getAllGrids(), { ...getAllGrids()[0]! }];
     const errs2 = validateWorldData([...getAllRegions()], gridsDup, [...getAllPOIs()]);
     expect(errs2.map((e) => e.code)).toContain('GRID_ID_DUPLICATE');
+  });
+
+  // -- Códigos añadidos en 4b.0 --
+
+  it('detecta POI_ARCHETYPE_INVALID con un arquetipo fuera del catálogo', () => {
+    const poisMod: POI[] = [...getAllPOIs()];
+    poisMod[0] = { ...poisMod[0]!, archetype: 'pantano' as POI['archetype'] };
+    const errs = validateWorldData(getAllRegions(), getAllGrids(), poisMod);
+    expect(errs.map((e) => e.code)).toContain('POI_ARCHETYPE_INVALID');
+  });
+
+  it('detecta POI_ARCHETYPE_PER_REGION_MISMATCH si se altera una cuota', () => {
+    // Convierte un 'natural' del Centro en 'ruina': rompe dos cuotas a la vez.
+    const poisMod: POI[] = [...getAllPOIs()];
+    const idx = poisMod.findIndex((p) => p.gridId.startsWith('centro') && p.archetype === 'natural');
+    poisMod[idx] = { ...poisMod[idx]!, archetype: 'ruina' };
+    const errs = validateWorldData(getAllRegions(), getAllGrids(), poisMod);
+    expect(errs.map((e) => e.code)).toContain('POI_ARCHETYPE_PER_REGION_MISMATCH');
+  });
+
+  it('detecta POI_POSITION_OUT_OF_BOUNDS fuera del mini-grid', () => {
+    const poisMod: POI[] = [...getAllPOIs()];
+    poisMod[0] = { ...poisMod[0]!, position: { x: 7, y: 0 } };
+    const errs = validateWorldData(getAllRegions(), getAllGrids(), poisMod);
+    expect(errs.map((e) => e.code)).toContain('POI_POSITION_OUT_OF_BOUNDS');
+  });
+
+  it('detecta POI_POSITION_ON_PLAYER_CELL en la celda central', () => {
+    const poisMod: POI[] = [...getAllPOIs()];
+    poisMod[0] = { ...poisMod[0]!, position: { ...WORLD_CIFRAS.playerCell } };
+    const errs = validateWorldData(getAllRegions(), getAllGrids(), poisMod);
+    expect(errs.map((e) => e.code)).toContain('POI_POSITION_ON_PLAYER_CELL');
+  });
+
+  it('detecta POI_POSITION_DUPLICATE_IN_GRID si dos POIs comparten celda', () => {
+    const poisMod: POI[] = [...getAllPOIs()];
+    // Los POIs 1 y 2 del primer grid van a la misma celda.
+    poisMod[1] = { ...poisMod[1]!, position: { ...poisMod[0]!.position } };
+    const errs = validateWorldData(getAllRegions(), getAllGrids(), poisMod);
+    expect(errs.map((e) => e.code)).toContain('POI_POSITION_DUPLICATE_IN_GRID');
+  });
+
+  it('detecta HOME_POI_NOT_ASENTAMIENTO si el Hogar cambia de arquetipo', () => {
+    const poisMod: POI[] = getAllPOIs().map((p) =>
+      p.id === WORLD_CIFRAS.homePOIId ? { ...p, archetype: 'ruina' as const } : p,
+    );
+    const errs = validateWorldData(getAllRegions(), getAllGrids(), poisMod);
+    expect(errs.map((e) => e.code)).toContain('HOME_POI_NOT_ASENTAMIENTO');
+  });
+
+  it('detecta HOME_POI_MISSING si el Hogar no está en el dataset', () => {
+    const poisMod = getAllPOIs().filter((p) => p.id !== WORLD_CIFRAS.homePOIId);
+    const errs = validateWorldData(getAllRegions(), getAllGrids(), poisMod);
+    expect(errs.map((e) => e.code)).toContain('HOME_POI_MISSING');
   });
 
   it('dataset real (importado) pasa el validador sin errores', () => {

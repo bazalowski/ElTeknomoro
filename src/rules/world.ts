@@ -29,6 +29,42 @@
 //
 // El grid de inicio (isStartingGrid=true) es `sur-001`: el Sur es el hub
 // estructural (decisión 4a), donde aterriza el PJ recién creado.
+//
+// PASE DE DATOS 4b.0 (decisión #89)
+// ---------------------------------
+// 4a dejó los 720 POIs como 'natural' y los 180 grids con un layout idéntico
+// de 4 POIs. Con esos datos los 4 iconos por arquetipo (#91) no se distinguen
+// nunca y los 180 grids se ven iguales. 4b.0 reparte arquetipos y varía
+// posiciones, todo determinista y en JSON: #72 (mundo fijo entre runs) intacto.
+//
+// Arquetipos — cuotas por región en ARCHETYPES_BY_REGION. Criterios:
+//   · 'natural' domina (59% global): la naturaleza ganó (#47).
+//   · 'ruina' es el segundo (29%): vestigio post-humano por todas partes.
+//   · 'asentamiento' escasea (10% global) y se concentra en el Sur (21% de sus
+//     POIs, 30 de 75 del mundo) porque el Sur es el hub estructural (#82).
+//   · 'arcano' es raro y plano entre regiones (14 de 720, ~2%): #47 lo quiere
+//     singular y reverencial, y un sesgo por región marcaría una función
+//     dramática que #82 deja explícitamente diferida a fase 2.
+// Reparto dentro de la región: se recorren sus POIs en orden de JSON y para
+// cada arquetipo con cuota K sobre N POIs se toman los índices
+// `floor(0.5 + i*N/K)` (misma fórmula que 4a usa para los slots curados); si
+// el índice está ocupado se avanza al siguiente libre con wrap. Orden de
+// reparto del más raro al más común (arcano → asentamiento → ruina), y lo que
+// sobra queda 'natural'. Ningún grid acaba con sus 4 POIs del mismo arquetipo.
+// EXCEPCIÓN fijada a mano: `sur-001-poi-1` es el Hogar (#85) y por tanto
+// 'asentamiento'; consume cuota del Sur antes del reparto.
+// Números PROVISIONALES de fase 1: fase 2 los re-estampa con el lore cerrado
+// sin tocar motor.
+//
+// Posiciones — mini-grid 5×5 (coordenadas 0..4). Cada POI del grid posee un
+// cuadrante fijo (poi-1 arriba-izquierda, poi-2 arriba-derecha, poi-3
+// abajo-izquierda, poi-4 abajo-derecha) y se mueve dentro de él con un jitter
+// determinista: `fmix32(fnv1a(poi.id))`, bit 0 → x, bit 1 → y. Da 2×2 opciones
+// por POI (256 layouts posibles por grid; 125 distintos sobre los 180 reales,
+// ninguno repetido más de 4 veces). La avalancha fmix32 es necesaria: sin ella
+// los bits bajos de FNV quedan pegados al final del id (todos acaban en
+// "-poi-N") y salen 12 layouts. **La celda central (2,2) nunca lleva POI**:
+// queda reservada al marcador del PJ en vista de grid (#91).
 
 import regionesData from '../data/world/regiones.json';
 import gridsData from '../data/world/grids.json';
@@ -80,7 +116,8 @@ export interface Grid {
 // Arquetipo del POI (decisión #68). En 4a todos arrancan como 'natural';
 // los curados de fase 2 podrán reasignar el arquetipo. Los cuatro valores
 // quedan declarados para que la unión exhaustiva esté lista para 4f.
-export type POIArchetype = 'natural' | 'ruina' | 'asentamiento' | 'arcano';
+export const POI_ARCHETYPES = ['natural', 'ruina', 'asentamiento', 'arcano'] as const;
+export type POIArchetype = (typeof POI_ARCHETYPES)[number];
 
 export interface POI {
   id: string;
@@ -123,6 +160,22 @@ export const WORLD_CIFRAS = {
     oeste: 13,
   } as const satisfies Readonly<Record<RegionId, number>>,
   startingGridId: 'sur-001',
+  // Reparto de arquetipos por región (decisión #89, 4b.0). PROVISIONAL fase 1.
+  archetypesByRegion: {
+    centro: { natural: 114, ruina: 66, asentamiento: 16, arcano: 4 },
+    norte: { natural: 87, ruina: 39, asentamiento: 11, arcano: 3 },
+    sur: { natural: 73, ruina: 35, asentamiento: 30, arcano: 2 },
+    este: { natural: 78, ruina: 31, asentamiento: 9, arcano: 2 },
+    oeste: { natural: 72, ruina: 36, asentamiento: 9, arcano: 3 },
+  } as const satisfies Readonly<Record<RegionId, Readonly<Record<POIArchetype, number>>>>,
+  // Lado del mini-grid local de cada grid: coordenadas válidas 0..4 (#89).
+  miniGridSize: 5,
+  // Celda reservada al marcador del PJ en vista de grid (#91). Ningún POI
+  // puede ocuparla.
+  playerCell: { x: 2, y: 2 },
+  // El Hogar: POI tipo Asentamiento del grid de inicio (#85). 4c lo convierte
+  // en la pantalla de campamento (#87); 4b sólo lo pinta como POI.
+  homePOIId: 'sur-001-poi-1',
 } as const;
 
 // -----------------------------------------------------------------------------
@@ -149,7 +202,15 @@ export type WorldValidationCode =
   | 'POI_GRID_INVALID'
   | 'POI_PER_GRID_MISMATCH'
   | 'POI_CURATED_COUNT_MISMATCH'
-  | 'POI_CURATED_PER_REGION_MISMATCH';
+  | 'POI_CURATED_PER_REGION_MISMATCH'
+  // Añadidos en 4b.0 (decisiones #89 y #91).
+  | 'POI_ARCHETYPE_INVALID'
+  | 'POI_ARCHETYPE_PER_REGION_MISMATCH'
+  | 'POI_POSITION_OUT_OF_BOUNDS'
+  | 'POI_POSITION_ON_PLAYER_CELL'
+  | 'POI_POSITION_DUPLICATE_IN_GRID'
+  | 'HOME_POI_MISSING'
+  | 'HOME_POI_NOT_ASENTAMIENTO';
 
 export interface WorldValidationError {
   code: WorldValidationCode;
@@ -158,6 +219,10 @@ export interface WorldValidationError {
 
 function isRegionId(s: string): s is RegionId {
   return (REGION_IDS as readonly string[]).includes(s);
+}
+
+function isPOIArchetype(s: string): s is POIArchetype {
+  return (POI_ARCHETYPES as readonly string[]).includes(s);
 }
 
 // Validador puro. Devuelve [] si todo cuadra. Lo usa el módulo al cargar y
@@ -266,6 +331,9 @@ export function validateWorldData(
   const poisPerGrid: Record<string, number> = {};
   let curatedCount = 0;
   const curatedPerRegion: Record<string, number> = {};
+  // 4b.0: arquetipos por región y ocupación de celdas por grid.
+  const archetypesPerRegion: Record<string, Record<string, number>> = {};
+  const cellsPerGrid: Record<string, Set<string>> = {};
   for (const p of pois) {
     if (poiIdsSeen.has(p.id)) {
       errors.push({
@@ -282,6 +350,47 @@ export function validateWorldData(
       continue;
     }
     poisPerGrid[p.gridId] = (poisPerGrid[p.gridId] ?? 0) + 1;
+
+    // -- 4b.0: arquetipo válido y contabilizado por región --
+    if (!isPOIArchetype(p.archetype)) {
+      errors.push({
+        code: 'POI_ARCHETYPE_INVALID',
+        message: `POI "${p.id}" tiene archetype "${p.archetype}" fuera de POI_ARCHETYPES.`,
+      });
+    } else {
+      const gridForArch = grids.find((g) => g.id === p.gridId);
+      if (gridForArch) {
+        const bucket = (archetypesPerRegion[gridForArch.regionId] ??= {});
+        bucket[p.archetype] = (bucket[p.archetype] ?? 0) + 1;
+      }
+    }
+
+    // -- 4b.0: posición dentro del mini-grid, fuera de la celda del PJ y
+    // sin colisionar con otro POI del mismo grid --
+    const max = WORLD_CIFRAS.miniGridSize - 1;
+    const { x, y } = p.position;
+    if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || x > max || y < 0 || y > max) {
+      errors.push({
+        code: 'POI_POSITION_OUT_OF_BOUNDS',
+        message: `POI "${p.id}" en (${x}, ${y}), fuera del mini-grid 0..${max}.`,
+      });
+    }
+    if (x === WORLD_CIFRAS.playerCell.x && y === WORLD_CIFRAS.playerCell.y) {
+      errors.push({
+        code: 'POI_POSITION_ON_PLAYER_CELL',
+        message: `POI "${p.id}" ocupa la celda reservada al PJ (${x}, ${y}).`,
+      });
+    }
+    const cells = (cellsPerGrid[p.gridId] ??= new Set<string>());
+    const key = `${x},${y}`;
+    if (cells.has(key)) {
+      errors.push({
+        code: 'POI_POSITION_DUPLICATE_IN_GRID',
+        message: `Grid "${p.gridId}" tiene dos POIs en (${x}, ${y}).`,
+      });
+    }
+    cells.add(key);
+
     if (p.hasCuratedSlot) {
       curatedCount++;
       // Determinamos la región del POI a través del grid.
@@ -315,6 +424,36 @@ export function validateWorldData(
         message: `Región "${rid}" tiene ${actual} POIs curados, esperado ${expected}.`,
       });
     }
+  }
+
+  // -- 4b.0: cuotas de arquetipo por región (decisión #89) --
+  for (const rid of REGION_IDS) {
+    const expectedByArch = WORLD_CIFRAS.archetypesByRegion[rid];
+    const actualByArch = archetypesPerRegion[rid] ?? {};
+    for (const arch of POI_ARCHETYPES) {
+      const expected = expectedByArch[arch];
+      const actual = actualByArch[arch] ?? 0;
+      if (actual !== expected) {
+        errors.push({
+          code: 'POI_ARCHETYPE_PER_REGION_MISMATCH',
+          message: `Región "${rid}" tiene ${actual} POIs '${arch}', esperado ${expected}.`,
+        });
+      }
+    }
+  }
+
+  // -- 4b.0: el Hogar existe y es Asentamiento (decisión #85) --
+  const home = pois.find((p) => p.id === WORLD_CIFRAS.homePOIId);
+  if (!home) {
+    errors.push({
+      code: 'HOME_POI_MISSING',
+      message: `No existe el POI del Hogar "${WORLD_CIFRAS.homePOIId}".`,
+    });
+  } else if (home.archetype !== 'asentamiento') {
+    errors.push({
+      code: 'HOME_POI_NOT_ASENTAMIENTO',
+      message: `El Hogar "${home.id}" es '${home.archetype}', debería ser 'asentamiento'.`,
+    });
   }
 
   return errors;
@@ -406,4 +545,20 @@ export function getStartingGrid(): Grid {
     throw new Error('getStartingGrid: no hay starting grid (validador roto).');
   }
   return g;
+}
+
+// POIs de un arquetipo concreto en todo el overworld. Lo consumen la vista de
+// grid (iconos por arquetipo, #91) y fase 2 al repartir contenido curado.
+export function getPOIsByArchetype(archetype: POIArchetype): readonly POI[] {
+  return POIS.filter((p) => p.archetype === archetype);
+}
+
+// El Hogar (#85). Lanza si falta, igual que getStartingGrid: el validador
+// garantiza que existe, así que el tipo es POI y no POI | null.
+export function getHomePOI(): POI {
+  const p = POIS.find((x) => x.id === WORLD_CIFRAS.homePOIId);
+  if (!p) {
+    throw new Error('getHomePOI: no existe el POI del Hogar (validador roto).');
+  }
+  return p;
 }
