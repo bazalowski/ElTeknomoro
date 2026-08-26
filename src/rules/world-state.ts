@@ -23,7 +23,7 @@
 // TODAS las funciones son puras: devuelven un WorldState nuevo, nunca mutan el
 // que reciben. Mismo criterio que `rules/statuses.ts` y `rules/perks.ts`.
 
-import { WORLD_CIFRAS, getGrid, getPOI, areGridsAdjacent } from './world';
+import { WORLD_CIFRAS, getGrid, getPOI, getPOIsByGrid, areGridsAdjacent } from './world';
 
 // -----------------------------------------------------------------------------
 // Tipos
@@ -91,8 +91,55 @@ export function createInitialWorldState(): WorldState {
 // Lecturas
 // -----------------------------------------------------------------------------
 
+// Marca persistida del grid. Es sólo una de las dos fuentes del estado real:
+// desde 4c (#94) el estado que se PINTA lo manda `deriveGridState`, que cruza
+// esta marca con los POIs del grid. Usa esta función para saber "¿el PJ pisó
+// este grid?"; usa `deriveGridState` para saber "¿cómo se ve este grid?".
 export function getGridState(state: WorldState, gridId: string): GridState {
   return state.gridStates[gridId] ?? 'inexplorado';
+}
+
+// Progreso de POIs de un grid. Alimenta el tooltip graduado de §9.9 ("N/4
+// POIs revelados") y la derivación de estado de abajo.
+export interface GridPOIProgress {
+  total: number;
+  revealed: number;
+  completed: number;
+}
+
+export function getGridPOIProgress(state: WorldState, gridId: string): GridPOIProgress {
+  const pois = getPOIsByGrid(gridId);
+  let revealed = 0;
+  let completed = 0;
+  for (const poi of pois) {
+    const st = getPOIState(state, poi.id);
+    if (st === null) continue;
+    revealed += 1;
+    if (st === 'completado') completed += 1;
+  }
+  return { total: pois.length, revealed, completed };
+}
+
+// Estado REAL del grid (#94, Q21 del cuestionario de 4c: "se deriva").
+//
+// No se persiste un estado calculado: se calcula desde lo que sí se persiste,
+// que son los POIs y el ancla. Así no hay dos verdades que sincronizar.
+//
+//   controlado  -> POIs del grid completados al 100% + ancla colocada (4e).
+//   explorado   -> al menos un POI revelado, O el PJ pisó el grid.
+//   inexplorado -> ni una cosa ni la otra.
+//
+// La segunda vía de 'explorado' (haber pisado el grid) es deliberada y no
+// estaba en la letra de Q20: sin ella, viajar a un grid y salir sin entrar a
+// ningún POI lo devolvería a la niebla del 40% de opacidad de #91, y el
+// jugador vería deshacerse un viaje que hizo. Pisar es explorar.
+export function deriveGridState(state: WorldState, gridId: string): GridState {
+  if (!getGrid(gridId)) return 'inexplorado';
+  const { total, revealed, completed } = getGridPOIProgress(state, gridId);
+  if (total > 0 && completed === total && hasAnchor(state, gridId)) return 'controlado';
+  if (revealed > 0) return 'explorado';
+  if (state.currentGridId === gridId) return 'explorado';
+  return getGridState(state, gridId) === 'inexplorado' ? 'inexplorado' : 'explorado';
 }
 
 // null = el POI sigue bajo niebla y se pinta "???" (§9.9).
@@ -154,6 +201,23 @@ export function setView(state: WorldState, view: PlayerView): WorldState {
   if (view.kind === 'grid' && !getGrid(view.gridId)) return state;
   if (view.kind === 'poi' && !getPOI(view.poiId)) return state;
   return { ...state, view };
+}
+
+// Azúcar sobre setPOIState para los dos únicos usos que existen (#94). Se
+// declaran aparte porque el momento en que se llama a cada uno es la decisión
+// de diseño, no el valor que escriben:
+//
+//   revealPOI   -> al ENTRAR al POI. La niebla de §9.9 cae por entrar, no por
+//                  resolver nada. Un POI ya completado no se degrada.
+//   completePOI -> al CERRAR el evento del POI (en 4c.1, ganar el combate).
+//                  No cierra el POI: se puede volver siempre (#92, Q40b);
+//                  sólo pinta el indicador de #91.
+export function revealPOI(state: WorldState, poiId: string): WorldState {
+  return setPOIState(state, poiId, 'revelado');
+}
+
+export function completePOI(state: WorldState, poiId: string): WorldState {
+  return setPOIState(state, poiId, 'completado');
 }
 
 export function placeAnchor(state: WorldState, gridId: string): WorldState {

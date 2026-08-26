@@ -16,10 +16,20 @@ import {
   moveToGrid,
   setView,
   placeAnchor,
+  revealPOI,
+  completePOI,
+  getGridPOIProgress,
+  deriveGridState,
   hydrateWorldState,
   type WorldState,
 } from './world-state';
-import { WORLD_CIFRAS, getCardinalNeighbours, areGridsAdjacent, getAllGrids } from './world';
+import {
+  WORLD_CIFRAS,
+  getCardinalNeighbours,
+  areGridsAdjacent,
+  getAllGrids,
+  getPOIsByGrid,
+} from './world';
 
 const vecinoDeInicio = (): string => getCardinalNeighbours(WORLD_CIFRAS.startingGridId)[0]!.id;
 
@@ -229,5 +239,119 @@ describe('world-state — hydrateWorldState', () => {
   it('el grid donde está el PJ siempre queda explorado tras hidratar', () => {
     const s = hydrateWorldState({ currentGridId: 'centro-001', gridStates: {} });
     expect(getGridState(s, 'centro-001')).toBe('explorado');
+  });
+});
+
+// =============================================================================
+// (g) POIs y derivación del estado del grid (sub-paso 4c.0, #94)
+// =============================================================================
+describe('world-state — revealPOI / completePOI', () => {
+  it('revealPOI saca al POI de la niebla', () => {
+    const s = revealPOI(createInitialWorldState(), 'centro-001-poi-1');
+    expect(getPOIState(s, 'centro-001-poi-1')).toBe('revelado');
+  });
+
+  it('completePOI marca completado desde niebla o desde revelado', () => {
+    const desdeNiebla = completePOI(createInitialWorldState(), 'centro-001-poi-1');
+    expect(getPOIState(desdeNiebla, 'centro-001-poi-1')).toBe('completado');
+
+    let s = revealPOI(createInitialWorldState(), 'centro-001-poi-2');
+    s = completePOI(s, 'centro-001-poi-2');
+    expect(getPOIState(s, 'centro-001-poi-2')).toBe('completado');
+  });
+
+  it('revealPOI no degrada un POI ya completado', () => {
+    let s = completePOI(createInitialWorldState(), 'centro-001-poi-1');
+    s = revealPOI(s, 'centro-001-poi-1');
+    expect(getPOIState(s, 'centro-001-poi-1')).toBe('completado');
+  });
+
+  it('son puras: no mutan el estado recibido', () => {
+    const s = createInitialWorldState();
+    revealPOI(s, 'centro-001-poi-1');
+    completePOI(s, 'centro-001-poi-2');
+    expect(getPOIState(s, 'centro-001-poi-1')).toBeNull();
+    expect(getPOIState(s, 'centro-001-poi-2')).toBeNull();
+  });
+
+  it('ignoran ids de POI que no existen', () => {
+    const s = createInitialWorldState();
+    expect(revealPOI(s, 'no-existe')).toBe(s);
+    expect(completePOI(s, 'no-existe')).toBe(s);
+  });
+});
+
+describe('world-state — getGridPOIProgress', () => {
+  it('cuenta revelados y completados sobre el total del grid', () => {
+    const total = getPOIsByGrid('centro-001').length;
+    let s = createInitialWorldState();
+    expect(getGridPOIProgress(s, 'centro-001')).toEqual({ total, revealed: 0, completed: 0 });
+
+    s = revealPOI(s, 'centro-001-poi-1');
+    s = completePOI(s, 'centro-001-poi-2');
+    expect(getGridPOIProgress(s, 'centro-001')).toEqual({ total, revealed: 2, completed: 1 });
+  });
+
+  it('un POI completado cuenta también como revelado', () => {
+    const s = completePOI(createInitialWorldState(), 'centro-001-poi-1');
+    const p = getGridPOIProgress(s, 'centro-001');
+    expect(p.revealed).toBe(1);
+    expect(p.completed).toBe(1);
+  });
+});
+
+describe('world-state — deriveGridState (#94)', () => {
+  it('un grid sin POIs revelados y no pisado es inexplorado', () => {
+    const s = createInitialWorldState();
+    expect(deriveGridState(s, 'centro-001')).toBe('inexplorado');
+  });
+
+  it('un POI revelado basta para que el grid sea explorado', () => {
+    const s = revealPOI(createInitialWorldState(), 'centro-001-poi-1');
+    expect(deriveGridState(s, 'centro-001')).toBe('explorado');
+  });
+
+  it('pisar el grid también lo hace explorado, sin entrar a ningún POI', () => {
+    const destino = vecinoDeInicio();
+    const s = moveToGrid(createInitialWorldState(), destino);
+    expect(getGridPOIProgress(s, destino).revealed).toBe(0);
+    expect(deriveGridState(s, destino)).toBe('explorado');
+  });
+
+  it('el grid pisado sigue explorado después de irse de él', () => {
+    const destino = vecinoDeInicio();
+    let s = moveToGrid(createInitialWorldState(), destino);
+    s = moveToGrid(s, WORLD_CIFRAS.startingGridId);
+    expect(s.currentGridId).toBe(WORLD_CIFRAS.startingGridId);
+    expect(deriveGridState(s, destino)).toBe('explorado');
+  });
+
+  it('100% completados sin ancla NO es controlado', () => {
+    let s = createInitialWorldState();
+    for (const poi of getPOIsByGrid('centro-001')) s = completePOI(s, poi.id);
+    expect(deriveGridState(s, 'centro-001')).toBe('explorado');
+  });
+
+  it('ancla sin el 100% completados NO es controlado', () => {
+    let s = createInitialWorldState();
+    s = completePOI(s, 'centro-001-poi-1');
+    s = placeAnchor(s, 'centro-001');
+    expect(deriveGridState(s, 'centro-001')).toBe('explorado');
+  });
+
+  it('100% completados + ancla es controlado', () => {
+    let s = createInitialWorldState();
+    for (const poi of getPOIsByGrid('centro-001')) s = completePOI(s, poi.id);
+    s = placeAnchor(s, 'centro-001');
+    expect(deriveGridState(s, 'centro-001')).toBe('controlado');
+  });
+
+  it('un grid inexistente es inexplorado, no revienta', () => {
+    expect(deriveGridState(createInitialWorldState(), 'no-existe')).toBe('inexplorado');
+  });
+
+  it('el grid de inicio arranca explorado (su POI Hogar viene revelado)', () => {
+    const s = createInitialWorldState();
+    expect(deriveGridState(s, WORLD_CIFRAS.startingGridId)).toBe('explorado');
   });
 });

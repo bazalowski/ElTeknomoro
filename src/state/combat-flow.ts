@@ -824,7 +824,17 @@ export function startCombatFlow(opts: CombatFlowOptions): CombatFlowHandle {
       // Limpiar statuses ANTES de escribir el epitafio: el PJ caído no
       // necesita arrastrar veneno/sangrado en el cadáver. La identidad
       // narrativa queda en el epitafio.
-      const cleanCharacter = clearAllStatuses(state.character);
+      // `last_damage_source` (campo SAGRADO de #85) se sella aquí, explícito,
+      // en vez de dejar que el epitafio deduzca la causa del log. Sub-paso
+      // 4c.0 (#93, Q34 del cuestionario de 4c): cuando 4c.1 cablee el combate
+      // desde POIs, la muerte por combate tiene que quedar marcada como tal
+      // sin depender de `lastEnemyAttackerIdFromLog`, que es un fallback.
+      // En H4 todo combate es de origen enemigo; si 4f introduce combates
+      // disparados por trampa, este punto es el que cambia.
+      const cleanCharacter: Character = {
+        ...clearAllStatuses(state.character),
+        last_damage_source: 'enemy',
+      };
       const finalChar = killCharacter(cleanCharacter, cause, nowIso());
       pushLog({ kind: 'combat_end', status: 'defeat' });
       result = {

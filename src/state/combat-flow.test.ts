@@ -221,6 +221,45 @@ describe('combat-flow / derrota', () => {
     expect(r.character.epitaph?.cause.agent_id).toBe(TEST_BRUTE_ENEMY.id);
     expect(r.character.epitaph?.ended_at).toBe(NOW());
   });
+
+  // Sub-paso 4c.0 (#93, Q34): el motor sella la causa en el campo SAGRADO en
+  // vez de dejar que el epitafio la deduzca del log. Cuando 4c.1 cablee el
+  // combate desde POIs, la muerte tiene que llegar ya marcada.
+  it('sella last_damage_source = enemy al cerrar por derrota', () => {
+    const character = buildWeak();
+    expect(character.last_damage_source).toBeNull();
+    let captured: CombatResult | null = null;
+    const handle = startCombatFlow({
+      character,
+      enemies: [
+        {
+          enemy_id: TEST_BRUTE_ENEMY.id,
+          instance_id: 'bruto#1',
+          hp: TEST_BRUTE_ENEMY.hp_max,
+          alive: true,
+          statuses: [],
+          intent: null,
+        },
+      ],
+      enemyTemplates: makeTemplates([TEST_BRUTE_ENEMY]),
+      itemCatalog: ITEMS_BY_ID,
+      rng: createRng(7),
+      nowIso: NOW,
+      onEnd: (r) => {
+        captured = r;
+      },
+    });
+
+    let safety = 50;
+    while (handle.isOngoing() && safety-- > 0) {
+      handle.submitAction({ kind: 'attack', target_instance_id: 'bruto#1' });
+    }
+    const r = captured as unknown as CombatResult;
+    expect(r.status).toBe('defeat');
+    expect(r.character.last_damage_source).toBe('enemy');
+    // El snapshot del epitafio lo lleva también: es el que lee la lápida.
+    expect(r.character.epitaph?.final_character.last_damage_source).toBe('enemy');
+  });
 });
 
 // -----------------------------------------------------------------------------
