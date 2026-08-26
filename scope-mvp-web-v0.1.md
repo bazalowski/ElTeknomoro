@@ -454,7 +454,7 @@ Orden de atención:
 - §5 estimación subida a 72-106 sesiones por la carga adicional de H1, H4 y H8.
 - §9 reordenado: la semana ahora arranca por confirmar el 1d20 propuesto.
 
-**v0.3** — Cierre del subsistema de tirada reactiva (biblia §4.15.6–§4.15.9) tras test `tirada-reactiva-v0.1.md`. Cambios:
+**v0.3** — Cierre del subsistema de tirada reactiva (biblia §4.15.6–§4.15.9) tras test `docs/archivo/tirada-reactiva-v0.1.md`. Cambios:
 
 - Dado de exploración cerrado oficialmente como **1d20** (decisión cerrada #26 en biblia).
 - Tirada reactiva cerrada para los 10 tipos del catálogo: marco común + tabla por tipo + formato `evade_check` ampliado.

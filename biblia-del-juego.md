@@ -89,9 +89,24 @@ El marco lore queda fijado en decisión #47 (§5). Cualquier contenido, paleta, 
 
 ## 3. Estado actual y roadmap
 
-**Estado hoy (26 agosto 2026):** biblia en v0.28. **H0, H1, H2 y H3 cerrados, PASO 4 del H3 archivado, cuestionario de scope de H4 cerrado, sub-pasos 4a, 4b.0, 4b y 4c completos (4c.0 a 4c.4).** El primer loop completo del juego (crear PJ → home → combate al Lobo → loot/epitafio → persistencia → home) corre en producción con statuses funcionales, 10 perks cableados, IA con 4 perfiles + intent visible, y `flee` 50% implementado. **534/534 tests verde** (21 ficheros), `tsc --noEmit` limpio, `vite build` limpio. Los 5 bloqueantes de diseño que restaban (v0.8) están cerrados (decisiones #41-#45 más #46 emergente). Lore (#47), reordenamiento de hitos (#62) y decisiones del cuestionario de visión (#63 en adelante) cerradas en v0.20. Decisiones del PASO 4 del H3 (#78-#80) cerradas en v0.21. Decisiones del cuestionario de scope de H4 (#81-#85) cerradas en v0.22. Decisiones del cuestionario de scope del sub-paso 4b (#86-#91) cerradas en v0.23. Decisiones del cuestionario de scope del sub-paso 4c (#92-#94) cerradas en v0.24. Decisiones del PASO 2 del pipeline de 4c.2/4c.3 (#95-#96) cerradas en v0.25. El sub-paso 4c cierra con 4c.4 el 26/8/2026. Reordenación de H4 (#97) cerrada en v0.26. **Decisiones del cuestionario de scope del sub-paso 4d (#98-#100) y volcado documental del rango #48-#61 (#101) cerradas en v0.27. Sub-paso 4f.0 cerrado el 26/8/2026 con la decisión #102: formato de entrada por POI, compilador de contenido y modelo de #92 cableado en el motor.**
+**Estado hoy (26 agosto 2026):** biblia en v0.29. **H0, H1, H2 y H3 cerrados, PASO 4 del H3 archivado, cuestionario de scope de H4 cerrado, sub-pasos 4a, 4b.0, 4b y 4c completos (4c.0 a 4c.4).** El primer loop completo del juego (crear PJ → home → combate al Lobo → loot/epitafio → persistencia → home) corre en producción con statuses funcionales, 10 perks cableados, IA con 4 perfiles + intent visible, y `flee` 50% implementado. **597/597 tests verde** (23 ficheros), `tsc --noEmit` limpio, `vite build` limpio. Los 5 bloqueantes de diseño que restaban (v0.8) están cerrados (decisiones #41-#45 más #46 emergente). Lore (#47), reordenamiento de hitos (#62) y decisiones del cuestionario de visión (#63 en adelante) cerradas en v0.20. Decisiones del PASO 4 del H3 (#78-#80) cerradas en v0.21. Decisiones del cuestionario de scope de H4 (#81-#85) cerradas en v0.22. Decisiones del cuestionario de scope del sub-paso 4b (#86-#91) cerradas en v0.23. Decisiones del cuestionario de scope del sub-paso 4c (#92-#94) cerradas en v0.24. Decisiones del PASO 2 del pipeline de 4c.2/4c.3 (#95-#96) cerradas en v0.25. El sub-paso 4c cierra con 4c.4 el 26/8/2026. Reordenación de H4 (#97) cerrada en v0.26. **Decisiones del cuestionario de scope del sub-paso 4d (#98-#100) y volcado documental del rango #48-#61 (#101) cerradas en v0.27. Sub-paso 4f.0 cerrado el 26/8/2026 con la decisión #102: formato de entrada por POI, compilador de contenido y modelo de #92 cableado en el motor.** Mapa de H4 y roadmap de §3.2 puestos al día en v0.29, y ocho cuestionarios ya codeados movidos a `docs/archivo/`.
 
 **Próximo:** **4f** (tirada de exploración cableada en la vista de POI, sustituyendo los botones provisionales de #93). El orden de H4 cambia por decisión #97: 4f se adelanta a 4d y 4e porque no depende de ellos y porque escribir contenido sin poder verlo es la vía rápida a escribirlo mal. **El cuestionario de 4d está respondido y cerrado en v0.27** (#98-#100): 4d llega a su turno con el scope firmado y cero deuda de decisión, pero sigue detrás de 4f por el argumento de #97, que responder el cuestionario no invalida.
+
+**Mapa de H4** (orden vigente por #97; detalle de cada fila en la tabla de sub-pasos de §13):
+
+| Sub-paso | Qué entrega | Estado |
+|---|---|---|
+| 4a | Dataset del mundo: 180 grids, 720 POIs, `rules/world.ts` SAGRADO | ✅ cerrado |
+| 4b.0 | Reparto de arquetipos + columna `world_state` en `save_slots` | ✅ cerrado |
+| 4b | Vista regional + vista de grid, zoom continuo, mirar ≠ viajar | ✅ cerrado |
+| 4c | Vista de POI, combate desde POI, pausa global, campamento, selector de slots | ✅ cerrado (4c.0 a 4c.4) |
+| 4f.0 | Formato de entrada por POI (§4.15.10), compilador de contenido, modelo de #92 en el motor | ✅ cerrado |
+| **4f** | **Tirada cableada en la vista de POI + orquestador de efectos** | **🔄 siguiente** |
+| 4d | Acciones por día, acampar, fatiga y muerte por inanición | ⏳ scope cerrado (#98-#100), sin codear |
+| 4e | Fast travel, anclas y condición de "Controlado" | ⏳ sin cuestionario responder |
+
+H4 cierra cuando los tres pendientes estén dentro. **4e depende de los otros dos**: su coste de viaje es "1 ración + 2 acciones" (#83, §9.8), que son recursos que construye 4d, y su condición de Controlado necesita que un POI pueda alcanzar `completado`, que es lo que desbloquea 4f (deuda de #95).
 
 **Deudas técnicas declaradas y con destino** (ninguna bloquea):
 
@@ -144,8 +159,10 @@ Lo que NO entra en v1 (queda para v1.1+):
    - ✅ H0: scaffold + login Supabase + Vercel.
    - ✅ H1: `rules/dice.ts` + `rules/character.ts` + `rules/exploration.ts` + `rules/progression.ts`.
    - ✅ Esqueleto extendido: `inventory.ts`, `combat.ts` (resolución + iniciativa + bucle de turnos), `crafting.ts`, `world-gen.ts` (Modo Historia mínimo), `fast-travel.ts` (BFS + tirada condensada), `death.ts` (con victoria), `time.ts`, `faction.ts`, `dialog.ts`, `achievements.ts`. 168 tests verdes.
-   - ⏳ H2: creación de personaje en UI.
-8. ⏳ Playtest del prototipo (entrega cuando H3 cierre el primer combate jugable).
+   - ✅ H2: creación de personaje en UI. Flow de 5 pantallas + preview + confirmación.
+   - ✅ H3: primer combate jugable. PASO 4 a/b/c — statuses (#78), perks aplicados (#79), IA con 4 perfiles + intent visible + `flee` (#80).
+   - 🔄 H4: overworld y exploración. **4 de 7 sub-pasos cerrados.**
+8. ⏳ Playtest del prototipo (entrega cuando H4 cierre el overworld navegable).
 
 **Bloqueantes de diseño:** **0 restantes.** Las provisionales del código son de contenido (puños = 1 daño, día = 240 ticks) y se cerrarán en su hito sin requerir sesión de diseño.
 
@@ -1295,7 +1312,7 @@ Sin reportes largos. Sin retrospectivas. Tres líneas.
 - **Nueva sección §8** con flujos y pantallas del MVP.
 - Bloqueantes reducidos de 5 a 6, pero ahora son todos numéricos (todos los de diseño cualitativo están cerrados).
 
-**v0.5** — Introducción del sistema de **tirada de exploración** como raíz del juego (§4.15) y cierre del subsistema de **tirada reactiva de mitigación**, tras dos tests dedicados respondidos por Bazalo (`tirada-exploracion-v0.1.md` y `tirada-reactiva-v0.1.md`). Cambios:
+**v0.5** — Introducción del sistema de **tirada de exploración** como raíz del juego (§4.15) y cierre del subsistema de **tirada reactiva de mitigación**, tras dos tests dedicados respondidos por Bazalo (`docs/archivo/tirada-exploracion-v0.1.md` y `docs/archivo/tirada-reactiva-v0.1.md`). Cambios:
 
 - Nueva §4.15 "Tirada de exploración" con 9 subsecciones: brújula, disparadores, variables, catálogo de eventos, dado (1d20), ritmo, marco común de tirada reactiva, tabla de tiradas reactivas por tipo, arquitectura, formato de `evade_check` ampliado.
 - Intención de diseño citada textualmente ("libertad, pero la libertad no te da paz; te da cautela y opción a preparar tu siguiente movimiento") como brújula de balance.
@@ -1839,3 +1856,19 @@ El Bloque F quedó sin responder con un "responde a todo como más sentido tenga
 - Código: **597/597 tests** (+63 sobre v0.27), `tsc --noEmit` limpio. `main` en `82b05d0`.
 - Contenido: 0 de 14.400 entradas escritas. El andamiaje, el compilador y el motor están listos y esperando texto.
 - Próximo: **4f** (tirada cableada en la vista de POI), y en paralelo Bazalo puede empezar a escribir por `genericas-por-banda.md`, que son 24 entradas y cubren los 14.400 slots.
+
+---
+
+**v0.29** — **Mantenimiento documental** (26/8/2026). Sin decisiones nuevas y sin código.
+
+Dos cosas que llevaban tiempo desfasadas y una limpieza que Bazalo pidió al cerrar 4f.0.
+
+- **El roadmap de §3.2 seguía en H2.** Decía "⏳ H2: creación de personaje en UI" y "168 tests verdes" con H2 y H3 cerrados desde v0.21 y 597 tests en verde. Se pone al día y el playtest del paso 8 se reancla: se entrega cuando H4 cierre el overworld navegable, no cuando H3 cierre el combate, que ya pasó.
+- **§3 gana un mapa de H4.** Los ocho sub-pasos con su estado en una tabla, porque el orden vigente vive disperso entre #97, la tabla de §13 y la línea de "Próximo". Se anota ahí la dependencia que no estaba escrita en ningún sitio: **4e depende de 4d y de 4f**, porque su coste de viaje se paga en raciones y acciones (#83, §9.8) y su condición de Controlado necesita que un POI pueda llegar a `completado` (deuda de #95).
+- **Ocho documentos a `docs/archivo/`**, con un README que dice de cada uno qué fue y en qué decisiones vive hoy. Se archivan los cuestionarios de 4b y 4c (codeados y cerrados) y los seis tests y depuraciones de la fase de diseño, cuyo contenido está absorbido en §4 y §5. No se borran: la biblia dice qué se decidió y estos dicen qué se preguntó, que es lo único que permite reconstruir un porqué dentro de un año. Referencias de la biblia, `proceso-director.md` y `scope-mvp-web-v0.1.md` reapuntadas.
+
+**Estado al cierre de v0.29:**
+
+- Biblia: 13 secciones, 102 decisiones numeradas, 0 bloqueantes abiertos.
+- Código: sin tocar. 597/597 tests, `main` en `7a8fb8f`.
+- Próximo: **4f**, y después el pendiente de decidir sobre fusionar 4d y 4e.

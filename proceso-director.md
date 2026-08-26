@@ -53,7 +53,7 @@ Cuando Bazalo pregunta algo, la pregunta cae en una de estas cinco zonas. Saber 
 Leídos y asimilados:
 
 - `biblia-del-juego.md` v0.3 — reglamento, decisiones cerradas, preguntas abiertas.
-- `test-funcionalidades-mvp.md` — 130 preguntas de UX/funcionalidad del MVP web, ya respondidas por Bazalo.
+- `docs/archivo/test-funcionalidades-mvp.md` — 130 preguntas de UX/funcionalidad del MVP web, ya respondidas por Bazalo.
 - `.claude/agents/el-teknomoro-director.md` — rol de dirección de diseño.
 - `.claude/skills/modopipeline/SKILL.md` — contrato del pipeline de UI.
 
@@ -61,7 +61,7 @@ Leídos y asimilados:
 
 ### Paso 2 — Segundo test de profundización (hecho)
 
-**Archivo**: `test-profundizacion-v0.1.md`.
+**Archivo**: `docs/archivo/test-profundizacion-v0.1.md`.
 
 **Objetivo**: cerrar las ambigüedades del primer test **sin** entrar en implementación. Cada pregunta deriva de una respuesta concreta del test de 130 que abre más dudas de las que cierra.
 
