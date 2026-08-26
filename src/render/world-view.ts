@@ -1465,23 +1465,52 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
     { passive: false },
   );
 
-  // Click = selección, nunca movimiento (#88). Delegado en el SVG.
+  // Seleccionar un POI. El foco salta a "Entrar", que es la única acción que
+  // queda y vive al otro lado de la pantalla: con teclado sirve Enter directo,
+  // y con ratón no estorba porque el panel acaba de aparecer por este gesto.
+  function selectPOI(poiId: string): void {
+    selection = { kind: 'poi', poiId };
+    paintGridStates();
+    paintPanel();
+    panel.querySelector<HTMLButtonElement>('[data-wv-enter]')?.focus();
+  }
+
+  // Seleccionar una celda ACERCÁNDOSE a ella. Ver la nota del listener de click.
+  function selectCell(gridId: string): void {
+    // Ya enfocada: sólo seleccionar. Volver a llamar a focusGrid relanzaría la
+    // animación de cámara sobre el sitio donde ya estás.
+    if (focusedGridId === gridId) {
+      selection = { kind: 'grid', gridId };
+      paintGridStates();
+      paintPanel();
+      return;
+    }
+    focusGrid(gridId, true);
+  }
+
+  // Click = selección y cámara, nunca gasto de recurso (#88). Delegado en el SVG.
+  //
+  // ACERCARSE ES PARTE DEL CLICK, NO UN PASO APARTE. #88 separó "mirar" de
+  // "viajar" para que un click en el mapa no pueda mover al PJ ni gastar
+  // jornada, y esa línea sigue intacta: entrar a un POI y viajar a un grid
+  // siguen exigiendo su botón explícito porque los dos cuestan una acción
+  // (#100). Lo que no tenía decisión detrás era obligar a un segundo click en
+  // el panel lateral para una operación que la propia #88 declara "gratis e
+  // ilimitada". Acercar no cuesta nada, así que no se confirma: entrar a un
+  // POI pasa de cuatro clicks a tres, y el que se va es el único que cruzaba
+  // la pantalla para no cobrar nada.
   svg.addEventListener('click', (ev) => {
     if (dragMoved) return; // el arrastre no selecciona
     if (focusedPOIId !== null || systemOpen()) return; // el mundo se ve, no se toca
     const target = ev.target as Element;
     const poiGroup = target.closest<SVGGElement>('[data-poi-id]');
     if (poiGroup?.dataset.poiId) {
-      selection = { kind: 'poi', poiId: poiGroup.dataset.poiId };
-      paintGridStates();
-      paintPanel();
+      selectPOI(poiGroup.dataset.poiId);
       return;
     }
     const cell = target.closest<SVGRectElement>('[data-grid-id]');
     if (cell?.dataset.gridId) {
-      selection = { kind: 'grid', gridId: cell.dataset.gridId };
-      paintGridStates();
-      paintPanel();
+      selectCell(cell.dataset.gridId);
       return;
     }
     // Click en el vacío (el "fuera del mundo"): limpia la selección.
@@ -1494,24 +1523,25 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
 
   // Teclado: Enter/Espacio seleccionan el elemento con foco; Esc aleja o
   // limpia la selección.
+  // Teclado: Enter y Espacio hacen exactamente lo mismo que el click. Estaban
+  // duplicados con lógicas distintas y ya divergieron una vez; ahora los dos
+  // caminos llaman al mismo sitio para que no vuelva a pasar.
   svg.addEventListener('keydown', (ev) => {
     if (ev.key !== 'Enter' && ev.key !== ' ') return;
     if (focusedPOIId !== null || systemOpen()) return;
     const target = ev.target as Element;
+
     const poiGroup = target.closest<SVGGElement>('[data-poi-id]');
     if (poiGroup?.dataset.poiId) {
       ev.preventDefault();
-      selection = { kind: 'poi', poiId: poiGroup.dataset.poiId };
-      paintGridStates();
-      paintPanel();
+      selectPOI(poiGroup.dataset.poiId);
       return;
     }
+
     const cell = target.closest<SVGRectElement>('[data-grid-id]');
     if (cell?.dataset.gridId) {
       ev.preventDefault();
-      selection = { kind: 'grid', gridId: cell.dataset.gridId };
-      paintGridStates();
-      paintPanel();
+      selectCell(cell.dataset.gridId);
     }
   });
 
