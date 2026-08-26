@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
+  STARTING_RATION_ID,
+  STARTING_RATIONS,
   EQUIPMENT_SLOTS,
   ITEMS,
   ITEMS_BY_ID,
@@ -152,10 +154,26 @@ describe('buildStartingInventory', () => {
     expect(equipped!.durability).toBe(ITEMS_BY_ID[STARTING_WEAPON_ID]!.max_durability);
   });
 
-  it('devuelve slots de la longitud declarada en INVENTORY_RULES, todos vacíos', () => {
+  it('devuelve slots de la longitud declarada en INVENTORY_RULES', () => {
     const inv = buildStartingInventory();
     expect(inv.slots).toHaveLength(INVENTORY_RULES.totalSlots);
-    expect(inv.slots.every((s) => s === null)).toBe(true);
+  });
+
+  it('la mochila arranca con las raciones de #98 y nada más', () => {
+    // Antes del sub-paso 4d la mochila arrancaba vacía. Desde #98 el PJ nace
+    // con provisiones: sin ellas moriría de hambre antes de encontrar la
+    // primera, porque en 4d no existe forma de conseguir más.
+    const inv = buildStartingInventory();
+    expect(inv.slots[0]).toEqual({
+      item_id: STARTING_RATION_ID,
+      quantity: STARTING_RATIONS,
+      durability: null,
+    });
+    expect(inv.slots.slice(1).every((s) => s === null)).toBe(true);
+  });
+
+  it('las raciones iniciales caben en un solo stack', () => {
+    expect(STARTING_RATIONS).toBeLessThanOrEqual(ITEMS_BY_ID[STARTING_RATION_ID]!.stack_size);
   });
 
   it('no equipa nada en otros slots distintos de main_hand', () => {

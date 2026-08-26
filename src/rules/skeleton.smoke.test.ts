@@ -778,7 +778,9 @@ describe('smoke: combate por turnos completo', () => {
         catalog,
       ),
     };
-    const slotIdx = character.inventory.slots.findIndex((s) => s !== null);
+    // Se busca la espada por id, no "el primer slot ocupado": desde #98 el PJ
+    // nace con raciones en la mochila y el primer slot ya no está libre.
+    const slotIdx = character.inventory.slots.findIndex((s) => s?.item_id === 'espada');
     character = {
       ...character,
       inventory: equipFromSlot(character.inventory, slotIdx, 'main_hand', catalog),

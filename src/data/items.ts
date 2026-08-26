@@ -50,6 +50,12 @@ export const EQUIPMENT_SLOTS: readonly EquipmentSlot[] = [
 // sustituye por otra pieza inicial por arquetipo, sólo cambia este símbolo.
 export const STARTING_WEAPON_ID: ItemId = 'daga';
 
+// Ración inicial del PJ (#98, sub-paso 4d). Q8b respondió "3-5" y se toma el
+// centro. Como `startingGold`, se declara aquí y no dentro de la función para
+// que H6 pueda recalibrarlo sin leer el cuerpo.
+export const STARTING_RATION_ID: ItemId = 'racion';
+export const STARTING_RATIONS = 4;
+
 export const ITEMS: readonly Item[] = [
   {
     id: 'daga',
@@ -162,10 +168,33 @@ export function buildStartingInventory(): Inventory {
     durability: startingItem.max_durability,
   };
 
-  const slots: SlotArray = new Array(INVENTORY_RULES.totalSlots).fill(null);
+  // Raciones iniciales (#98, Q8b: "3-5"; se toma el centro de la banda). Van a
+  // la mochila, no equipadas: la ración no es equipo, es moneda de jornada que
+  // `rules/fatigue.ts` gasta al acampar. En un solo stack porque #98 cierra
+  // "un solo slot stackable" — si compitieran por mochila con el loot, acampar
+  // se convertiría en gestión de inventario en vez de gestión de jornada.
+  //
+  // PROVISIONAL FASE 1. En 4d no existe forma de conseguir más (crafteo es H7,
+  // tiendas son H8, el loot no tiene tabla escrita), así que este stock es todo
+  // lo que hay: un run de 4d muere de hambre en unos pocos días. Es esperado y
+  // está declarado como deuda con destino 4f, banda 16-17 de §9.5.
+  const rationItem = ITEMS_BY_ID[STARTING_RATION_ID];
+  if (rationItem === undefined) {
+    throw new Error(
+      `data/items: STARTING_RATION_ID "${STARTING_RATION_ID}" no resuelve a ningún Item del catálogo.`,
+    );
+  }
+  if (STARTING_RATIONS > rationItem.stack_size) {
+    throw new Error(
+      `data/items: ${STARTING_RATIONS} raciones iniciales no caben en un stack de ${rationItem.stack_size}.`,
+    );
+  }
+
+  const slots: (ItemStack | null)[] = new Array(INVENTORY_RULES.totalSlots).fill(null);
+  slots[0] = { item_id: rationItem.id, quantity: STARTING_RATIONS, durability: null };
 
   return {
-    slots,
+    slots: slots as SlotArray,
     equipped: { main_hand: startingStack },
   };
 }

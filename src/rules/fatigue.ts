@@ -38,9 +38,9 @@ export const FATIGUE_RULES = {
   hpMaxPenaltyPerNight: 5,
   hpCurrentPenaltyRatio: 0.1,
 
-  // Ración inicial del PJ (Q8b: "3-5"). Se toma el centro de la banda.
-  startingRations: 4,
-
+  // Cuántas raciones lleva el PJ al crearse NO vive aquí: es `STARTING_RATIONS`
+  // en `data/items.ts`, junto al resto del inventario inicial. Duplicar el
+  // número en dos módulos es la forma clásica de que se separen al recalibrar.
   rationItemId: 'racion',
 } as const;
 

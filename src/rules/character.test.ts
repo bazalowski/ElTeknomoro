@@ -14,7 +14,7 @@ import {
 import { applyDamageToCharacter, buildAttackInputFromCharacter } from './combat';
 import { deathByEnemy, killCharacter } from './death';
 import { equippedWeapon } from './inventory';
-import { ITEMS_BY_ID, STARTING_WEAPON_ID } from '../data/items';
+import { ITEMS_BY_ID, STARTING_WEAPON_ID, STARTING_RATION_ID, STARTING_RATIONS } from '../data/items';
 
 // Plantilla válida mínima. Cada test la clona y muta el campo a probar.
 function baseInput(overrides: Partial<CreateCharacterInput> = {}): CreateCharacterInput {
@@ -187,11 +187,16 @@ describe('createCharacter', () => {
     expect(c.location).toEqual({ mapId: 'historia-01', x: 0, y: 0 });
     // Cuadrícula 5×4 = 20 slots fijos. Decisión D-2b-1 / D-equip-2c: el
     // Character recién creado arranca con la Daga ya equipada en main_hand,
-    // NO en mochila (los 20 slots de mochila siguen todos vacíos). La
-    // pantalla H2.5a muestra placeholder narrativo, pero el Character
-    // persistido es jugable.
+    // NO en mochila. La pantalla H2.5a muestra placeholder narrativo, pero el
+    // Character persistido es jugable.
+    //
+    // Desde el sub-paso 4d la mochila ya no arranca vacía: #98 le da al PJ sus
+    // provisiones iniciales, sin las cuales moriría de hambre antes de
+    // encontrar la primera ración (en 4d no hay forma de conseguir más).
     expect(c.inventory.slots).toHaveLength(20);
-    expect(c.inventory.slots.every((s) => s === null)).toBe(true);
+    expect(c.inventory.slots.filter((s) => s !== null)).toEqual([
+      { item_id: STARTING_RATION_ID, quantity: STARTING_RATIONS, durability: null },
+    ]);
     expect(c.inventory.equipped.main_hand?.item_id).toBe(STARTING_WEAPON_ID);
 
     // Inicialización limpia
@@ -221,9 +226,10 @@ describe('createCharacter', () => {
     expect(equipped!.quantity).toBe(1);
     expect(equipped!.durability).toBe(ITEMS_BY_ID[STARTING_WEAPON_ID]!.max_durability);
 
-    // 20 slots, todos null: la Daga va al equipo, no a la mochila.
+    // 20 slots y la Daga en ninguno: va al equipo, no a la mochila. Lo único
+    // que la mochila lleva de salida son las raciones de #98 (sub-paso 4d).
     expect(c.inventory.slots).toHaveLength(20);
-    expect(c.inventory.slots.every((s) => s === null)).toBe(true);
+    expect(c.inventory.slots.some((s) => s?.item_id === STARTING_WEAPON_ID)).toBe(false);
   });
 
   it('equippedWeapon resuelve al item Daga del catálogo', () => {

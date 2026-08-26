@@ -25,7 +25,7 @@ import {
 import { createCharacter, type Character } from './character.ts';
 import { createInitialWorldState, type WorldState } from './world-state.ts';
 import { addItem, type Inventory } from './inventory.ts';
-import { ITEMS_BY_ID } from '../data/items.ts';
+import { ITEMS_BY_ID, STARTING_RATIONS } from '../data/items.ts';
 
 const AYER = '2026-08-26T00:00:00.000Z';
 
@@ -57,7 +57,18 @@ function pj(con = 3, over: Partial<Character> = {}): Character {
     perks: ['perk_pies_ligeros'],
     location: { mapId: 'sur-001', x: 0, y: 0 },
   });
-  return { ...base, ...over };
+  // Se le quitan las raciones que `createCharacter` reparte por #98: en estos
+  // tests las provisiones son la variable bajo prueba, así que se ponen
+  // explícitamente con `conRaciones` en cada caso que las necesite.
+  return { ...sinRaciones(base), ...over };
+}
+
+// Vacía la mochila de raciones.
+function sinRaciones(character: Character): Character {
+  const slots = character.inventory.slots.map((s) =>
+    s !== null && s.item_id === FATIGUE_RULES.rationItemId ? null : s,
+  );
+  return { ...character, inventory: { ...character.inventory, slots } };
 }
 
 function conRaciones(character: Character, cantidad: number): Character {
@@ -178,7 +189,21 @@ describe('consumeAction — el orquestador debe preguntar antes', () => {
 });
 
 describe('raciones (#98)', () => {
-  it('un PJ recién creado no lleva raciones todavía', () => {
+  it('`createCharacter` reparte las provisiones iniciales de #98 (Q8b)', () => {
+    // Este test mira el PJ tal cual sale de creación, sin pasar por el fixture
+    // que se las quita. Sin provisiones el PJ moriría de hambre antes de
+    // encontrar la primera ración, porque en 4d no hay forma de conseguir más.
+    const recienCreado = createCharacter({
+      id: 'pj-nuevo', name: 'Nuevo', portraitId: 'retrato-01', archetype: null,
+      attributes: { fue: 3, des: 3, con: 3, int: 2, vol: 1 },
+      skills: {}, perks: ['perk_pies_ligeros'],
+      location: { mapId: 'sur-001', x: 0, y: 0 },
+    });
+    expect(countRations(recienCreado)).toBe(STARTING_RATIONS);
+    expect(hasRation(recienCreado)).toBe(true);
+  });
+
+  it('el fixture arranca sin raciones, para que cada test las declare', () => {
     expect(countRations(pj())).toBe(0);
     expect(hasRation(pj())).toBe(false);
   });
