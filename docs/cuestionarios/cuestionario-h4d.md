@@ -3,6 +3,7 @@
 > **Director:** el-teknomoro-director
 > **Fecha de redacción:** 6 de mayo de 2026
 > **Lector:** Bazalo. Responde en bloques. El director procesa bloque por bloque al ejecutar el sub-paso.
+> **Actualizado el 26 de agosto de 2026:** añadido el **Bloque I** (3 preguntas) con la deuda documental del rango #48-#61 de §5, arrastrada desde el cierre del cuestionario de 4c.
 > **Propósito:** cerrar las decisiones de UX/UI/cableado del sub-paso 4d (acciones por día + acampar + ración + UI de fatiga + muerte por fatiga) antes de disparar MODOPIPELINE. El scope macro de H4 ya está cerrado en biblia v0.22 (decisión #83 confirma "8/día + ración por acampar + penalización HP sin ración + muerte por fatiga"). Este cuestionario refina los detalles operativos.
 > **Aviso de revisabilidad:** las respuestas son válidas al momento de redactar. Si sub-pasos previos descubren algo que las invalide, la decisión se reabre.
 
@@ -277,7 +278,56 @@
 
 ---
 
-**Total: 50 preguntas. 7 marcadas [★] como bloqueantes. 4 marcadas [REPO] como confirmación rápida.**
+## Bloque I — Deuda documental heredada: el hueco #48-#61 de §5
+
+> **Añadido el 26 de agosto de 2026**, al cerrar el cuestionario de 4c. Bazalo pidió arrastrar aquí el hueco documental que v0.23 detectó y v0.24 no resolvió. **No es scope de 4d**: son dos preguntas de mantenimiento de la biblia que se responden aquí porque es el siguiente cuestionario abierto.
+
+**Qué pasó.** La tabla de decisiones cerradas de §5 tiene 77 filas para 94 números. Al auditarlo en v0.23 se anotó como "las decisiones #48 a #61 nunca se volcaron a la tabla" y quedó pendiente decidir entre reconstruirlas o declarar el rango muerto.
+
+**Qué he encontrado al ir a mirarlo de verdad (26/8/2026).** El hueco es más pequeño y más mecánico de lo que parecía. Se parte en dos mitades con respuestas distintas:
+
+- **#48 y #49 no existen y nunca existieron.** Los bumps v0.10 y v0.11 dicen literal "Sin nuevas decisiones" en su entrada de §13. La numeración saltó de **#47** (v0.9, marco lore del mundo) a **#50** (v0.12, pantalla de habilidades). Son dos números quemados en un salto de numeración, no dos decisiones perdidas.
+- **#50 a #61 existen con texto íntegro y fechado dentro de §13.** No hay nada que reconstruir de memoria: están redactadas en las entradas del historial de v0.12 a v0.19, y varias se citan por toda la biblia. Volcarlas a la tabla de §5 es copiar y pegar con su columna de versión, no un ejercicio de arqueología.
+
+Inventario de lo que hay en §13, para que veas que está todo:
+
+| # | Decisión | Cerrada en |
+|---|---|---|
+| 50 | Suma exacta al confirmar habilidades (`sum(skills) == 10` habilita Continuar). | v0.12 |
+| 51 | Descripciones de habilidad fuera del flow de creación. | v0.12 |
+| 52 | Política de extracción del stepper (se clona hasta el tercer consumidor). | v0.12 |
+| 53 | Los 5 perks iniciales, todos disponibles en creación; el gateo por arquetipo es del árbol post-creación. | v0.13 |
+| 54 | Excepción de Numbers-In-Mono para prosa inline (`DESIGN.md` §3). | v0.13 |
+| 55 | Oro como recurso del personaje (`Character.gold`), no ítem. | v0.16 |
+| 56 | Inventario y equipo separados en módulo sagrado. | v0.16 |
+| 57 | Auto-equip de la Daga al crear personaje. | v0.16 |
+| 58 | Loot vive en `data/`, no en módulo sagrado. | v0.16 |
+| 59 | Stat-line del Lobo del Bosque validada (720.000 combates simulados). | v0.17 |
+| 60 | `computeDefense` queda intocada (`2 + floor(DES/2)`). | v0.17 |
+| 61 | Principio operativo macro: esqueleto > contenido > pulido. Fase 1 cierra en H5 (actualizado en v0.19). | v0.17 |
+
+**Por qué importa arreglarlo y no dejarlo correr.** #61 es el principio operativo que gobierna el scope de todo el proyecto y se cita en #76, #79, #89 y #92. Que la decisión más citada de la biblia no tenga fila en la tabla de decisiones es exactamente la clase de hueco que hace que dentro de seis meses alguien —tú, yo, o quien recoja esto— la dé por no cerrada y la reabra sin saberlo.
+
+---
+
+51. [★] ¿Volcamos **#50-#61** a la tabla de §5, copiando el texto que ya existe en §13 y añadiendo su columna de versión?
+    - (a) **Sí, las 12 filas.** La tabla de §5 pasa a ser la fuente única de decisiones cerradas y deja de tener agujeros. Coste: un bump de biblia sin código. *(Recomendación del director.)*
+    - (b) Sí, pero sólo las que siguen vivas hoy (#53, #55-#61); las de detalle de UI del flow de creación (#50, #51, #52, #54) se quedan sólo en §13 porque su pantalla ya está cerrada.
+    - (c) No. §13 es suficiente como archivo y la tabla de §5 se declara "decisiones de diseño macro", no exhaustiva.
+-
+
+52. [★] ¿Qué hacemos con **#48 y #49**, los dos números que nunca se asignaron?
+    - (a) **Se declaran muertos** con una fila explícita en §5 que diga "números no asignados, salto de numeración entre v0.9 y v0.12". Nadie vuelve a preguntarse qué había ahí. *(Recomendación del director.)*
+    - (b) Se reutilizan para las dos próximas decisiones que salgan, y la numeración se compacta.
+    - (c) Se ignoran sin dejar rastro.
+-
+
+53. ¿Quieres que este volcado vaya en su **propio bump de biblia** (v0.25, sin código, antes de arrancar 4d) o **colgado del bump que cierre 4d**?
+-
+
+---
+
+**Total: 53 preguntas.** 50 de scope de 4d (7 marcadas [★] como bloqueantes, 4 marcadas [REPO]) + 3 de deuda documental heredada en el Bloque I (2 marcadas [★]), añadidas el 26/8/2026 a petición de Bazalo al cerrar 4c.
 
 ---
 
