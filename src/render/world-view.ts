@@ -23,6 +23,7 @@ import {
   getGrid,
   getPOI,
   getPOIsByGrid,
+  getHomePOI,
   areGridsAdjacent,
   WORLD_CIFRAS,
   type Grid,
@@ -57,9 +58,6 @@ import { showConfirmModal } from './confirm-modal';
 export interface WorldViewDeps {
   flow: WorldFlowHandle;
   character: Character;
-  // Volver a la pantalla home (solo ofrecido cuando el PJ está en el grid del
-  // Hogar; el home es un lugar, no un menú global — decisión D-4b-p2).
-  onExitToHome: () => void;
   // Entrar al combate desde el POI abierto (4c.1). La vista ya ha hecho su
   // parte de la transición (acercamiento al frame) cuando esto se invoca;
   // main monta la pantalla de combate y, al cerrarla, remonta esta vista, que
@@ -168,6 +166,16 @@ const SCENE_PATTERNS: Record<POIArchetype, { tile: number; d: string }> = {
 // existe en datos (`hasCuratedSlot`) y se lee con el flag de dev de #16.
 const SCENE_TEXT = 'Aún no has explorado este lugar en detalle.';
 
+// El Hogar es el ÚNICO POI con texto propio en 4c, y la excepción está acotada
+// por #95: lo que #93 prohíbe es distinguir en pantalla lo curado de lo
+// genérico, porque eso dibujaría el mapa del contenido escrito a mano (#81).
+// El Hogar no revela nada de ese mapa — ya está identificado por nombre y por
+// su juego de acciones —, así que la excepción es por función mecánica
+// visible, no por curaduría. Ningún otro POI la recibe, y menos los 80
+// `hasCuratedSlot`. PROVISIONAL como todo lo narrativo de H4 (#91).
+const HOME_SCENE_TEXT =
+  'Cuatro paredes que la maleza aún no ha reclamado. Aquí dejas lo que pesa y recuperas el aliento.';
+
 // Una acción del panel de escena. La fila se construye desde una lista de
 // éstos, no desde botones cableados a mano: 4f sustituye "Combatir" por la
 // tirada de §9.5 y activa "Inspeccionar", y 4e añadirá la colocación de ancla
@@ -192,7 +200,7 @@ type Selection =
   | { kind: 'poi'; poiId: string };
 
 export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
-  const { flow, character, onExitToHome, onEnterCombat, onExitToMenu, onResetRun } = deps;
+  const { flow, character, onEnterCombat, onExitToMenu, onResetRun } = deps;
   const storage = browserStorage();
   let prefs = readPreferences(storage);
   applyTextSize(prefs.textSize);
@@ -212,7 +220,6 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
           <button type="button" class="world-view__back" data-wv-back hidden>&lsaquo; Mapa de Terra</button>
         </div>
         <div class="world-view__header-right">
-          <button type="button" class="world-view__home" data-wv-home hidden>Hogar</button>
           <button type="button" class="world-view__chip" data-wv-inventory>Inventario</button>
           <button type="button" class="world-view__chip" data-wv-pause>Pausa</button>
           <div class="world-view__hud" role="status" aria-label="Estado del personaje">
@@ -253,7 +260,6 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   const pauseBtn = root.querySelector<HTMLButtonElement>('[data-wv-pause]')!;
   const inventoryBtn = root.querySelector<HTMLButtonElement>('[data-wv-inventory]')!;
   const backBtn = root.querySelector<HTMLButtonElement>('[data-wv-back]')!;
-  const homeBtn = root.querySelector<HTMLButtonElement>('[data-wv-home]')!;
   const hpEl = root.querySelector<HTMLElement>('[data-wv-hp]')!;
   // HP máximo leído del PJ persistido, no recalculado: createCharacter ya
   // aplicó los bonos de perk sobre hp.max. Recomputarlo aquí duplicaría la
@@ -618,6 +624,31 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   const sceneActions = (poi: POI): SceneAction[] => {
     const actions: SceneAction[] = [];
 
+    // El campamento (#87, repartido por #95). No es una pantalla aparte: es
+    // este mismo panel con otras acciones dentro, porque el Hogar es un POI
+    // del Sur como cualquier otro (#85). Ajustes y Cambiar de personaje NO
+    // están aquí: son menú de sistema y viven en la pausa, que es global —
+    // con #88 (viajar cuesta) atarlos a la casa dejaría al PJ lejos sin poder
+    // tocarlos.
+    if (poi.id === getHomePOI().id) {
+      actions.push({
+        id: 'inventario',
+        label: 'Inventario y equipo',
+        enabled: true,
+        primary: true,
+        onActivate: () => openInventory(),
+      });
+      actions.push({
+        id: 'descansar',
+        label: 'Descansar',
+        enabled: false,
+        // Acampar es §9.7 y su mecánica entra en 4d. El botón existe y lo dice.
+        disabledReason: 'Disponible en 4d',
+      });
+      actions.push({ id: 'salir', label: 'Salir', enabled: true, onActivate: () => leavePOIView(true) });
+      return actions;
+    }
+
     if (poi.archetype === 'asentamiento') {
       // Los asentamientos no son hostiles: aquí no hay combate que ofrecer,
       // ni siquiera deshabilitado. Lo que habrá es gente.
@@ -687,7 +718,9 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
         </div>
       </div>
       <p class="world-view__scene-state">${poiState === 'completado' ? 'Completado' : 'Revelado'}</p>
-      <p class="world-view__scene-text">${escapeHtml(SCENE_TEXT)}</p>
+      <p class="world-view__scene-text">${escapeHtml(
+        poi.id === getHomePOI().id ? HOME_SCENE_TEXT : SCENE_TEXT,
+      )}</p>
       <div class="world-view__scene-actions">
         ${actions
           .map((a) => {
@@ -764,7 +797,6 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
 
   const paintChrome = (): void => {
     backBtn.hidden = focusedGridId === null;
-    homeBtn.hidden = flow.getState().currentGridId !== WORLD_CIFRAS.startingGridId;
   };
 
   // --- Panel de selección (tooltip graduado §9.9) ---------------------------
@@ -1009,6 +1041,14 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   const savePrefs = (next: typeof prefs): void => {
     prefs = next;
     writePreferences(storage, prefs);
+    paintSystem();
+  };
+
+  // Abre el inventario desde fuera del chip de cabecera (el campamento lo
+  // ofrece como acción del lugar). Un solo destino, dos puertas.
+  const openInventory = (): void => {
+    if (isPauseOpen(pause) || pause.busy || inventoryOpen) return;
+    inventoryOpen = true;
     paintSystem();
   };
 
@@ -1330,12 +1370,6 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   document.addEventListener('keydown', onKeyDown);
 
   backBtn.addEventListener('click', () => unfocusGrid(true));
-  homeBtn.addEventListener('click', () => {
-    document.removeEventListener('keydown', onKeyDown);
-    window.removeEventListener('resize', onResize);
-    destroyed = true;
-    onExitToHome();
-  });
 
   const onResize = (): void => {
     if (destroyed || !svg.isConnected) return;

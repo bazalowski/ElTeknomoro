@@ -2,11 +2,18 @@ import type { Session } from '@supabase/supabase-js';
 import { signOut } from '../backend/auth';
 import { loadLastCharacter } from '../backend/characters';
 import type { Character } from '../rules/character';
+import { browserStorage, readPreferences, writePreferences } from '../state/preferences';
+import { renderOptionsPanel } from './options-panel';
 
 export type HomeIntent =
   | 'create-character'
+  // El combate del Lobo del onboarding (#84). Con el tutorial pendiente es la
+  // vía por defecto, no la única (#96).
   | 'enter-wilds'
-  | 'exit-to-world'
+  // Entrar al mundo restaurando la vista persistida (#90). Cubre las dos
+  // puertas: cargar una partida ya empezada y saltarse el tutorial asumiendo
+  // su coste (#96).
+  | 'load-game'
   | 'create-new-after-death';
 
 type HomeBranch =
@@ -34,13 +41,16 @@ export function renderHomeView(
         <p class="home-screen__loading">Cargando personaje…</p>
       </section>
 
-      <nav class="home-screen__nav">
+      <nav class="home-screen__nav" data-home-nav>
         <button
           type="button"
           class="home-screen__primary"
           id="primary-action-btn"
           disabled
         >…</button>
+        <button type="button" class="home-screen__secondary" data-home-secondary hidden></button>
+        <p class="home-screen__cost" data-home-cost hidden></p>
+        <button type="button" class="home-screen__tertiary" data-home-options>Opciones</button>
       </nav>
     </main>
   `;
@@ -49,10 +59,23 @@ export function renderHomeView(
   const screenEl = root.querySelector<HTMLElement>('[data-home-screen]')!;
   const primaryBtn = root.querySelector<HTMLButtonElement>('#primary-action-btn')!;
   const logoutBtn = root.querySelector<HTMLButtonElement>('#logout-btn')!;
+  const navEl = root.querySelector<HTMLElement>('[data-home-nav]')!;
+  const secondaryBtn = root.querySelector<HTMLButtonElement>('[data-home-secondary]')!;
+  const costEl = root.querySelector<HTMLElement>('[data-home-cost]')!;
+  const optionsBtn = root.querySelector<HTMLButtonElement>('[data-home-options]')!;
+
+  const storage = browserStorage();
+  let prefs = readPreferences(storage);
 
   let intent: HomeIntent = 'create-character';
+  let lastBranch: HomeBranch = { kind: 'loading' };
 
   const applyBranch = (branch: HomeBranch): void => {
+    lastBranch = branch;
+    // Toda rama arranca sin la vía secundaria: sólo la enciende el PJ vivo con
+    // el tutorial pendiente.
+    secondaryBtn.hidden = true;
+    costEl.hidden = true;
     if (branch.kind === 'loading') {
       screenEl.dataset.branch = 'loading';
       bodyEl.innerHTML = `<p class="home-screen__loading">Cargando personaje…</p>`;
@@ -71,15 +94,33 @@ export function renderHomeView(
     }
 
     if (branch.kind === 'alive') {
-      // Decisión #87 (4b): tras superar el tutorial del Lobo, el botón pasa
-      // a "Salir al mundo" → vista regional. Sin tutorial, el flujo actual
-      // (combate del Lobo) se mantiene; el salto con coste (#86) entra en 4c.
+      // La rama de PJ vivo dejó de ser "estás en casa, sal al yermo": la casa
+      // es ahora un POI del Sur (#85, #95) y esta pantalla es el Menú
+      // principal, que es de FUERA de la run (#87). Cargar devuelve a la
+      // vista persistida, sea la regional o el interior de un POI (#90).
       const tutorialDone = branch.character.tutorial_lobo_completed;
-      intent = tutorialDone ? 'exit-to-world' : 'enter-wilds';
       screenEl.dataset.branch = 'alive';
       bodyEl.innerHTML = renderAlive(branch.character);
-      primaryBtn.textContent = tutorialDone ? 'Salir al mundo' : 'Entrar al yermo';
+
+      if (tutorialDone) {
+        intent = 'load-game';
+        primaryBtn.textContent = 'Cargar partida';
+        primaryBtn.disabled = false;
+        return;
+      }
+
+      // #96: con el tutorial pendiente hay DOS vías reales, no una. La del
+      // Lobo es la de por defecto; saltarla es una elección mecánica que
+      // cuesta loot y XP, así que el copy dice el precio en vez de esconderlo
+      // tras un botón mudo. Saltarla no marca la flag: se puede volver.
+      intent = 'enter-wilds';
+      primaryBtn.textContent = 'Entrar al yermo';
       primaryBtn.disabled = false;
+      secondaryBtn.textContent = 'Salir al mundo sin pelear';
+      secondaryBtn.hidden = false;
+      costEl.textContent =
+        'Te ahorras el primer combate, pero pierdes su botín y su experiencia. Podrás volver a por el lobo mientras sigas vivo.';
+      costEl.hidden = false;
       return;
     }
 
@@ -121,6 +162,32 @@ export function renderHomeView(
   primaryBtn.addEventListener('click', () => {
     if (primaryBtn.disabled) return;
     onIntent?.(intent);
+  });
+
+  // La vía de salto de #96 va SIEMPRE al mundo, sea cual sea el intent
+  // primario: es la otra puerta de la misma rama.
+  secondaryBtn.addEventListener('click', () => {
+    onIntent?.('load-game');
+  });
+
+  // §8.1 fija tres opciones en el Menú principal, y Opciones es la tercera.
+  // Sin esto el tamaño de texto de §8.5 sólo sería alcanzable con un PJ vivo
+  // caminando por el mundo, que es donde vive el otro punto de montaje.
+  optionsBtn.addEventListener('click', () => {
+    navEl.hidden = true;
+    screenEl.dataset.branch = 'options';
+    renderOptionsPanel(bodyEl, {
+      prefs,
+      onChange: (next) => {
+        prefs = next;
+        writePreferences(storage, prefs);
+      },
+      onBack: () => {
+        navEl.hidden = false;
+        applyBranch(lastBranch);
+        optionsBtn.focus();
+      },
+    });
   });
 
   logoutBtn.addEventListener('click', async () => {

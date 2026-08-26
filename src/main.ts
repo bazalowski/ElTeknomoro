@@ -171,11 +171,6 @@ function mountWorldView(root: HTMLElement, flow: WorldFlowHandle, character: Cha
   renderWorldView(root, {
     flow,
     character,
-    onExitToHome: () => {
-      worldSession = null;
-      mode = 'home';
-      render();
-    },
     onEnterCombat: (poiId) => startPOICombat(root, poiId),
     // "Guardar y salir al menú" (4c.2). La vista ya ha esperado al flush del
     // world-flow: aquí sólo se desmonta.
@@ -261,7 +256,7 @@ function render(): void {
       render();
       return;
     }
-    if (intent === 'enter-wilds' || intent === 'exit-to-world') {
+    if (intent === 'enter-wilds' || intent === 'load-game') {
       mode = intent === 'enter-wilds' ? 'combat' : 'world';
       // Recargamos el PJ vivo en el momento de entrar. home ya lo mostró,
       // pero el slot puede haber cambiado entre tabs; este load es la

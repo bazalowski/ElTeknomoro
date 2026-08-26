@@ -224,7 +224,67 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
   width: 100%;
   max-width: 540px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Vía secundaria del Menú principal (#96: saltarse el tutorial). Deliberadamente
+   sin adorno y por debajo de la primaria: es una elección informada, no un
+   atajo que compita por la atención. */
+.home-screen__secondary {
+  flex: 0 1 auto;
+  min-width: 220px;
+  padding: 0.6rem 1.5rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--c-hueso-descolorido);
+  background: transparent;
+  border: 1px solid var(--c-tinta-tierra-media);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color 150ms ease-out;
+}
+
+.home-screen__secondary:hover {
+  border-color: var(--c-corteza-palida);
+}
+
+.home-screen__secondary:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+/* El precio se dice, no se esconde: #86 exige elección mecánica informada. */
+.home-screen__cost {
+  margin: 0;
+  max-width: 46ch;
+  text-align: center;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--c-corteza-palida);
+}
+
+.home-screen__tertiary {
+  font-family: inherit;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--c-corteza-palida);
+  background: none;
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.home-screen__tertiary:hover {
+  color: var(--c-hueso-descolorido);
+}
+
+.home-screen__tertiary:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
 }
 
 .home-screen__primary {
@@ -3480,28 +3540,6 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
   gap: 12px;
 }
 
-.world-view__home {
-  font-family: inherit;
-  font-size: 0.85rem;
-  color: var(--c-hueso-descolorido);
-  background: var(--c-tinta-tierra-baja);
-  border: 1px solid var(--c-corteza-palida);
-  border-radius: 2px;
-  padding: 6px 14px;
-  cursor: pointer;
-  transition: background-color 150ms ease-out;
-}
-
-.world-view__home:hover {
-  background: var(--c-tinta-tierra-media);
-}
-
-.world-view__home:focus-visible {
-  outline: 2px solid var(--c-hueso-descolorido);
-  outline-offset: 2px;
-}
-
-/* HUD mínimo (#91): solo datos reales. Números en mono (Numbers-In-Mono). */
 .world-view__hud {
   display: flex;
   align-items: center;
@@ -3922,8 +3960,7 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
   outline: none;
 }
 
-.world-view__system-inner,
-.world-view__system .options-panel {
+.world-view__system-inner {
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -4006,6 +4043,24 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
 }
 
 /* --- Panel de opciones (montado en pausa y en Menú principal) -------------- */
+
+/* Layout propio: el panel se monta dentro de la pausa (columna estrecha a la
+   derecha) y en el Menú principal (centrado en el cuerpo de la pantalla). */
+.options-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 28px;
+  text-align: left;
+}
+
+.world-view__system .options-panel {
+  min-height: 100%;
+  max-width: none;
+}
 
 .options-panel__title {
   margin: 0;
