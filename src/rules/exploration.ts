@@ -496,3 +496,172 @@ export function resolveEvadeCheck(
   return { ...primary.result, cascade: cascade.result };
 }
 
+
+// =============================================================================
+// Modelo de tabla d20 por POI (#92, cableado en el sub-paso 4f.0 por #97)
+// =============================================================================
+//
+// POR QUÉ HAY DOS MODELOS EN ESTE ARCHIVO. Todo lo de arriba —`BiomeTable`,
+// `computeEffectiveWeight`, `selectByD20`, `rollExplorationTick`— implementa el
+// modelo de v0.20: una tabla por bioma cuyas entradas compiten por peso, que el
+// d20 normaliza a rangos. La decisión #92 cambió el modelo a **20 slots
+// numerados por POI**, y en ese modelo **la cara del d20 ES el slot**: sale un
+// 7, se resuelve el slot 07. No hay pesos que normalizar y el balance no lo
+// garantizan los pesos sino el reparto de bandas de §9.5, idéntico en los 720.
+//
+// Los dos modelos conviven en lugar de sustituirse (decisión de 4f.0, lectura 1
+// de las tres que se pusieron sobre la mesa): el camino de bioma está validado
+// y con tests verdes, y borrarlo para reescribirlo no compra nada hoy. Lo que
+// NO se hace es usar los dos en el mismo sitio — la exploración de POI va por
+// aquí, y `rollExplorationTick` queda para quien lo necesite.
+//
+// Los datos los produce `scripts/compile-contenido.mjs` desde `contenido/`, y
+// el autor nunca escribe este shape a mano.
+
+// Efecto declarativo de una entrada. Es la salida de la gramática de una línea
+// que el autor escribe como `mecanica: oro 12 + estado poisoned`. El motor no
+// los aplica: los declara. Quien los ejecuta es el orquestador de `state/`,
+// igual que el loot de #58 no vive en el módulo sagrado de combate.
+export type PoiMechanic =
+  | { kind: 'enemy'; id: string; count: number }
+  | { kind: 'item'; id: string; count: number }
+  | { kind: 'damage'; amount: number }
+  | { kind: 'heal'; amount: number }
+  | { kind: 'gold'; amount: number }
+  | { kind: 'xp'; amount: number }
+  | { kind: 'status'; id: string }
+  | { kind: 'reveal_poi'; id: string }
+  | { kind: 'flag'; id: string };
+
+// Override de la tirada reactiva de una entrada concreta. `null` en la entrada
+// significa "usa el default de §4.15.7 para este tipo": #24 obliga a que toda
+// entrada declare tirada, y escribir 14.400 a mano es imposible.
+export type PoiEvadeOverride =
+  | { none: true }
+  | { skill: string; difficulty: number; opposed: false; auto: boolean }
+  | { skill: string; opposed: true; opposed_stat: string; auto: boolean };
+
+export interface PoiEntry {
+  slot: number;
+  type: EventType;
+  text: string;
+  mechanic: readonly PoiMechanic[] | null;
+  evade: PoiEvadeOverride | null;
+}
+
+// Evento fijo de los 80 POIs con `hasCuratedSlot` (§9.3). Puentea el d20; no
+// sustituye a los 20 slots, el POI lleva las dos cosas.
+export interface PoiCuratedEntry {
+  title: string | null;
+  text: string;
+  mechanic: readonly PoiMechanic[] | null;
+  // true: se dispara la primera visita y después el POI resuelve por d20.
+  exhaustible: boolean;
+}
+
+export type PoiArchetype = 'natural' | 'ruina' | 'asentamiento' | 'arcano';
+
+export interface PoiTable {
+  poiId: string;
+  archetype: PoiArchetype;
+  curated: boolean;
+  name: string | null;
+  description: string | null;
+  curatedEntry: PoiCuratedEntry | null;
+  // Disperso a propósito: sólo los slots escritos. Un hueco no es un error,
+  // es lo que la cascada rellena.
+  slots: Readonly<Record<string, PoiEntry>>;
+}
+
+export interface ExplorationFallbacks {
+  // Segundo escalón: una tabla por arquetipo, indexada por slot.
+  archetypes: Readonly<Record<string, Readonly<Record<string, PoiEntry>>>>;
+  // Tercer escalón: N variantes por slot, para que quien juegue sin contenido
+  // escrito no lea tres veces la misma línea seguida.
+  generic: Readonly<Record<string, readonly PoiEntry[]>>;
+}
+
+// De qué escalón de la cascada salió la entrada. La UI no lo necesita, pero el
+// Campo de pruebas de §4.14 sí: "¿este texto es del POI o es genérico?" es la
+// pregunta que se hace un autor mirando su propio contenido.
+export type PoiEntrySource = 'poi' | 'archetype' | 'generic';
+
+export interface ResolvedPoiEntry {
+  entry: PoiEntry;
+  source: PoiEntrySource;
+}
+
+// -----------------------------------------------------------------------------
+// Cascada de resolución (§9.5)
+// -----------------------------------------------------------------------------
+
+// Entrada propia del POI → entrada del arquetipo para ese slot → variante
+// genérica de la banda. Devuelve null sólo si los tres escalones están vacíos,
+// que es un hueco de datos y no un estado de juego: con las genéricas escritas
+// nunca puede pasar, y por eso son las primeras que conviene rellenar.
+//
+// `rng` sólo se consume si la resolución llega al tercer escalón Y hay más de
+// una variante. Mantenerlo opcional deja la función determinista para los dos
+// primeros escalones, que es como la van a llamar los tests y las herramientas.
+export function resolvePoiEntry(
+  table: PoiTable,
+  fallbacks: ExplorationFallbacks,
+  die: number,
+  rng?: Rng,
+): ResolvedPoiEntry | null {
+  if (!Number.isInteger(die) || die < 1 || die > 20) {
+    throw new RangeError(`resolvePoiEntry: die debe ser entero en [1, 20], recibido ${die}`);
+  }
+  const clave = String(die);
+
+  const propia = table.slots[clave];
+  if (propia !== undefined) return { entry: propia, source: 'poi' };
+
+  const porArquetipo = fallbacks.archetypes[table.archetype]?.[clave];
+  if (porArquetipo !== undefined) return { entry: porArquetipo, source: 'archetype' };
+
+  const variantes = fallbacks.generic[clave] ?? [];
+  if (variantes.length === 0) return null;
+  if (variantes.length === 1) return { entry: variantes[0]!, source: 'generic' };
+
+  // Con varias variantes se elige una. Sin rng, la primera: determinista y
+  // suficiente para tests y para el compilador de contenido.
+  const indice = rng === undefined ? 0 : Math.min(variantes.length - 1, Math.floor(rng() * variantes.length));
+  return { entry: variantes[indice]!, source: 'generic' };
+}
+
+// -----------------------------------------------------------------------------
+// Tirada de POI
+// -----------------------------------------------------------------------------
+
+export interface PoiRoll {
+  // La cara del d20 y el slot resuelto son el mismo número en este modelo. Se
+  // exponen los dos porque la UI enseña la tirada (#75: la tirada es visible) y
+  // el motor razona en slots.
+  roll: RollDetail;
+  slot: number;
+  resolved: ResolvedPoiEntry | null;
+}
+
+// Tira el d20 y resuelve el slot por la cascada. Es el equivalente de
+// `rollExplorationTick` para el modelo de #92.
+export function rollPoiEntry(
+  table: PoiTable,
+  fallbacks: ExplorationFallbacks,
+  rng: Rng,
+): PoiRoll {
+  const die = rollD20(rng);
+  return {
+    roll: { die, total: die, critical: die === 20, fumble: die === 1 },
+    slot: die,
+    resolved: resolvePoiEntry(table, fallbacks, die, rng),
+  };
+}
+
+// Predicado puro: ¿esta visita debe abrir el evento curado en lugar de tirar?
+// El estado de "ya consumido" vive en `world_state` (#94), no aquí — este
+// módulo no persiste nada.
+export function shouldUseCuratedEntry(table: PoiTable, alreadyConsumed: boolean): boolean {
+  if (table.curatedEntry === null) return false;
+  return table.curatedEntry.exhaustible ? !alreadyConsumed : true;
+}

@@ -1,0 +1,6591 @@
+{
+  "meta": {
+    "generatedBy": "scripts/compile-contenido.mjs",
+    "decision": "#92 (tabla d20 por POI) · #97 (sub-paso 4f.0)",
+    "bands": [
+      {
+        "slots": [
+          1
+        ],
+        "name": "peligro real",
+        "types": [
+          "trap",
+          "ambush"
+        ]
+      },
+      {
+        "slots": [
+          2,
+          3
+        ],
+        "name": "combate menor",
+        "types": [
+          "combat",
+          "ambush"
+        ]
+      },
+      {
+        "slots": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "name": "color del mundo",
+        "types": [
+          "environmental",
+          "nothing",
+          "narrative"
+        ]
+      },
+      {
+        "slots": [
+          13,
+          14,
+          15
+        ],
+        "name": "encuentro neutral",
+        "types": [
+          "npc",
+          "shelter"
+        ]
+      },
+      {
+        "slots": [
+          16,
+          17
+        ],
+        "name": "recurso",
+        "types": [
+          "discovery"
+        ]
+      },
+      {
+        "slots": [
+          18
+        ],
+        "name": "pista / rumor",
+        "types": [
+          "discovery",
+          "poi",
+          "narrative"
+        ]
+      },
+      {
+        "slots": [
+          19
+        ],
+        "name": "oportunidad",
+        "types": [
+          "npc",
+          "shelter",
+          "discovery"
+        ]
+      },
+      {
+        "slots": [
+          20
+        ],
+        "name": "legendario",
+        "types": [
+          "narrative",
+          "discovery",
+          "combat"
+        ]
+      }
+    ],
+    "coverage": {
+      "pois": 720,
+      "slots": 14400,
+      "ownEntries": 0,
+      "covered": 0
+    }
+  },
+  "pois": {
+    "centro-001-poi-1": {
+      "poiId": "centro-001-poi-1",
+      "archetype": "arcano",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-001-poi-2": {
+      "poiId": "centro-001-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-001-poi-3": {
+      "poiId": "centro-001-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-001-poi-4": {
+      "poiId": "centro-001-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-002-poi-1": {
+      "poiId": "centro-002-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-002-poi-2": {
+      "poiId": "centro-002-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-002-poi-3": {
+      "poiId": "centro-002-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-002-poi-4": {
+      "poiId": "centro-002-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-003-poi-1": {
+      "poiId": "centro-003-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-003-poi-2": {
+      "poiId": "centro-003-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-003-poi-3": {
+      "poiId": "centro-003-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-003-poi-4": {
+      "poiId": "centro-003-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-004-poi-1": {
+      "poiId": "centro-004-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-004-poi-2": {
+      "poiId": "centro-004-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-004-poi-3": {
+      "poiId": "centro-004-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-004-poi-4": {
+      "poiId": "centro-004-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-005-poi-1": {
+      "poiId": "centro-005-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-005-poi-2": {
+      "poiId": "centro-005-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-005-poi-3": {
+      "poiId": "centro-005-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-005-poi-4": {
+      "poiId": "centro-005-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-006-poi-1": {
+      "poiId": "centro-006-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-006-poi-2": {
+      "poiId": "centro-006-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-006-poi-3": {
+      "poiId": "centro-006-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-006-poi-4": {
+      "poiId": "centro-006-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-007-poi-1": {
+      "poiId": "centro-007-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-007-poi-2": {
+      "poiId": "centro-007-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-007-poi-3": {
+      "poiId": "centro-007-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-007-poi-4": {
+      "poiId": "centro-007-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-008-poi-1": {
+      "poiId": "centro-008-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-008-poi-2": {
+      "poiId": "centro-008-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-008-poi-3": {
+      "poiId": "centro-008-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-008-poi-4": {
+      "poiId": "centro-008-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-009-poi-1": {
+      "poiId": "centro-009-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-009-poi-2": {
+      "poiId": "centro-009-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-009-poi-3": {
+      "poiId": "centro-009-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-009-poi-4": {
+      "poiId": "centro-009-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-010-poi-1": {
+      "poiId": "centro-010-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-010-poi-2": {
+      "poiId": "centro-010-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-010-poi-3": {
+      "poiId": "centro-010-poi-3",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-010-poi-4": {
+      "poiId": "centro-010-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-011-poi-1": {
+      "poiId": "centro-011-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-011-poi-2": {
+      "poiId": "centro-011-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-011-poi-3": {
+      "poiId": "centro-011-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-011-poi-4": {
+      "poiId": "centro-011-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-012-poi-1": {
+      "poiId": "centro-012-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-012-poi-2": {
+      "poiId": "centro-012-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-012-poi-3": {
+      "poiId": "centro-012-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-012-poi-4": {
+      "poiId": "centro-012-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-013-poi-1": {
+      "poiId": "centro-013-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-013-poi-2": {
+      "poiId": "centro-013-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-013-poi-3": {
+      "poiId": "centro-013-poi-3",
+      "archetype": "arcano",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-013-poi-4": {
+      "poiId": "centro-013-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-014-poi-1": {
+      "poiId": "centro-014-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-014-poi-2": {
+      "poiId": "centro-014-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-014-poi-3": {
+      "poiId": "centro-014-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-014-poi-4": {
+      "poiId": "centro-014-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-015-poi-1": {
+      "poiId": "centro-015-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-015-poi-2": {
+      "poiId": "centro-015-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-015-poi-3": {
+      "poiId": "centro-015-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-015-poi-4": {
+      "poiId": "centro-015-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-016-poi-1": {
+      "poiId": "centro-016-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-016-poi-2": {
+      "poiId": "centro-016-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-016-poi-3": {
+      "poiId": "centro-016-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-016-poi-4": {
+      "poiId": "centro-016-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-017-poi-1": {
+      "poiId": "centro-017-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-017-poi-2": {
+      "poiId": "centro-017-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-017-poi-3": {
+      "poiId": "centro-017-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-017-poi-4": {
+      "poiId": "centro-017-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-018-poi-1": {
+      "poiId": "centro-018-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-018-poi-2": {
+      "poiId": "centro-018-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-018-poi-3": {
+      "poiId": "centro-018-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-018-poi-4": {
+      "poiId": "centro-018-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-019-poi-1": {
+      "poiId": "centro-019-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-019-poi-2": {
+      "poiId": "centro-019-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-019-poi-3": {
+      "poiId": "centro-019-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-019-poi-4": {
+      "poiId": "centro-019-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-020-poi-1": {
+      "poiId": "centro-020-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-020-poi-2": {
+      "poiId": "centro-020-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-020-poi-3": {
+      "poiId": "centro-020-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-020-poi-4": {
+      "poiId": "centro-020-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-021-poi-1": {
+      "poiId": "centro-021-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-021-poi-2": {
+      "poiId": "centro-021-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-021-poi-3": {
+      "poiId": "centro-021-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-021-poi-4": {
+      "poiId": "centro-021-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-022-poi-1": {
+      "poiId": "centro-022-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-022-poi-2": {
+      "poiId": "centro-022-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-022-poi-3": {
+      "poiId": "centro-022-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-022-poi-4": {
+      "poiId": "centro-022-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-023-poi-1": {
+      "poiId": "centro-023-poi-1",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-023-poi-2": {
+      "poiId": "centro-023-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-023-poi-3": {
+      "poiId": "centro-023-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-023-poi-4": {
+      "poiId": "centro-023-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-024-poi-1": {
+      "poiId": "centro-024-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-024-poi-2": {
+      "poiId": "centro-024-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-024-poi-3": {
+      "poiId": "centro-024-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-024-poi-4": {
+      "poiId": "centro-024-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-025-poi-1": {
+      "poiId": "centro-025-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-025-poi-2": {
+      "poiId": "centro-025-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-025-poi-3": {
+      "poiId": "centro-025-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-025-poi-4": {
+      "poiId": "centro-025-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-026-poi-1": {
+      "poiId": "centro-026-poi-1",
+      "archetype": "arcano",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-026-poi-2": {
+      "poiId": "centro-026-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-026-poi-3": {
+      "poiId": "centro-026-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-026-poi-4": {
+      "poiId": "centro-026-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-027-poi-1": {
+      "poiId": "centro-027-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-027-poi-2": {
+      "poiId": "centro-027-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-027-poi-3": {
+      "poiId": "centro-027-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-027-poi-4": {
+      "poiId": "centro-027-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-028-poi-1": {
+      "poiId": "centro-028-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-028-poi-2": {
+      "poiId": "centro-028-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-028-poi-3": {
+      "poiId": "centro-028-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-028-poi-4": {
+      "poiId": "centro-028-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-029-poi-1": {
+      "poiId": "centro-029-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-029-poi-2": {
+      "poiId": "centro-029-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-029-poi-3": {
+      "poiId": "centro-029-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-029-poi-4": {
+      "poiId": "centro-029-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-030-poi-1": {
+      "poiId": "centro-030-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-030-poi-2": {
+      "poiId": "centro-030-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-030-poi-3": {
+      "poiId": "centro-030-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-030-poi-4": {
+      "poiId": "centro-030-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-031-poi-1": {
+      "poiId": "centro-031-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-031-poi-2": {
+      "poiId": "centro-031-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-031-poi-3": {
+      "poiId": "centro-031-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-031-poi-4": {
+      "poiId": "centro-031-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-032-poi-1": {
+      "poiId": "centro-032-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-032-poi-2": {
+      "poiId": "centro-032-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-032-poi-3": {
+      "poiId": "centro-032-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-032-poi-4": {
+      "poiId": "centro-032-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-033-poi-1": {
+      "poiId": "centro-033-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-033-poi-2": {
+      "poiId": "centro-033-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-033-poi-3": {
+      "poiId": "centro-033-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-033-poi-4": {
+      "poiId": "centro-033-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-034-poi-1": {
+      "poiId": "centro-034-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-034-poi-2": {
+      "poiId": "centro-034-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-034-poi-3": {
+      "poiId": "centro-034-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-034-poi-4": {
+      "poiId": "centro-034-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-035-poi-1": {
+      "poiId": "centro-035-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-035-poi-2": {
+      "poiId": "centro-035-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-035-poi-3": {
+      "poiId": "centro-035-poi-3",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-035-poi-4": {
+      "poiId": "centro-035-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-036-poi-1": {
+      "poiId": "centro-036-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-036-poi-2": {
+      "poiId": "centro-036-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-036-poi-3": {
+      "poiId": "centro-036-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-036-poi-4": {
+      "poiId": "centro-036-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-037-poi-1": {
+      "poiId": "centro-037-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-037-poi-2": {
+      "poiId": "centro-037-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-037-poi-3": {
+      "poiId": "centro-037-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-037-poi-4": {
+      "poiId": "centro-037-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-038-poi-1": {
+      "poiId": "centro-038-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-038-poi-2": {
+      "poiId": "centro-038-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-038-poi-3": {
+      "poiId": "centro-038-poi-3",
+      "archetype": "arcano",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-038-poi-4": {
+      "poiId": "centro-038-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-039-poi-1": {
+      "poiId": "centro-039-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-039-poi-2": {
+      "poiId": "centro-039-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-039-poi-3": {
+      "poiId": "centro-039-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-039-poi-4": {
+      "poiId": "centro-039-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-040-poi-1": {
+      "poiId": "centro-040-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-040-poi-2": {
+      "poiId": "centro-040-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-040-poi-3": {
+      "poiId": "centro-040-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-040-poi-4": {
+      "poiId": "centro-040-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-041-poi-1": {
+      "poiId": "centro-041-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-041-poi-2": {
+      "poiId": "centro-041-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-041-poi-3": {
+      "poiId": "centro-041-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-041-poi-4": {
+      "poiId": "centro-041-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-042-poi-1": {
+      "poiId": "centro-042-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-042-poi-2": {
+      "poiId": "centro-042-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-042-poi-3": {
+      "poiId": "centro-042-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-042-poi-4": {
+      "poiId": "centro-042-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-043-poi-1": {
+      "poiId": "centro-043-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-043-poi-2": {
+      "poiId": "centro-043-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-043-poi-3": {
+      "poiId": "centro-043-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-043-poi-4": {
+      "poiId": "centro-043-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-044-poi-1": {
+      "poiId": "centro-044-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-044-poi-2": {
+      "poiId": "centro-044-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-044-poi-3": {
+      "poiId": "centro-044-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-044-poi-4": {
+      "poiId": "centro-044-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-045-poi-1": {
+      "poiId": "centro-045-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-045-poi-2": {
+      "poiId": "centro-045-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-045-poi-3": {
+      "poiId": "centro-045-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-045-poi-4": {
+      "poiId": "centro-045-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-046-poi-1": {
+      "poiId": "centro-046-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-046-poi-2": {
+      "poiId": "centro-046-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-046-poi-3": {
+      "poiId": "centro-046-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-046-poi-4": {
+      "poiId": "centro-046-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-047-poi-1": {
+      "poiId": "centro-047-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-047-poi-2": {
+      "poiId": "centro-047-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-047-poi-3": {
+      "poiId": "centro-047-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-047-poi-4": {
+      "poiId": "centro-047-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-048-poi-1": {
+      "poiId": "centro-048-poi-1",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-048-poi-2": {
+      "poiId": "centro-048-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-048-poi-3": {
+      "poiId": "centro-048-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-048-poi-4": {
+      "poiId": "centro-048-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-049-poi-1": {
+      "poiId": "centro-049-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-049-poi-2": {
+      "poiId": "centro-049-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-049-poi-3": {
+      "poiId": "centro-049-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-049-poi-4": {
+      "poiId": "centro-049-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-050-poi-1": {
+      "poiId": "centro-050-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-050-poi-2": {
+      "poiId": "centro-050-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-050-poi-3": {
+      "poiId": "centro-050-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "centro-050-poi-4": {
+      "poiId": "centro-050-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-001-poi-1": {
+      "poiId": "este-001-poi-1",
+      "archetype": "arcano",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-001-poi-2": {
+      "poiId": "este-001-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-001-poi-3": {
+      "poiId": "este-001-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-001-poi-4": {
+      "poiId": "este-001-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-002-poi-1": {
+      "poiId": "este-002-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-002-poi-2": {
+      "poiId": "este-002-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-002-poi-3": {
+      "poiId": "este-002-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-002-poi-4": {
+      "poiId": "este-002-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-003-poi-1": {
+      "poiId": "este-003-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-003-poi-2": {
+      "poiId": "este-003-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-003-poi-3": {
+      "poiId": "este-003-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-003-poi-4": {
+      "poiId": "este-003-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-004-poi-1": {
+      "poiId": "este-004-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-004-poi-2": {
+      "poiId": "este-004-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-004-poi-3": {
+      "poiId": "este-004-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-004-poi-4": {
+      "poiId": "este-004-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-005-poi-1": {
+      "poiId": "este-005-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-005-poi-2": {
+      "poiId": "este-005-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-005-poi-3": {
+      "poiId": "este-005-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-005-poi-4": {
+      "poiId": "este-005-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-006-poi-1": {
+      "poiId": "este-006-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-006-poi-2": {
+      "poiId": "este-006-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-006-poi-3": {
+      "poiId": "este-006-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-006-poi-4": {
+      "poiId": "este-006-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-007-poi-1": {
+      "poiId": "este-007-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-007-poi-2": {
+      "poiId": "este-007-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-007-poi-3": {
+      "poiId": "este-007-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-007-poi-4": {
+      "poiId": "este-007-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-008-poi-1": {
+      "poiId": "este-008-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-008-poi-2": {
+      "poiId": "este-008-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-008-poi-3": {
+      "poiId": "este-008-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-008-poi-4": {
+      "poiId": "este-008-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-009-poi-1": {
+      "poiId": "este-009-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-009-poi-2": {
+      "poiId": "este-009-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-009-poi-3": {
+      "poiId": "este-009-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-009-poi-4": {
+      "poiId": "este-009-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-010-poi-1": {
+      "poiId": "este-010-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-010-poi-2": {
+      "poiId": "este-010-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-010-poi-3": {
+      "poiId": "este-010-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-010-poi-4": {
+      "poiId": "este-010-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-011-poi-1": {
+      "poiId": "este-011-poi-1",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-011-poi-2": {
+      "poiId": "este-011-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-011-poi-3": {
+      "poiId": "este-011-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-011-poi-4": {
+      "poiId": "este-011-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-012-poi-1": {
+      "poiId": "este-012-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-012-poi-2": {
+      "poiId": "este-012-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-012-poi-3": {
+      "poiId": "este-012-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-012-poi-4": {
+      "poiId": "este-012-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-013-poi-1": {
+      "poiId": "este-013-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-013-poi-2": {
+      "poiId": "este-013-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-013-poi-3": {
+      "poiId": "este-013-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-013-poi-4": {
+      "poiId": "este-013-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-014-poi-1": {
+      "poiId": "este-014-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-014-poi-2": {
+      "poiId": "este-014-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-014-poi-3": {
+      "poiId": "este-014-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-014-poi-4": {
+      "poiId": "este-014-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-015-poi-1": {
+      "poiId": "este-015-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-015-poi-2": {
+      "poiId": "este-015-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-015-poi-3": {
+      "poiId": "este-015-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-015-poi-4": {
+      "poiId": "este-015-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-016-poi-1": {
+      "poiId": "este-016-poi-1",
+      "archetype": "arcano",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-016-poi-2": {
+      "poiId": "este-016-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-016-poi-3": {
+      "poiId": "este-016-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-016-poi-4": {
+      "poiId": "este-016-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-017-poi-1": {
+      "poiId": "este-017-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-017-poi-2": {
+      "poiId": "este-017-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-017-poi-3": {
+      "poiId": "este-017-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-017-poi-4": {
+      "poiId": "este-017-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-018-poi-1": {
+      "poiId": "este-018-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-018-poi-2": {
+      "poiId": "este-018-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-018-poi-3": {
+      "poiId": "este-018-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-018-poi-4": {
+      "poiId": "este-018-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-019-poi-1": {
+      "poiId": "este-019-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-019-poi-2": {
+      "poiId": "este-019-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-019-poi-3": {
+      "poiId": "este-019-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-019-poi-4": {
+      "poiId": "este-019-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-020-poi-1": {
+      "poiId": "este-020-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-020-poi-2": {
+      "poiId": "este-020-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-020-poi-3": {
+      "poiId": "este-020-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-020-poi-4": {
+      "poiId": "este-020-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-021-poi-1": {
+      "poiId": "este-021-poi-1",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-021-poi-2": {
+      "poiId": "este-021-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-021-poi-3": {
+      "poiId": "este-021-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-021-poi-4": {
+      "poiId": "este-021-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-022-poi-1": {
+      "poiId": "este-022-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-022-poi-2": {
+      "poiId": "este-022-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-022-poi-3": {
+      "poiId": "este-022-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-022-poi-4": {
+      "poiId": "este-022-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-023-poi-1": {
+      "poiId": "este-023-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-023-poi-2": {
+      "poiId": "este-023-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-023-poi-3": {
+      "poiId": "este-023-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-023-poi-4": {
+      "poiId": "este-023-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-024-poi-1": {
+      "poiId": "este-024-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-024-poi-2": {
+      "poiId": "este-024-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-024-poi-3": {
+      "poiId": "este-024-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-024-poi-4": {
+      "poiId": "este-024-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-025-poi-1": {
+      "poiId": "este-025-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-025-poi-2": {
+      "poiId": "este-025-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-025-poi-3": {
+      "poiId": "este-025-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-025-poi-4": {
+      "poiId": "este-025-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-026-poi-1": {
+      "poiId": "este-026-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-026-poi-2": {
+      "poiId": "este-026-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-026-poi-3": {
+      "poiId": "este-026-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-026-poi-4": {
+      "poiId": "este-026-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-027-poi-1": {
+      "poiId": "este-027-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-027-poi-2": {
+      "poiId": "este-027-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-027-poi-3": {
+      "poiId": "este-027-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-027-poi-4": {
+      "poiId": "este-027-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-028-poi-1": {
+      "poiId": "este-028-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-028-poi-2": {
+      "poiId": "este-028-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-028-poi-3": {
+      "poiId": "este-028-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-028-poi-4": {
+      "poiId": "este-028-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-029-poi-1": {
+      "poiId": "este-029-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-029-poi-2": {
+      "poiId": "este-029-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-029-poi-3": {
+      "poiId": "este-029-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-029-poi-4": {
+      "poiId": "este-029-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-030-poi-1": {
+      "poiId": "este-030-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-030-poi-2": {
+      "poiId": "este-030-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-030-poi-3": {
+      "poiId": "este-030-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "este-030-poi-4": {
+      "poiId": "este-030-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-001-poi-1": {
+      "poiId": "norte-001-poi-1",
+      "archetype": "arcano",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-001-poi-2": {
+      "poiId": "norte-001-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-001-poi-3": {
+      "poiId": "norte-001-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-001-poi-4": {
+      "poiId": "norte-001-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-002-poi-1": {
+      "poiId": "norte-002-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-002-poi-2": {
+      "poiId": "norte-002-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-002-poi-3": {
+      "poiId": "norte-002-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-002-poi-4": {
+      "poiId": "norte-002-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-003-poi-1": {
+      "poiId": "norte-003-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-003-poi-2": {
+      "poiId": "norte-003-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-003-poi-3": {
+      "poiId": "norte-003-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-003-poi-4": {
+      "poiId": "norte-003-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-004-poi-1": {
+      "poiId": "norte-004-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-004-poi-2": {
+      "poiId": "norte-004-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-004-poi-3": {
+      "poiId": "norte-004-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-004-poi-4": {
+      "poiId": "norte-004-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-005-poi-1": {
+      "poiId": "norte-005-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-005-poi-2": {
+      "poiId": "norte-005-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-005-poi-3": {
+      "poiId": "norte-005-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-005-poi-4": {
+      "poiId": "norte-005-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-006-poi-1": {
+      "poiId": "norte-006-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-006-poi-2": {
+      "poiId": "norte-006-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-006-poi-3": {
+      "poiId": "norte-006-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-006-poi-4": {
+      "poiId": "norte-006-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-007-poi-1": {
+      "poiId": "norte-007-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-007-poi-2": {
+      "poiId": "norte-007-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-007-poi-3": {
+      "poiId": "norte-007-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-007-poi-4": {
+      "poiId": "norte-007-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-008-poi-1": {
+      "poiId": "norte-008-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-008-poi-2": {
+      "poiId": "norte-008-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-008-poi-3": {
+      "poiId": "norte-008-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-008-poi-4": {
+      "poiId": "norte-008-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-009-poi-1": {
+      "poiId": "norte-009-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-009-poi-2": {
+      "poiId": "norte-009-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-009-poi-3": {
+      "poiId": "norte-009-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-009-poi-4": {
+      "poiId": "norte-009-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-010-poi-1": {
+      "poiId": "norte-010-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-010-poi-2": {
+      "poiId": "norte-010-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-010-poi-3": {
+      "poiId": "norte-010-poi-3",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-010-poi-4": {
+      "poiId": "norte-010-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-011-poi-1": {
+      "poiId": "norte-011-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-011-poi-2": {
+      "poiId": "norte-011-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-011-poi-3": {
+      "poiId": "norte-011-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-011-poi-4": {
+      "poiId": "norte-011-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-012-poi-1": {
+      "poiId": "norte-012-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-012-poi-2": {
+      "poiId": "norte-012-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-012-poi-3": {
+      "poiId": "norte-012-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-012-poi-4": {
+      "poiId": "norte-012-poi-4",
+      "archetype": "arcano",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-013-poi-1": {
+      "poiId": "norte-013-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-013-poi-2": {
+      "poiId": "norte-013-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-013-poi-3": {
+      "poiId": "norte-013-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-013-poi-4": {
+      "poiId": "norte-013-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-014-poi-1": {
+      "poiId": "norte-014-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-014-poi-2": {
+      "poiId": "norte-014-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-014-poi-3": {
+      "poiId": "norte-014-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-014-poi-4": {
+      "poiId": "norte-014-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-015-poi-1": {
+      "poiId": "norte-015-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-015-poi-2": {
+      "poiId": "norte-015-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-015-poi-3": {
+      "poiId": "norte-015-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-015-poi-4": {
+      "poiId": "norte-015-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-016-poi-1": {
+      "poiId": "norte-016-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-016-poi-2": {
+      "poiId": "norte-016-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-016-poi-3": {
+      "poiId": "norte-016-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-016-poi-4": {
+      "poiId": "norte-016-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-017-poi-1": {
+      "poiId": "norte-017-poi-1",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-017-poi-2": {
+      "poiId": "norte-017-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-017-poi-3": {
+      "poiId": "norte-017-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-017-poi-4": {
+      "poiId": "norte-017-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-018-poi-1": {
+      "poiId": "norte-018-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-018-poi-2": {
+      "poiId": "norte-018-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-018-poi-3": {
+      "poiId": "norte-018-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-018-poi-4": {
+      "poiId": "norte-018-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-019-poi-1": {
+      "poiId": "norte-019-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-019-poi-2": {
+      "poiId": "norte-019-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-019-poi-3": {
+      "poiId": "norte-019-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-019-poi-4": {
+      "poiId": "norte-019-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-020-poi-1": {
+      "poiId": "norte-020-poi-1",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-020-poi-2": {
+      "poiId": "norte-020-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-020-poi-3": {
+      "poiId": "norte-020-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-020-poi-4": {
+      "poiId": "norte-020-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-021-poi-1": {
+      "poiId": "norte-021-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-021-poi-2": {
+      "poiId": "norte-021-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-021-poi-3": {
+      "poiId": "norte-021-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-021-poi-4": {
+      "poiId": "norte-021-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-022-poi-1": {
+      "poiId": "norte-022-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-022-poi-2": {
+      "poiId": "norte-022-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-022-poi-3": {
+      "poiId": "norte-022-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-022-poi-4": {
+      "poiId": "norte-022-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-023-poi-1": {
+      "poiId": "norte-023-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-023-poi-2": {
+      "poiId": "norte-023-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-023-poi-3": {
+      "poiId": "norte-023-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-023-poi-4": {
+      "poiId": "norte-023-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-024-poi-1": {
+      "poiId": "norte-024-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-024-poi-2": {
+      "poiId": "norte-024-poi-2",
+      "archetype": "arcano",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-024-poi-3": {
+      "poiId": "norte-024-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-024-poi-4": {
+      "poiId": "norte-024-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-025-poi-1": {
+      "poiId": "norte-025-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-025-poi-2": {
+      "poiId": "norte-025-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-025-poi-3": {
+      "poiId": "norte-025-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-025-poi-4": {
+      "poiId": "norte-025-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-026-poi-1": {
+      "poiId": "norte-026-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-026-poi-2": {
+      "poiId": "norte-026-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-026-poi-3": {
+      "poiId": "norte-026-poi-3",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-026-poi-4": {
+      "poiId": "norte-026-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-027-poi-1": {
+      "poiId": "norte-027-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-027-poi-2": {
+      "poiId": "norte-027-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-027-poi-3": {
+      "poiId": "norte-027-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-027-poi-4": {
+      "poiId": "norte-027-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-028-poi-1": {
+      "poiId": "norte-028-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-028-poi-2": {
+      "poiId": "norte-028-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-028-poi-3": {
+      "poiId": "norte-028-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-028-poi-4": {
+      "poiId": "norte-028-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-029-poi-1": {
+      "poiId": "norte-029-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-029-poi-2": {
+      "poiId": "norte-029-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-029-poi-3": {
+      "poiId": "norte-029-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-029-poi-4": {
+      "poiId": "norte-029-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-030-poi-1": {
+      "poiId": "norte-030-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-030-poi-2": {
+      "poiId": "norte-030-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-030-poi-3": {
+      "poiId": "norte-030-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-030-poi-4": {
+      "poiId": "norte-030-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-031-poi-1": {
+      "poiId": "norte-031-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-031-poi-2": {
+      "poiId": "norte-031-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-031-poi-3": {
+      "poiId": "norte-031-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-031-poi-4": {
+      "poiId": "norte-031-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-032-poi-1": {
+      "poiId": "norte-032-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-032-poi-2": {
+      "poiId": "norte-032-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-032-poi-3": {
+      "poiId": "norte-032-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-032-poi-4": {
+      "poiId": "norte-032-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-033-poi-1": {
+      "poiId": "norte-033-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-033-poi-2": {
+      "poiId": "norte-033-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-033-poi-3": {
+      "poiId": "norte-033-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-033-poi-4": {
+      "poiId": "norte-033-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-034-poi-1": {
+      "poiId": "norte-034-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-034-poi-2": {
+      "poiId": "norte-034-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-034-poi-3": {
+      "poiId": "norte-034-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-034-poi-4": {
+      "poiId": "norte-034-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-035-poi-1": {
+      "poiId": "norte-035-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-035-poi-2": {
+      "poiId": "norte-035-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-035-poi-3": {
+      "poiId": "norte-035-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "norte-035-poi-4": {
+      "poiId": "norte-035-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-001-poi-1": {
+      "poiId": "oeste-001-poi-1",
+      "archetype": "arcano",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-001-poi-2": {
+      "poiId": "oeste-001-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-001-poi-3": {
+      "poiId": "oeste-001-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-001-poi-4": {
+      "poiId": "oeste-001-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-002-poi-1": {
+      "poiId": "oeste-002-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-002-poi-2": {
+      "poiId": "oeste-002-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-002-poi-3": {
+      "poiId": "oeste-002-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-002-poi-4": {
+      "poiId": "oeste-002-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-003-poi-1": {
+      "poiId": "oeste-003-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-003-poi-2": {
+      "poiId": "oeste-003-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-003-poi-3": {
+      "poiId": "oeste-003-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-003-poi-4": {
+      "poiId": "oeste-003-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-004-poi-1": {
+      "poiId": "oeste-004-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-004-poi-2": {
+      "poiId": "oeste-004-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-004-poi-3": {
+      "poiId": "oeste-004-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-004-poi-4": {
+      "poiId": "oeste-004-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-005-poi-1": {
+      "poiId": "oeste-005-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-005-poi-2": {
+      "poiId": "oeste-005-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-005-poi-3": {
+      "poiId": "oeste-005-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-005-poi-4": {
+      "poiId": "oeste-005-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-006-poi-1": {
+      "poiId": "oeste-006-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-006-poi-2": {
+      "poiId": "oeste-006-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-006-poi-3": {
+      "poiId": "oeste-006-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-006-poi-4": {
+      "poiId": "oeste-006-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-007-poi-1": {
+      "poiId": "oeste-007-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-007-poi-2": {
+      "poiId": "oeste-007-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-007-poi-3": {
+      "poiId": "oeste-007-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-007-poi-4": {
+      "poiId": "oeste-007-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-008-poi-1": {
+      "poiId": "oeste-008-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-008-poi-2": {
+      "poiId": "oeste-008-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-008-poi-3": {
+      "poiId": "oeste-008-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-008-poi-4": {
+      "poiId": "oeste-008-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-009-poi-1": {
+      "poiId": "oeste-009-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-009-poi-2": {
+      "poiId": "oeste-009-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-009-poi-3": {
+      "poiId": "oeste-009-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-009-poi-4": {
+      "poiId": "oeste-009-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-010-poi-1": {
+      "poiId": "oeste-010-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-010-poi-2": {
+      "poiId": "oeste-010-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-010-poi-3": {
+      "poiId": "oeste-010-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-010-poi-4": {
+      "poiId": "oeste-010-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-011-poi-1": {
+      "poiId": "oeste-011-poi-1",
+      "archetype": "arcano",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-011-poi-2": {
+      "poiId": "oeste-011-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-011-poi-3": {
+      "poiId": "oeste-011-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-011-poi-4": {
+      "poiId": "oeste-011-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-012-poi-1": {
+      "poiId": "oeste-012-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-012-poi-2": {
+      "poiId": "oeste-012-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-012-poi-3": {
+      "poiId": "oeste-012-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-012-poi-4": {
+      "poiId": "oeste-012-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-013-poi-1": {
+      "poiId": "oeste-013-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-013-poi-2": {
+      "poiId": "oeste-013-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-013-poi-3": {
+      "poiId": "oeste-013-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-013-poi-4": {
+      "poiId": "oeste-013-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-014-poi-1": {
+      "poiId": "oeste-014-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-014-poi-2": {
+      "poiId": "oeste-014-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-014-poi-3": {
+      "poiId": "oeste-014-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-014-poi-4": {
+      "poiId": "oeste-014-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-015-poi-1": {
+      "poiId": "oeste-015-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-015-poi-2": {
+      "poiId": "oeste-015-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-015-poi-3": {
+      "poiId": "oeste-015-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-015-poi-4": {
+      "poiId": "oeste-015-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-016-poi-1": {
+      "poiId": "oeste-016-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-016-poi-2": {
+      "poiId": "oeste-016-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-016-poi-3": {
+      "poiId": "oeste-016-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-016-poi-4": {
+      "poiId": "oeste-016-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-017-poi-1": {
+      "poiId": "oeste-017-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-017-poi-2": {
+      "poiId": "oeste-017-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-017-poi-3": {
+      "poiId": "oeste-017-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-017-poi-4": {
+      "poiId": "oeste-017-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-018-poi-1": {
+      "poiId": "oeste-018-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-018-poi-2": {
+      "poiId": "oeste-018-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-018-poi-3": {
+      "poiId": "oeste-018-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-018-poi-4": {
+      "poiId": "oeste-018-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-019-poi-1": {
+      "poiId": "oeste-019-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-019-poi-2": {
+      "poiId": "oeste-019-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-019-poi-3": {
+      "poiId": "oeste-019-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-019-poi-4": {
+      "poiId": "oeste-019-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-020-poi-1": {
+      "poiId": "oeste-020-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-020-poi-2": {
+      "poiId": "oeste-020-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-020-poi-3": {
+      "poiId": "oeste-020-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-020-poi-4": {
+      "poiId": "oeste-020-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-021-poi-1": {
+      "poiId": "oeste-021-poi-1",
+      "archetype": "arcano",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-021-poi-2": {
+      "poiId": "oeste-021-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-021-poi-3": {
+      "poiId": "oeste-021-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-021-poi-4": {
+      "poiId": "oeste-021-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-022-poi-1": {
+      "poiId": "oeste-022-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-022-poi-2": {
+      "poiId": "oeste-022-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-022-poi-3": {
+      "poiId": "oeste-022-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-022-poi-4": {
+      "poiId": "oeste-022-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-023-poi-1": {
+      "poiId": "oeste-023-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-023-poi-2": {
+      "poiId": "oeste-023-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-023-poi-3": {
+      "poiId": "oeste-023-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-023-poi-4": {
+      "poiId": "oeste-023-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-024-poi-1": {
+      "poiId": "oeste-024-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-024-poi-2": {
+      "poiId": "oeste-024-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-024-poi-3": {
+      "poiId": "oeste-024-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-024-poi-4": {
+      "poiId": "oeste-024-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-025-poi-1": {
+      "poiId": "oeste-025-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-025-poi-2": {
+      "poiId": "oeste-025-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-025-poi-3": {
+      "poiId": "oeste-025-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-025-poi-4": {
+      "poiId": "oeste-025-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-026-poi-1": {
+      "poiId": "oeste-026-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-026-poi-2": {
+      "poiId": "oeste-026-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-026-poi-3": {
+      "poiId": "oeste-026-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-026-poi-4": {
+      "poiId": "oeste-026-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-027-poi-1": {
+      "poiId": "oeste-027-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-027-poi-2": {
+      "poiId": "oeste-027-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-027-poi-3": {
+      "poiId": "oeste-027-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-027-poi-4": {
+      "poiId": "oeste-027-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-028-poi-1": {
+      "poiId": "oeste-028-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-028-poi-2": {
+      "poiId": "oeste-028-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-028-poi-3": {
+      "poiId": "oeste-028-poi-3",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-028-poi-4": {
+      "poiId": "oeste-028-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-029-poi-1": {
+      "poiId": "oeste-029-poi-1",
+      "archetype": "natural",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-029-poi-2": {
+      "poiId": "oeste-029-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-029-poi-3": {
+      "poiId": "oeste-029-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-029-poi-4": {
+      "poiId": "oeste-029-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-030-poi-1": {
+      "poiId": "oeste-030-poi-1",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-030-poi-2": {
+      "poiId": "oeste-030-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-030-poi-3": {
+      "poiId": "oeste-030-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "oeste-030-poi-4": {
+      "poiId": "oeste-030-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-001-poi-1": {
+      "poiId": "sur-001-poi-1",
+      "archetype": "asentamiento",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-001-poi-2": {
+      "poiId": "sur-001-poi-2",
+      "archetype": "arcano",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-001-poi-3": {
+      "poiId": "sur-001-poi-3",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-001-poi-4": {
+      "poiId": "sur-001-poi-4",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-002-poi-1": {
+      "poiId": "sur-002-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-002-poi-2": {
+      "poiId": "sur-002-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-002-poi-3": {
+      "poiId": "sur-002-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-002-poi-4": {
+      "poiId": "sur-002-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-003-poi-1": {
+      "poiId": "sur-003-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-003-poi-2": {
+      "poiId": "sur-003-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-003-poi-3": {
+      "poiId": "sur-003-poi-3",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-003-poi-4": {
+      "poiId": "sur-003-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-004-poi-1": {
+      "poiId": "sur-004-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-004-poi-2": {
+      "poiId": "sur-004-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-004-poi-3": {
+      "poiId": "sur-004-poi-3",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-004-poi-4": {
+      "poiId": "sur-004-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-005-poi-1": {
+      "poiId": "sur-005-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-005-poi-2": {
+      "poiId": "sur-005-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-005-poi-3": {
+      "poiId": "sur-005-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-005-poi-4": {
+      "poiId": "sur-005-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-006-poi-1": {
+      "poiId": "sur-006-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-006-poi-2": {
+      "poiId": "sur-006-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-006-poi-3": {
+      "poiId": "sur-006-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-006-poi-4": {
+      "poiId": "sur-006-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-007-poi-1": {
+      "poiId": "sur-007-poi-1",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-007-poi-2": {
+      "poiId": "sur-007-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-007-poi-3": {
+      "poiId": "sur-007-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-007-poi-4": {
+      "poiId": "sur-007-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-008-poi-1": {
+      "poiId": "sur-008-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-008-poi-2": {
+      "poiId": "sur-008-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-008-poi-3": {
+      "poiId": "sur-008-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-008-poi-4": {
+      "poiId": "sur-008-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-009-poi-1": {
+      "poiId": "sur-009-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-009-poi-2": {
+      "poiId": "sur-009-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-009-poi-3": {
+      "poiId": "sur-009-poi-3",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-009-poi-4": {
+      "poiId": "sur-009-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-010-poi-1": {
+      "poiId": "sur-010-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-010-poi-2": {
+      "poiId": "sur-010-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-010-poi-3": {
+      "poiId": "sur-010-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-010-poi-4": {
+      "poiId": "sur-010-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-011-poi-1": {
+      "poiId": "sur-011-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-011-poi-2": {
+      "poiId": "sur-011-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-011-poi-3": {
+      "poiId": "sur-011-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-011-poi-4": {
+      "poiId": "sur-011-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-012-poi-1": {
+      "poiId": "sur-012-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-012-poi-2": {
+      "poiId": "sur-012-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-012-poi-3": {
+      "poiId": "sur-012-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-012-poi-4": {
+      "poiId": "sur-012-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-013-poi-1": {
+      "poiId": "sur-013-poi-1",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-013-poi-2": {
+      "poiId": "sur-013-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-013-poi-3": {
+      "poiId": "sur-013-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-013-poi-4": {
+      "poiId": "sur-013-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-014-poi-1": {
+      "poiId": "sur-014-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-014-poi-2": {
+      "poiId": "sur-014-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-014-poi-3": {
+      "poiId": "sur-014-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-014-poi-4": {
+      "poiId": "sur-014-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-015-poi-1": {
+      "poiId": "sur-015-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-015-poi-2": {
+      "poiId": "sur-015-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-015-poi-3": {
+      "poiId": "sur-015-poi-3",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-015-poi-4": {
+      "poiId": "sur-015-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-016-poi-1": {
+      "poiId": "sur-016-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-016-poi-2": {
+      "poiId": "sur-016-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-016-poi-3": {
+      "poiId": "sur-016-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-016-poi-4": {
+      "poiId": "sur-016-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-017-poi-1": {
+      "poiId": "sur-017-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-017-poi-2": {
+      "poiId": "sur-017-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-017-poi-3": {
+      "poiId": "sur-017-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-017-poi-4": {
+      "poiId": "sur-017-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-018-poi-1": {
+      "poiId": "sur-018-poi-1",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-018-poi-2": {
+      "poiId": "sur-018-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-018-poi-3": {
+      "poiId": "sur-018-poi-3",
+      "archetype": "arcano",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-018-poi-4": {
+      "poiId": "sur-018-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-019-poi-1": {
+      "poiId": "sur-019-poi-1",
+      "archetype": "asentamiento",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-019-poi-2": {
+      "poiId": "sur-019-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-019-poi-3": {
+      "poiId": "sur-019-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-019-poi-4": {
+      "poiId": "sur-019-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-020-poi-1": {
+      "poiId": "sur-020-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-020-poi-2": {
+      "poiId": "sur-020-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-020-poi-3": {
+      "poiId": "sur-020-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-020-poi-4": {
+      "poiId": "sur-020-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-021-poi-1": {
+      "poiId": "sur-021-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-021-poi-2": {
+      "poiId": "sur-021-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-021-poi-3": {
+      "poiId": "sur-021-poi-3",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-021-poi-4": {
+      "poiId": "sur-021-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-022-poi-1": {
+      "poiId": "sur-022-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-022-poi-2": {
+      "poiId": "sur-022-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-022-poi-3": {
+      "poiId": "sur-022-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-022-poi-4": {
+      "poiId": "sur-022-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-023-poi-1": {
+      "poiId": "sur-023-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-023-poi-2": {
+      "poiId": "sur-023-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-023-poi-3": {
+      "poiId": "sur-023-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-023-poi-4": {
+      "poiId": "sur-023-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-024-poi-1": {
+      "poiId": "sur-024-poi-1",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-024-poi-2": {
+      "poiId": "sur-024-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-024-poi-3": {
+      "poiId": "sur-024-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-024-poi-4": {
+      "poiId": "sur-024-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-025-poi-1": {
+      "poiId": "sur-025-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-025-poi-2": {
+      "poiId": "sur-025-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-025-poi-3": {
+      "poiId": "sur-025-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-025-poi-4": {
+      "poiId": "sur-025-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-026-poi-1": {
+      "poiId": "sur-026-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-026-poi-2": {
+      "poiId": "sur-026-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-026-poi-3": {
+      "poiId": "sur-026-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-026-poi-4": {
+      "poiId": "sur-026-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-027-poi-1": {
+      "poiId": "sur-027-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-027-poi-2": {
+      "poiId": "sur-027-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-027-poi-3": {
+      "poiId": "sur-027-poi-3",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-027-poi-4": {
+      "poiId": "sur-027-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-028-poi-1": {
+      "poiId": "sur-028-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-028-poi-2": {
+      "poiId": "sur-028-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-028-poi-3": {
+      "poiId": "sur-028-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-028-poi-4": {
+      "poiId": "sur-028-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-029-poi-1": {
+      "poiId": "sur-029-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-029-poi-2": {
+      "poiId": "sur-029-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-029-poi-3": {
+      "poiId": "sur-029-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-029-poi-4": {
+      "poiId": "sur-029-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-030-poi-1": {
+      "poiId": "sur-030-poi-1",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-030-poi-2": {
+      "poiId": "sur-030-poi-2",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-030-poi-3": {
+      "poiId": "sur-030-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-030-poi-4": {
+      "poiId": "sur-030-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-031-poi-1": {
+      "poiId": "sur-031-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-031-poi-2": {
+      "poiId": "sur-031-poi-2",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-031-poi-3": {
+      "poiId": "sur-031-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-031-poi-4": {
+      "poiId": "sur-031-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-032-poi-1": {
+      "poiId": "sur-032-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-032-poi-2": {
+      "poiId": "sur-032-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-032-poi-3": {
+      "poiId": "sur-032-poi-3",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-032-poi-4": {
+      "poiId": "sur-032-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-033-poi-1": {
+      "poiId": "sur-033-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-033-poi-2": {
+      "poiId": "sur-033-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-033-poi-3": {
+      "poiId": "sur-033-poi-3",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-033-poi-4": {
+      "poiId": "sur-033-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-034-poi-1": {
+      "poiId": "sur-034-poi-1",
+      "archetype": "ruina",
+      "curated": true,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-034-poi-2": {
+      "poiId": "sur-034-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-034-poi-3": {
+      "poiId": "sur-034-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-034-poi-4": {
+      "poiId": "sur-034-poi-4",
+      "archetype": "asentamiento",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-035-poi-1": {
+      "poiId": "sur-035-poi-1",
+      "archetype": "ruina",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-035-poi-2": {
+      "poiId": "sur-035-poi-2",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-035-poi-3": {
+      "poiId": "sur-035-poi-3",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    },
+    "sur-035-poi-4": {
+      "poiId": "sur-035-poi-4",
+      "archetype": "natural",
+      "curated": false,
+      "name": null,
+      "description": null,
+      "curatedEntry": null,
+      "slots": {}
+    }
+  }
+}

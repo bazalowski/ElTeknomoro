@@ -478,6 +478,26 @@ describe('integridad referencial contra los catálogos reales', () => {
     }
   });
 
+  it('el JSON commiteado está al día con `contenido/` (guardia de deriva)', () => {
+    // `src/data/exploration/*.json` es artefacto generado y va commiteado,
+    // porque el bundler lo importa y el build no corre el compilador. El precio
+    // es que alguien puede editar `contenido/` y olvidarse de recompilar, y el
+    // juego se quedaría con la versión vieja sin avisar. Esto lo cierra:
+    // recompila a un temp y compara con lo que hay en el repo.
+    const temp = mkdtempSync(join(tmpdir(), 'teknomoro-deriva-'));
+    try {
+      execFileSync('node', [COMPILADOR, '--out', temp], { encoding: 'utf8' });
+      for (const archivo of ['poi-tables.json', 'fallbacks.json']) {
+        const recien = readFileSync(join(temp, archivo), 'utf8');
+        const commiteado = readFileSync(join(process.cwd(), 'src', 'data', 'exploration', archivo), 'utf8');
+        expect(commiteado, `${archivo} está desfasado: corre "node scripts/compile-contenido.mjs"`)
+          .toBe(recien);
+      }
+    } finally {
+      rmSync(temp, { recursive: true, force: true });
+    }
+  });
+
   it('el árbol real de `contenido/` compila limpio', () => {
     // Guardia de regresión sobre lo que Bazalo tenga escrito hoy. Con el
     // andamiaje en blanco pasa trivialmente; en cuanto se escriba, este test
