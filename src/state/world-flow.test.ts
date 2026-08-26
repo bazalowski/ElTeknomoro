@@ -246,3 +246,52 @@ describe('world-flow — completar POI', () => {
     expect(flow.getState().gridStates[vecino]).toBeUndefined();
   });
 });
+
+// =============================================================================
+// flush (sub-paso 4c.2): el único punto que espera a la red
+// =============================================================================
+
+describe('world-flow — flush', () => {
+  it('sin escrituras pendientes resuelve igualmente', async () => {
+    const fake = makePersistFake();
+    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    await expect(flow.flush()).resolves.toBeUndefined();
+  });
+
+  // "Guardar y salir" desmonta la vista: si navegase sin esperar, la última
+  // mutación se perdería y "cargar te devuelve donde estabas" fallaría de
+  // forma intermitente.
+  it('espera a la última escritura lanzada', async () => {
+    let resolver: (() => void) | null = null;
+    const orden: string[] = [];
+    const flow = createWorldFlow({
+      initialState: createInitialWorldState(),
+      persist: () =>
+        new Promise<void>((res) => {
+          resolver = () => {
+            orden.push('escritura');
+            res();
+          };
+        }),
+    });
+
+    flow.travelTo(vecinoDeInicio());
+    const esperando = flow.flush().then(() => orden.push('flush'));
+
+    expect(orden).toEqual([]);
+    resolver!();
+    await esperando;
+    expect(orden).toEqual(['escritura', 'flush']);
+  });
+
+  it('propaga el fallo de la última escritura para que el caller no salga', async () => {
+    const flow = createWorldFlow({
+      initialState: createInitialWorldState(),
+      persist: () => Promise.reject(new Error('red caída')),
+    });
+
+    flow.travelTo(vecinoDeInicio());
+
+    await expect(flow.flush()).rejects.toThrow('red caída');
+  });
+});

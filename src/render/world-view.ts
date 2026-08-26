@@ -36,6 +36,23 @@ import {
   type GridState,
 } from '../rules/world-state';
 import type { WorldFlowHandle } from '../state/world-flow';
+import {
+  INITIAL_PAUSE_STATE,
+  backToRoot,
+  canOpenPause,
+  cancelConfirm,
+  closePause,
+  escape as escapePause,
+  isPauseOpen,
+  openOptions,
+  openPause,
+  requestConfirm,
+  setBusy,
+  type PauseState,
+} from '../state/pause';
+import { browserStorage, readPreferences, writePreferences } from '../state/preferences';
+import { applyTextSize, renderOptionsPanel } from './options-panel';
+import { showConfirmModal } from './confirm-modal';
 
 export interface WorldViewDeps {
   flow: WorldFlowHandle;
@@ -48,6 +65,12 @@ export interface WorldViewDeps {
   // main monta la pantalla de combate y, al cerrarla, remonta esta vista, que
   // se restaura sola desde la vista persistida (#90).
   onEnterCombat: (poiId: string) => void;
+  // "Guardar y salir al menú" (4c.2). La vista ya ha esperado al flush del
+  // world-flow cuando esto se invoca: main sólo tiene que desmontar.
+  onExitToMenu: () => void;
+  // "Reset run" (4c.2): borra el slot. Devuelve la promesa del borrado para
+  // que el panel pueda fallar visible si la red falla.
+  onResetRun: () => Promise<void>;
 }
 
 // -----------------------------------------------------------------------------
@@ -169,7 +192,10 @@ type Selection =
   | { kind: 'poi'; poiId: string };
 
 export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
-  const { flow, character, onExitToHome, onEnterCombat } = deps;
+  const { flow, character, onExitToHome, onEnterCombat, onExitToMenu, onResetRun } = deps;
+  const storage = browserStorage();
+  let prefs = readPreferences(storage);
+  applyTextSize(prefs.textSize);
   const grids = getAllGrids();
   const bounds = computeBounds(grids);
   const regions = getAllRegions();
@@ -187,6 +213,8 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
         </div>
         <div class="world-view__header-right">
           <button type="button" class="world-view__home" data-wv-home hidden>Hogar</button>
+          <button type="button" class="world-view__chip" data-wv-inventory>Inventario</button>
+          <button type="button" class="world-view__chip" data-wv-pause>Pausa</button>
           <div class="world-view__hud" role="status" aria-label="Estado del personaje">
             <span class="world-view__hud-name">${escapeHtml(character.name)}</span>
             <span class="world-view__hud-sep" aria-hidden="true"></span>
@@ -204,6 +232,15 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
           tabindex="-1"
           hidden
         ></section>
+        <section
+          class="world-view__system"
+          data-wv-system
+          role="dialog"
+          aria-modal="false"
+          aria-label="Menú de pausa"
+          tabindex="-1"
+          hidden
+        ></section>
       </div>
       <aside class="world-view__panel" data-wv-panel aria-live="polite"></aside>
     </div>
@@ -212,6 +249,9 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   const viewport = root.querySelector<HTMLElement>('[data-wv-viewport]')!;
   const panel = root.querySelector<HTMLElement>('[data-wv-panel]')!;
   const scene = root.querySelector<HTMLElement>('[data-wv-scene]')!;
+  const system = root.querySelector<HTMLElement>('[data-wv-system]')!;
+  const pauseBtn = root.querySelector<HTMLButtonElement>('[data-wv-pause]')!;
+  const inventoryBtn = root.querySelector<HTMLButtonElement>('[data-wv-inventory]')!;
   const backBtn = root.querySelector<HTMLButtonElement>('[data-wv-back]')!;
   const homeBtn = root.querySelector<HTMLButtonElement>('[data-wv-home]')!;
   const hpEl = root.querySelector<HTMLElement>('[data-wv-hp]')!;
@@ -315,6 +355,15 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   // "Combatir" no lanza un segundo combate (#93). No se limpia porque tras
   // entrar al combate la vista se desmonta entera.
   let combatLaunched = false;
+  // Menú de sistema (#94, #95). El inventario es un panel hermano y no un
+  // hijo de la pausa: se abre desde su propio botón, así que su apertura no
+  // pasa por la máquina de la pausa.
+  let pause: PauseState = INITIAL_PAUSE_STATE;
+  let inventoryOpen = false;
+
+  // Cualquier panel de sistema abierto congela la superficie igual que lo hace
+  // un POI: el mundo se ve, no se toca (#94/Q25).
+  const systemOpen = (): boolean => isPauseOpen(pause) || inventoryOpen;
 
   // Cámara manual: unidades → píxeles. k = px por unidad.
   const cam = { tx: 0, ty: 0, k: 1 };
@@ -952,6 +1001,190 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
     window.setTimeout(handOff, 240);
   };
 
+  // --- Menú de sistema: pausa e inventario (4c.2, #94/#95) ------------------
+  // La pausa es el menú de SISTEMA (guardar, salir, opciones, borrar). Las
+  // acciones del mundo (inventario real, descansar) son del campamento, que es
+  // un lugar. Aquí sólo vive lo que no depende de dónde esté el PJ.
+
+  const savePrefs = (next: typeof prefs): void => {
+    prefs = next;
+    writePreferences(storage, prefs);
+    paintSystem();
+  };
+
+  const closeInventory = (): void => {
+    if (!inventoryOpen) return;
+    inventoryOpen = false;
+    paintSystem();
+    inventoryBtn.focus({ preventScroll: true });
+  };
+
+  // "Guardar y salir": ESPERA a que la escritura confirme antes de desmontar.
+  // El resto del mundo persiste fire-and-forget a propósito, pero aquí la
+  // vista se va: sin esperar, la última mutación se puede perder y "cargar te
+  // devuelve donde estabas" fallaría de vez en cuando. Si falla, falla visible.
+  const doExitToMenu = (): void => {
+    pause = setBusy(pause, true);
+    paintSystem();
+    flow
+      .flush()
+      .then(() => {
+        onExitToMenu();
+      })
+      .catch((err) => {
+        console.error('world-view: el guardado final falló, no se sale:', err);
+        pause = setBusy(pause, false);
+        paintSystem();
+        const el = system.querySelector<HTMLElement>('[data-wv-system-error]');
+        if (el) el.textContent = 'No se ha podido guardar. No has salido de la partida.';
+      });
+  };
+
+  const askExitToMenu = (): void => {
+    if (!prefs.confirmOnExit) {
+      doExitToMenu();
+      return;
+    }
+    pause = requestConfirm(pause, 'exit-to-menu');
+    paintSystem();
+    showConfirmModal(root, {
+      title: 'Vas a salir al menú. Tu progreso se guarda antes de cerrar.',
+      confirmLabel: 'Guardar y salir',
+      cancelLabel: 'Seguir jugando',
+      checkbox: { label: 'No volver a preguntar', mode: 'opt-out' },
+      onConfirm: (dontAskAgain) => {
+        if (dontAskAgain) savePrefs({ ...prefs, confirmOnExit: false });
+        pause = cancelConfirm(pause);
+        doExitToMenu();
+      },
+      onCancel: () => {
+        pause = cancelConfirm(pause);
+        paintSystem();
+      },
+    });
+  };
+
+  // Borrar la partida es la acción más destructiva del juego (#44, #65) y la
+  // única del menú sin deshacer. Doble confirmación literal de #94, resuelta
+  // como dos actos deliberados en UNA ventana: la casilla habilita el botón.
+  // Encadenar dos modales sería melodrama, que DESIGN prohíbe.
+  const askResetRun = (): void => {
+    pause = requestConfirm(pause, 'reset-run');
+    paintSystem();
+    showConfirmModal(root, {
+      title: 'Vas a borrar esta partida. El personaje, el mundo explorado y el progreso desaparecen, y no queda epitafio.',
+      confirmLabel: 'Borrar la partida',
+      cancelLabel: 'Cancelar',
+      checkbox: { label: 'Entiendo que se borra la partida', mode: 'gate' },
+      danger: true,
+      onConfirm: () => {
+        pause = cancelConfirm(pause);
+        pause = setBusy(pause, true);
+        paintSystem();
+        onResetRun().catch((err) => {
+          console.error('world-view: el borrado del slot falló:', err);
+          pause = setBusy(pause, false);
+          paintSystem();
+          const el = system.querySelector<HTMLElement>('[data-wv-system-error]');
+          if (el) el.textContent = 'No se ha podido borrar la partida. Sigue ahí.';
+        });
+      },
+      onCancel: () => {
+        pause = cancelConfirm(pause);
+        paintSystem();
+      },
+    });
+  };
+
+  const paintSystem = (): void => {
+    pauseBtn.setAttribute('aria-expanded', String(isPauseOpen(pause)));
+    inventoryBtn.setAttribute('aria-expanded', String(inventoryOpen));
+
+    if (inventoryOpen) {
+      system.hidden = false;
+      system.setAttribute('aria-label', 'Inventario');
+      // Placeholder honesto: ni mochila falsa ni rejilla de huecos vacíos.
+      // El inventario real es H6 y fingirlo sería simulación de pulido.
+      system.innerHTML = `
+        <div class="world-view__system-inner">
+          <h2 class="world-view__system-title">Inventario</h2>
+          <p class="world-view__system-text">Disponible en H6.</p>
+          <div class="world-view__system-actions">
+            <button type="button" class="world-view__system-btn" data-wv-inv-close>Volver</button>
+          </div>
+        </div>
+      `;
+      system
+        .querySelector<HTMLButtonElement>('[data-wv-inv-close]')
+        ?.addEventListener('click', closeInventory);
+      system.focus({ preventScroll: true });
+      return;
+    }
+
+    if (pause.panel === 'options') {
+      system.hidden = false;
+      system.setAttribute('aria-label', 'Opciones');
+      renderOptionsPanel(system, {
+        prefs,
+        onChange: savePrefs,
+        onBack: () => {
+          pause = backToRoot(pause);
+          paintSystem();
+        },
+      });
+      system.focus({ preventScroll: true });
+      return;
+    }
+
+    if (pause.panel === 'root') {
+      system.hidden = false;
+      system.setAttribute('aria-label', 'Menú de pausa');
+      const busy = pause.busy;
+      system.innerHTML = `
+        <div class="world-view__system-inner">
+          <h2 class="world-view__system-title">Pausa</h2>
+          <p class="world-view__system-text">La partida se guarda sola. Esto es sólo para dejarla.</p>
+          <div class="world-view__system-actions">
+            <button type="button" class="world-view__system-btn world-view__system-btn--primary" data-wv-continue ${busy ? 'disabled' : ''}>Continuar</button>
+            <button type="button" class="world-view__system-btn" data-wv-exit ${busy ? 'disabled' : ''}>${busy ? 'Guardando…' : 'Guardar y salir al menú'}</button>
+            <button type="button" class="world-view__system-btn" data-wv-options ${busy ? 'disabled' : ''}>Opciones</button>
+            <button type="button" class="world-view__system-btn world-view__system-btn--danger" data-wv-reset ${busy ? 'disabled' : ''}>Borrar la partida</button>
+          </div>
+          <p class="world-view__system-error" data-wv-system-error role="alert"></p>
+        </div>
+      `;
+      system.querySelector<HTMLButtonElement>('[data-wv-continue]')?.addEventListener('click', () => {
+        pause = closePause(pause);
+        paintSystem();
+        pauseBtn.focus({ preventScroll: true });
+      });
+      system.querySelector<HTMLButtonElement>('[data-wv-exit]')?.addEventListener('click', askExitToMenu);
+      system.querySelector<HTMLButtonElement>('[data-wv-options]')?.addEventListener('click', () => {
+        pause = openOptions(pause);
+        paintSystem();
+      });
+      system.querySelector<HTMLButtonElement>('[data-wv-reset]')?.addEventListener('click', askResetRun);
+      if (!busy) system.focus({ preventScroll: true });
+      return;
+    }
+
+    system.hidden = true;
+    system.innerHTML = '';
+  };
+
+  pauseBtn.addEventListener('click', () => {
+    if (!canOpenPause(pause)) return;
+    pause = openPause(pause);
+    closeInventory();
+    paintSystem();
+  });
+
+  inventoryBtn.addEventListener('click', () => {
+    if (isPauseOpen(pause) || pause.busy) return;
+    inventoryOpen = !inventoryOpen;
+    paintSystem();
+  });
+
   // --- Interacción de cámara (mirar, #88) -----------------------------------
 
   let dragging = false;
@@ -960,7 +1193,7 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
 
   viewport.addEventListener('pointerdown', (ev) => {
     if (ev.button !== 0) return;
-    if (focusedPOIId !== null) return; // superficie inerte con el POI abierto
+    if (focusedPOIId !== null || systemOpen()) return; // superficie inerte
     dragging = true;
     dragMoved = false;
     lastPointer = { x: ev.clientX, y: ev.clientY };
@@ -990,7 +1223,7 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   viewport.addEventListener(
     'wheel',
     (ev) => {
-      if (focusedPOIId !== null) return; // sin zoom manual dentro del POI
+      if (focusedPOIId !== null || systemOpen()) return; // sin zoom manual
       ev.preventDefault();
       setAnimating(false);
       const rect = viewport.getBoundingClientRect();
@@ -1010,7 +1243,7 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   // Click = selección, nunca movimiento (#88). Delegado en el SVG.
   svg.addEventListener('click', (ev) => {
     if (dragMoved) return; // el arrastre no selecciona
-    if (focusedPOIId !== null) return; // el mundo se ve, no se toca
+    if (focusedPOIId !== null || systemOpen()) return; // el mundo se ve, no se toca
     const target = ev.target as Element;
     const poiGroup = target.closest<SVGGElement>('[data-poi-id]');
     if (poiGroup?.dataset.poiId) {
@@ -1038,7 +1271,7 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   // limpia la selección.
   svg.addEventListener('keydown', (ev) => {
     if (ev.key !== 'Enter' && ev.key !== ' ') return;
-    if (focusedPOIId !== null) return;
+    if (focusedPOIId !== null || systemOpen()) return;
     const target = ev.target as Element;
     const poiGroup = target.closest<SVGGElement>('[data-poi-id]');
     if (poiGroup?.dataset.poiId) {
@@ -1066,7 +1299,23 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
       return;
     }
     if (ev.key !== 'Escape') return;
-    // Escape recorre los niveles de cámara hacia fuera, uno por pulsación:
+    // Escape nunca ABRE la pausa (ese gesto es de la cámara). Con un panel de
+    // sistema delante, lo cierra: el panel captura el input, así que la cámara
+    // no está escuchando y no hay gesto robado. Un panel con foco atrapado y
+    // sin salida por teclado es un fallo de accesibilidad.
+    if (isPauseOpen(pause)) {
+      const next = escapePause(pause);
+      if (next !== pause) {
+        pause = next;
+        paintSystem();
+      }
+      return;
+    }
+    if (inventoryOpen) {
+      closeInventory();
+      return;
+    }
+    // Después, los niveles de cámara hacia fuera, uno por pulsación:
     // POI → grid → selección. Nunca salta dos.
     if (focusedPOIId !== null) {
       leavePOIView(true);
@@ -1112,6 +1361,7 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   paintMarker();
   paintChrome();
   paintPanel();
+  paintSystem();
   fitK = fitRegional().k;
 
   const initialView = flow.getState().view;

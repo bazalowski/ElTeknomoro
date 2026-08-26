@@ -58,6 +58,16 @@ export interface WorldFlowHandle {
   // victoria. NO cierra el POI: se puede volver siempre (#92), sólo pinta el
   // indicador de #91.
   completePOI(poiId: string): void;
+  // Espera a que la última escritura pendiente confirme (sub-paso 4c.2).
+  //
+  // El resto del módulo persiste fire-and-forget a propósito: nadie debe
+  // esperar a la red para seguir jugando. Pero "Guardar y salir al menú"
+  // desmonta la vista, y navegar sin esperar puede perder la última mutación
+  // — con lo que "cargar te devuelve donde estabas" fallaría de forma
+  // intermitente, que es el peor tipo de fallo para depurar. Este es el único
+  // punto que aguarda, y rechaza si la escritura falló para que el jugador
+  // pueda decidir no salir.
+  flush(): Promise<void>;
 }
 
 export interface WorldFlowDeps {
@@ -71,8 +81,14 @@ export interface WorldFlowDeps {
 export function createWorldFlow(deps: WorldFlowDeps): WorldFlowHandle {
   let state = deps.initialState;
 
+  // Última escritura lanzada. `flush` se engancha a ésta en vez de disparar
+  // una nueva: si no hay nada pendiente, resuelve al instante.
+  let lastWrite: Promise<void> = Promise.resolve();
+
   const persistCurrent = (): void => {
-    deps.persist(state).catch((err) => {
+    const write = deps.persist(state);
+    lastWrite = write;
+    write.catch((err) => {
       console.error('world-flow: persist falló (la partida sigue en memoria):', err);
     });
   };
@@ -145,5 +161,7 @@ export function createWorldFlow(deps: WorldFlowDeps): WorldFlowHandle {
       state = next;
       persistCurrent();
     },
+
+    flush: (): Promise<void> => lastWrite,
   };
 }

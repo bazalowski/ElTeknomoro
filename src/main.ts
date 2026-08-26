@@ -1,5 +1,11 @@
 import { getSession, onSessionChange } from './backend/auth';
-import { loadLastCharacter, saveCharacterUpdate, loadWorldState, saveWorldState } from './backend/characters';
+import {
+  loadLastCharacter,
+  saveCharacterUpdate,
+  loadWorldState,
+  saveWorldState,
+  deleteSlot,
+} from './backend/characters';
 import { renderLoginView } from './render/login-view';
 import { renderHomeView } from './render/home-view';
 import { renderCombatView } from './render/combat-view';
@@ -8,6 +14,8 @@ import { startH2Flow } from './state/h2-flow';
 import { startCombatFlow } from './state/combat-flow';
 import { createWorldFlow } from './state/world-flow';
 import { createRng } from './rules/dice';
+import { applyTextSize } from './render/options-panel';
+import { browserStorage, readPreferences } from './state/preferences';
 import { ENEMIES_BY_ID } from './data/enemies';
 import { ITEMS_BY_ID } from './data/items';
 import type { EnemyState } from './rules/combat';
@@ -169,6 +177,22 @@ function mountWorldView(root: HTMLElement, flow: WorldFlowHandle, character: Cha
       render();
     },
     onEnterCombat: (poiId) => startPOICombat(root, poiId),
+    // "Guardar y salir al menú" (4c.2). La vista ya ha esperado al flush del
+    // world-flow: aquí sólo se desmonta.
+    onExitToMenu: () => {
+      worldSession = null;
+      mode = 'home';
+      render();
+    },
+    // "Borrar la partida" (#94, #95): se va la fila entera del slot, sin
+    // epitafio. El Menú principal vuelve solo a su rama vacía porque
+    // loadLastCharacter dejará de encontrar nada.
+    onResetRun: () =>
+      deleteSlot().then(() => {
+        worldSession = null;
+        mode = 'home';
+        render();
+      }),
   });
   root.querySelector<HTMLElement>('[data-world-view]')?.classList.add('world-view--enter');
 }
@@ -272,6 +296,11 @@ function render(): void {
 // tarda lo que tarde la red, y hasta ahora la app no pintaba NADA en esa
 // ventana: el jugador veía la página en negro sin saber si estaba cargando o
 // roto. Es el mismo síntoma que una app rota, así que se distingue.
+// El tamaño de texto elegido se aplica antes del primer pintado: si esperase
+// a que la vista de mundo monte, el jugador con vista cansada leería el login y
+// el menú al tamaño que no eligió.
+applyTextSize(readPreferences(browserStorage()).textSize);
+
 app.innerHTML = `
   <main class="app-boot" role="status" aria-live="polite">
     <p class="app-boot__text">Cargando…</p>

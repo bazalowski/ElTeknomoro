@@ -1,3 +1,19 @@
+/* Tamaño de texto del jugador (§8.5, sub-paso 4c.2). Escala el font-size de la
+   raíz: la interfaz está escrita en rem, así que esto escala tipografía,
+   espaciado y controles de verdad, no sólo un párrafo. Tres pasos fijos, sin
+   slider continuo, como cierra el scope. */
+:root[data-text-size='s'] {
+  font-size: 87.5%;
+}
+
+:root[data-text-size='m'] {
+  font-size: 100%;
+}
+
+:root[data-text-size='l'] {
+  font-size: 112.5%;
+}
+
 :root {
   font-family: system-ui, -apple-system, sans-serif;
   color-scheme: light dark;
@@ -3853,6 +3869,264 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
 
 .world-view__panel-btn--travel:hover {
   background: var(--c-verde-pantano);
+}
+
+/* --- Menú de sistema: pausa, opciones e inventario (H4 4c.2) ---------------
+   Mismo patrón que el panel de escena y por la misma razón (#94/Q25): panel
+   anclado, sin dimming, el mundo se ve y no se toca. Se apila por encima de la
+   escena para que pausar dentro de un POI no obligue a cerrarlo — Continuar
+   devuelve al estado exacto, incluido el POI abierto.
+   ------------------------------------------------------------------------ */
+
+.world-view__chip {
+  font-family: inherit;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--c-hueso-descolorido);
+  background: var(--c-tinta-tierra-baja);
+  border: 1px solid var(--c-tinta-tierra-media);
+  border-radius: 2px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.world-view__chip:hover {
+  background: var(--c-tinta-tierra-media);
+}
+
+.world-view__chip:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+.world-view__chip[aria-expanded='true'] {
+  background: var(--c-tinta-tierra-media);
+  border-color: var(--c-corteza-palida);
+}
+
+.world-view__system {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  width: min(38vw, 440px);
+  overflow-y: auto;
+  background: var(--c-tinta-tierra-baja);
+  border-left: 1px solid var(--c-corteza-palida);
+  cursor: default;
+}
+
+.world-view__system:focus-visible {
+  outline: none;
+}
+
+.world-view__system-inner,
+.world-view__system .options-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 100%;
+  padding: 28px 28px 24px;
+}
+
+.world-view__system-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--c-hueso-claro);
+}
+
+.world-view__system-text {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--c-corteza-palida);
+}
+
+.world-view__system-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.world-view__system-btn {
+  font-family: inherit;
+  font-size: 0.9rem;
+  text-align: left;
+  color: var(--c-hueso-descolorido);
+  background: var(--c-tinta-tierra-media);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.world-view__system-btn:hover:not(:disabled) {
+  background: var(--c-verde-musgo-profundo);
+}
+
+.world-view__system-btn:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+.world-view__system-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.world-view__system-btn--primary {
+  border-color: var(--c-hueso-descolorido);
+}
+
+/* Borrar la partida es peligro real, no un acento: Color-Means-Something. */
+.world-view__system-btn--danger:not(:disabled) {
+  color: var(--c-rojo-oxido-enfermo);
+  border-color: var(--c-rojo-oxido-enfermo);
+}
+
+.world-view__system-btn--danger:hover:not(:disabled) {
+  background: var(--c-rojo-oxido-enfermo);
+  color: var(--c-hueso-claro);
+}
+
+.world-view__system-error {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--c-rojo-oxido-enfermo);
+}
+
+.world-view__system-error:empty {
+  display: none;
+}
+
+/* --- Panel de opciones (montado en pausa y en Menú principal) -------------- */
+
+.options-panel__title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--c-hueso-claro);
+}
+
+.options-panel__group {
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-top: 1px solid var(--c-tinta-tierra-media);
+  padding-top: 16px;
+}
+
+.options-panel__legend {
+  padding: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+.options-panel__choices {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.options-panel__choice {
+  flex: 1;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--c-hueso-descolorido);
+  background: var(--c-tinta-tierra-media);
+  border: 1px solid var(--c-tinta-tierra-media);
+  border-radius: 2px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.options-panel__choice:hover {
+  border-color: var(--c-corteza-palida);
+}
+
+.options-panel__choice:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+/* Selección con inset ring: el mismo lenguaje que el flow de creación de H2,
+   para que "esto está elegido" se lea igual en todo el juego. */
+.options-panel__choice[aria-checked='true'] {
+  box-shadow: inset 0 0 0 2px var(--c-hueso-descolorido);
+  color: var(--c-hueso-claro);
+}
+
+.options-panel__check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: var(--c-hueso-descolorido);
+  cursor: pointer;
+}
+
+.options-panel__note {
+  margin: 10px 0 0;
+  max-width: 62ch;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--c-corteza-palida);
+}
+
+.options-panel__actions {
+  margin-top: auto;
+}
+
+.options-panel__back {
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--c-hueso-descolorido);
+  background: var(--c-tinta-tierra-media);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.options-panel__back:hover {
+  background: var(--c-verde-musgo-profundo);
+}
+
+.options-panel__back:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+/* --- Casilla dentro del modal de confirmación (4c.2) ----------------------- */
+
+.confirm-modal__check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0 0;
+  font-size: 0.9rem;
+  color: var(--c-hueso-descolorido);
+  cursor: pointer;
+}
+
+.confirm-modal__button--danger {
+  color: var(--c-hueso-claro);
+  background: var(--c-rojo-oxido-enfermo);
+  border-color: var(--c-rojo-oxido-enfermo);
+}
+
+.confirm-modal__button--danger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* --- Escena del POI (tercer nivel de zoom, H4 4c.1) ------------------------

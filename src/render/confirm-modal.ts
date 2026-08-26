@@ -2,7 +2,19 @@ export interface ConfirmModalOptions {
   title: string;
   confirmLabel: string;
   cancelLabel?: string;
-  onConfirm: () => void;
+  // Casilla opcional dentro del modal (sub-paso 4c.2). Dos modos, y la
+  // diferencia importa:
+  //   'gate'    → el botón de confirmar arranca DESHABILITADO hasta marcarla.
+  //               Es la "doble confirmación" de #94 para borrar la partida:
+  //               dos actos deliberados en una sola ventana. Encadenar dos
+  //               modales sería melodrama, que DESIGN prohíbe.
+  //   'opt-out' → informativa ("no volver a preguntar"). No bloquea nada; su
+  //               valor llega en `onConfirm`.
+  checkbox?: { label: string; mode: 'gate' | 'opt-out' };
+  // Acción destructiva: tiñe el botón de confirmar con el rojo del sistema,
+  // que significa peligro real (Color-Means-Something).
+  danger?: boolean;
+  onConfirm: (checkboxChecked: boolean) => void;
   onCancel?: () => void;
 }
 
@@ -28,9 +40,22 @@ export function showConfirmModal(
       aria-labelledby="${titleId}"
     >
       <p class="confirm-modal__title" id="${titleId}">${escapeHtml(options.title)}</p>
+      ${
+        options.checkbox === undefined
+          ? ''
+          : `<label class="confirm-modal__check">
+               <input type="checkbox" data-action="check" />
+               <span>${escapeHtml(options.checkbox.label)}</span>
+             </label>`
+      }
       <div class="confirm-modal__actions">
         <button type="button" class="confirm-modal__button" data-action="cancel">${escapeHtml(cancelLabel)}</button>
-        <button type="button" class="confirm-modal__button confirm-modal__button--primary" data-action="confirm">${escapeHtml(options.confirmLabel)}</button>
+        <button
+          type="button"
+          class="confirm-modal__button confirm-modal__button--primary${options.danger === true ? ' confirm-modal__button--danger' : ''}"
+          data-action="confirm"
+          ${options.checkbox?.mode === 'gate' ? 'disabled' : ''}
+        >${escapeHtml(options.confirmLabel)}</button>
       </div>
     </div>
   `;
@@ -38,6 +63,13 @@ export function showConfirmModal(
   const panel = overlay.querySelector<HTMLElement>('.confirm-modal__panel')!;
   const cancelBtn = overlay.querySelector<HTMLButtonElement>('[data-action="cancel"]')!;
   const confirmBtn = overlay.querySelector<HTMLButtonElement>('[data-action="confirm"]')!;
+  const checkEl = overlay.querySelector<HTMLInputElement>('[data-action="check"]');
+
+  if (checkEl !== null && options.checkbox?.mode === 'gate') {
+    checkEl.addEventListener('change', () => {
+      confirmBtn.disabled = !checkEl.checked;
+    });
+  }
 
   let dismissed = false;
 
@@ -50,7 +82,7 @@ export function showConfirmModal(
       previousFocus.focus();
     }
     if (kind === 'confirm') {
-      options.onConfirm();
+      options.onConfirm(checkEl?.checked ?? false);
     } else {
       options.onCancel?.();
     }
@@ -64,18 +96,22 @@ export function showConfirmModal(
       return;
     }
     if (e.key === 'Tab') {
-      const focusables = [cancelBtn, confirmBtn];
+      // La casilla entra en el ciclo de foco: si no, con 'gate' el teclado no
+      // podría llegar nunca a habilitar el botón.
+      const focusables: HTMLElement[] = checkEl === null
+        ? [cancelBtn, confirmBtn]
+        : [checkEl, cancelBtn, confirmBtn];
       const active = document.activeElement;
       const idx = focusables.findIndex((el) => el === active);
       if (e.shiftKey) {
         if (idx <= 0) {
           e.preventDefault();
-          confirmBtn.focus();
+          focusables[focusables.length - 1]!.focus();
         }
       } else {
         if (idx === focusables.length - 1) {
           e.preventDefault();
-          cancelBtn.focus();
+          focusables[0]!.focus();
         }
       }
     }
@@ -90,7 +126,10 @@ export function showConfirmModal(
 
   host.appendChild(overlay);
   panel.tabIndex = -1;
-  confirmBtn.focus();
+  // Con la casilla como puerta, el foco arranca en ella: es el primer acto
+  // deliberado que el jugador tiene que hacer, y el botón está apagado.
+  if (checkEl !== null && options.checkbox?.mode === 'gate') checkEl.focus();
+  else confirmBtn.focus();
 }
 
 function escapeHtml(s: string): string {

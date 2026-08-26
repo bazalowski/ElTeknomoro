@@ -171,6 +171,26 @@ export async function loadWorldState(): Promise<WorldState> {
   return hydrateWorldState(data.world_state);
 }
 
+// Borra el slot 0 por completo (sub-paso 4c.2, "Reset run" de #94).
+//
+// NO escribe epitafio a propósito. La galería de epitafios de #11 es memoria de
+// las muertes del jugador; un borrado administrativo no es una muerte y
+// ensuciarla con lápidas de partidas abandonadas devalúa las de verdad. El
+// slot desaparece y el Menú principal vuelve a su rama vacía.
+//
+// Borrar la fila (y no vaciarla campo a campo) es lo que garantiza que no
+// sobreviva nada: `character_data`, `epitaph` y `world_state` se van juntos.
+export async function deleteSlot(): Promise<void> {
+  const userId = await getCurrentUserId();
+
+  const { error } = await supabase
+    .from('save_slots')
+    .delete()
+    .eq('user_id', userId)
+    .eq('slot_index', 0);
+  if (error) throw error;
+}
+
 // Persiste el estado del mundo sobre un slot que YA existe. Lanza si no lo
 // hay: guardar mundo sin personaje sería un bug del caller (el slot lo crea
 // siempre `saveCharacter` antes de que exista mundo que guardar).
