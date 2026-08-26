@@ -1,6 +1,6 @@
 # Pipeline H4 sub-pasos 4c.2 + 4c.3 — brief UI (PASO 1, carril B)
 
-**Estado**: PASO 1 compilado. **PASO 2: APTO CON CAMBIOS en los dos prompts** (director) — E1-E11 aplicadas; D-4c23-p1..p4 aceptadas, p1 con matización obligatoria en biblia (#95, firmada por Bazalo, `cf6002f`). PASO 3 desbloqueado, prompt A primero. Bazalo pidió arrancar los dos sub-pasos a la vez y revisarlos juntos; van en un solo pipeline porque tocan los mismos archivos y porque se solapan entre sí (ver D-4c23-p1).
+**Estado**: PASO 1 compilado. **PASO 2: APTO CON CAMBIOS en los dos prompts** (director) — E1-E11 aplicadas; D-4c23-p1..p4 aceptadas, p1 con matización obligatoria en biblia (#95, firmada por Bazalo, `cf6002f`). **PASO 3: ejecutado** (impeccable, register product). Prompt A en `82bec5c`, prompt B en `c3b1a4a`. 534/534 tests, `tsc` y `vite build` limpios, detector sin hallazgos nuevos. **Verificación visual en la app: NO ejecutada** — no hay navegador headless en el entorno y la vista exige login de Supabase. Bazalo pidió arrancar los dos sub-pasos a la vez y revisarlos juntos; van en un solo pipeline porque tocan los mismos archivos y porque se solapan entre sí (ver D-4c23-p1).
 **Carril**: B (2 pasos: director → impeccable).
 **Fecha**: 2026-08-26.
 **Fuentes**: biblia v0.25 (#10, #11, #85, #87, #90, #93, #94, #95, #96), DESIGN.md, PRODUCT.md, repo en `9d1ce5d`.
