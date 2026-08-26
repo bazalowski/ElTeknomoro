@@ -4,8 +4,13 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { createWorldFlow } from './world-flow';
-import { createInitialWorldState, getGridState } from '../rules/world-state';
-import { WORLD_CIFRAS, getCardinalNeighbours } from '../rules/world';
+import {
+  createInitialWorldState,
+  getGridState,
+  getPOIState,
+  deriveGridState,
+} from '../rules/world-state';
+import { WORLD_CIFRAS, getCardinalNeighbours, getPOIsByGrid } from '../rules/world';
 import type { WorldState } from '../rules/world-state';
 
 const vecinoDeInicio = (): string => getCardinalNeighbours(WORLD_CIFRAS.startingGridId)[0]!.id;
@@ -103,5 +108,141 @@ describe('world-flow — cámara semántica (lookAt)', () => {
     const persisted = fake.calls[fake.calls.length - 1]!;
     expect(persisted.view).toEqual({ kind: 'grid', gridId: vecinoDeInicio() });
     expect(persisted.currentGridId).toBe(vecinoDeInicio());
+  });
+});
+
+// =============================================================================
+// Entrada y salida de POI (sub-paso 4c.1, #93/#94)
+// =============================================================================
+
+const poiDeInicio = (): string => getPOIsByGrid(WORLD_CIFRAS.startingGridId)[1]!.id;
+
+describe('world-flow — entrar y salir de POI', () => {
+  it('enterPOI revela y fija la vista en UNA sola persistencia', () => {
+    const fake = makePersistFake();
+    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const poiId = poiDeInicio();
+    expect(getPOIState(flow.getState(), poiId)).toBeNull();
+
+    expect(flow.enterPOI(poiId)).toBe(true);
+
+    const s = flow.getState();
+    expect(getPOIState(s, poiId)).toBe('revelado');
+    expect(s.view).toEqual({ kind: 'poi', poiId });
+    // La clave del contrato: entrar es UN write, no dos. Dos writes dejarían
+    // una ventana persistida con el jugador dentro de un POI en niebla.
+    expect(fake.calls.length).toBe(1);
+    expect(getPOIState(fake.calls[0]!, poiId)).toBe('revelado');
+    expect(fake.calls[0]!.view).toEqual({ kind: 'poi', poiId });
+  });
+
+  it('enterPOI sobre un POI inexistente no toca nada', () => {
+    const fake = makePersistFake();
+    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const antes = flow.getState();
+
+    expect(flow.enterPOI('no-existe')).toBe(false);
+
+    expect(flow.getState()).toBe(antes);
+    expect(fake.calls.length).toBe(0);
+  });
+
+  it('entrar al mismo POI dos veces no vuelve a persistir', () => {
+    const fake = makePersistFake();
+    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const poiId = poiDeInicio();
+
+    flow.enterPOI(poiId);
+    flow.enterPOI(poiId);
+
+    expect(fake.calls.length).toBe(1);
+  });
+
+  it('leavePOI devuelve la vista al grid que contiene el POI', () => {
+    const fake = makePersistFake();
+    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const poiId = poiDeInicio();
+
+    flow.enterPOI(poiId);
+    flow.leavePOI();
+
+    expect(flow.getState().view).toEqual({ kind: 'grid', gridId: WORLD_CIFRAS.startingGridId });
+    expect(fake.calls.length).toBe(2);
+  });
+
+  it('salir no degrada el estado del POI: sigue revelado', () => {
+    const fake = makePersistFake();
+    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const poiId = poiDeInicio();
+
+    flow.enterPOI(poiId);
+    flow.leavePOI();
+
+    expect(getPOIState(flow.getState(), poiId)).toBe('revelado');
+  });
+
+  it('leavePOI fuera de un POI no hace nada', () => {
+    const fake = makePersistFake();
+    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+
+    flow.leavePOI();
+
+    expect(flow.getState().view).toEqual({ kind: 'region' });
+    expect(fake.calls.length).toBe(0);
+  });
+});
+
+describe('world-flow — completar POI', () => {
+  it('completePOI marca completado y persiste', () => {
+    const fake = makePersistFake();
+    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const poiId = poiDeInicio();
+
+    flow.enterPOI(poiId);
+    flow.completePOI(poiId);
+
+    expect(getPOIState(flow.getState(), poiId)).toBe('completado');
+    expect(fake.calls.length).toBe(2);
+  });
+
+  it('completar dos veces el mismo POI no vuelve a persistir', () => {
+    const fake = makePersistFake();
+    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const poiId = poiDeInicio();
+
+    flow.completePOI(poiId);
+    flow.completePOI(poiId);
+
+    expect(fake.calls.length).toBe(1);
+  });
+
+  // #92/Q40b: farmear un POI está permitido. Volver a entrar en uno completado
+  // no lo degrada a 'revelado', y por tanto tampoco deshace el progreso del
+  // grid hacia 'controlado'.
+  it('volver a entrar a un POI completado no lo degrada', () => {
+    const fake = makePersistFake();
+    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const poiId = poiDeInicio();
+
+    flow.completePOI(poiId);
+    flow.leavePOI();
+    flow.enterPOI(poiId);
+
+    expect(getPOIState(flow.getState(), poiId)).toBe('completado');
+  });
+
+  it('revelar POIs sube el estado derivado del grid sin escribirlo', () => {
+    const fake = makePersistFake();
+    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const vecino = vecinoDeInicio();
+    const poiVecino = getPOIsByGrid(vecino)[0]!.id;
+
+    expect(deriveGridState(flow.getState(), vecino)).toBe('inexplorado');
+
+    flow.enterPOI(poiVecino);
+
+    expect(deriveGridState(flow.getState(), vecino)).toBe('explorado');
+    // Nadie ha escrito gridStates: el estado se deriva de los POIs (#94).
+    expect(flow.getState().gridStates[vecino]).toBeUndefined();
   });
 });

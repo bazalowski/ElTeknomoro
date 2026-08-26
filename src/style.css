@@ -3855,6 +3855,284 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
   background: var(--c-verde-pantano);
 }
 
+/* --- Escena del POI (tercer nivel de zoom, H4 4c.1) ------------------------
+   El POI NO es otra pantalla (#83): es la misma superficie con la cámara
+   dentro de su sub-celda, y este panel se ancla encima. Sin dimming — el
+   mundo se ve, no se toca. El encuadre de la cámara (fitPOI) descuenta el
+   ancho del panel, así que el lugar nunca queda debajo del texto.
+   ------------------------------------------------------------------------ */
+
+.world-view__scene {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  width: min(38vw, 440px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px 28px 24px;
+  overflow-y: auto;
+  background: var(--c-tinta-tierra-baja);
+  border-left: 1px solid var(--c-tinta-tierra-media);
+  cursor: default;
+}
+
+.world-view__scene:focus-visible {
+  outline: none;
+}
+
+.world-view__scene-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.world-view__scene-icon {
+  flex: none;
+  width: 38px;
+  height: 38px;
+}
+
+.world-view__scene-icon path {
+  fill: none;
+  stroke: var(--c-hueso-descolorido);
+  stroke-width: 0.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.world-view__scene-names {
+  min-width: 0;
+}
+
+/* Sans, no la serif display: un jugador ve esta pantalla cientos de veces por
+   partida y Display-Is-Sacred reserva la serif a los momentos contados. */
+.world-view__scene-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--c-hueso-claro);
+}
+
+.world-view__scene-id {
+  margin: 3px 0 0;
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: var(--c-corteza-palida);
+  overflow-wrap: anywhere;
+}
+
+.world-view__scene-state {
+  margin: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--c-tinta-tierra-media);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+.world-view__scene-text {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--c-hueso-descolorido);
+}
+
+.world-view__scene-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.world-view__scene-action {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.world-view__scene-btn {
+  flex: none;
+  min-width: 148px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  text-align: left;
+  color: var(--c-hueso-descolorido);
+  background: var(--c-tinta-tierra-media);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.world-view__scene-btn:hover:not(:disabled) {
+  background: var(--c-verde-musgo-profundo);
+}
+
+.world-view__scene-btn:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+.world-view__scene-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Rojo óxido en Combatir: Color-Means-Something. El rojo del sistema significa
+   peligro real, y entrar a un combate con permadeath lo es. No es acento. */
+.world-view__scene-btn--danger:not(:disabled) {
+  background: var(--c-rojo-oxido-enfermo);
+  border-color: var(--c-rojo-oxido-enfermo);
+  color: var(--c-hueso-claro);
+}
+
+.world-view__scene-btn--danger:hover:not(:disabled) {
+  background: oklch(50% 0.12 30);
+}
+
+.world-view__scene-reason {
+  font-size: 0.75rem;
+  color: var(--c-corteza-palida);
+}
+
+/* Superficie inerte mientras el POI está abierto: sin hover, sin click, sin
+   foco. Si se pudiera clicar otro POI desde dentro, existiría un estado 'poi'
+   con la cámara mirando a otro sitio. */
+.world-view__svg--poi-focus .world-view__cell,
+.world-view__svg--poi-focus .world-view__poi {
+  pointer-events: none;
+}
+
+.world-view__svg--poi-focus {
+  cursor: default;
+}
+
+/* El resto del grid se retira para que la escena sea lo único vivo. No es
+   dimming del mundo: el POI enfocado mantiene su luminancia, se apaga lo de
+   alrededor. */
+.world-view__svg--poi-focus .world-view__detail,
+.world-view__svg--poi-focus .world-view__region-labels {
+  opacity: 0.35;
+  transition: opacity 260ms ease-out;
+}
+
+/* --- Frame de la escena en la superficie ----------------------------------- */
+
+.world-view__scene-floor {
+  opacity: 0.5;
+}
+
+.world-view__scene-weave {
+  opacity: 0.9;
+}
+
+.world-view__scene-edge {
+  fill: none;
+  stroke: var(--c-corteza-palida);
+  stroke-width: 1.5px;
+  vector-effect: non-scaling-stroke;
+}
+
+.world-view__scene-glyph path {
+  fill: none;
+  stroke: var(--c-hueso-claro);
+  stroke-width: 2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Las cuatro tramas. Un solo grosor de trazo en las cuatro: lo que cambia es
+   el motivo, no el peso, para que ninguna pese más que otra. */
+.world-view__scene-motif {
+  fill: none;
+  stroke: var(--c-hueso-descolorido);
+  stroke-width: 1px;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.5;
+}
+
+#wv-scene-natural .world-view__scene-motif {
+  stroke: var(--c-verde-pantano);
+  opacity: 0.75;
+}
+
+#wv-scene-ruina .world-view__scene-motif {
+  stroke: var(--c-corteza-palida);
+  opacity: 0.85;
+}
+
+#wv-scene-asentamiento .world-view__scene-motif {
+  stroke: var(--c-hueso-descolorido);
+  opacity: 0.55;
+}
+
+/* Único uso de violeta de la vista, y sólo cuando el sitio ES arcano
+   (Arcane-Restraint): la rareza es lo que lo hace significar algo. */
+#wv-scene-arcano .world-view__scene-motif {
+  stroke: var(--c-violeta-coagulado);
+  opacity: 0.9;
+}
+
+.world-view__scene-frame[data-archetype='arcano'] .world-view__scene-edge {
+  stroke: var(--c-violeta-coagulado);
+}
+
+/* --- Salto al combate (crossfade, #93/Q31c) -------------------------------- */
+/* La continuidad con la pantalla de combate se hace con acercamiento + fade:
+   startCombatRun sustituye el contenido de root, así que montar combat-view
+   dentro de esta superficie exigiría reescribir una pantalla cerrada en H3. */
+
+.world-view--leaving {
+  animation: world-view-leaving 240ms ease-out forwards;
+}
+
+@keyframes world-view-leaving {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-view--leaving {
+    animation: none;
+  }
+
+  .world-view__svg--poi-focus .world-view__detail,
+  .world-view__svg--poi-focus .world-view__region-labels {
+    transition: none;
+  }
+}
+
+/* Entrada en fade de la pantalla que releva a la vista de mundo (combate desde
+   POI). Genérica a propósito: es la contraparte de .world-view--leaving. */
+.view-fade-in {
+  animation: view-fade-in 180ms ease-out;
+}
+
+@keyframes view-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-fade-in {
+    animation: none;
+  }
+}
+
 /* --- Transición home → mundo (fade 300ms, decisión Q5) ---------------------- */
 
 .world-view--enter {
