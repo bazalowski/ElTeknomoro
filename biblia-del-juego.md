@@ -89,9 +89,9 @@ El marco lore queda fijado en decisión #47 (§5). Cualquier contenido, paleta, 
 
 ## 3. Estado actual y roadmap
 
-**Estado hoy (26 agosto 2026):** biblia en v0.27. **H0, H1, H2 y H3 cerrados, PASO 4 del H3 archivado, cuestionario de scope de H4 cerrado, sub-pasos 4a, 4b.0, 4b y 4c completos (4c.0 a 4c.4).** El primer loop completo del juego (crear PJ → home → combate al Lobo → loot/epitafio → persistencia → home) corre en producción con statuses funcionales, 10 perks cableados, IA con 4 perfiles + intent visible, y `flee` 50% implementado. **534/534 tests verde** (21 ficheros), `tsc --noEmit` limpio, `vite build` limpio. Los 5 bloqueantes de diseño que restaban (v0.8) están cerrados (decisiones #41-#45 más #46 emergente). Lore (#47), reordenamiento de hitos (#62) y decisiones del cuestionario de visión (#63 en adelante) cerradas en v0.20. Decisiones del PASO 4 del H3 (#78-#80) cerradas en v0.21. Decisiones del cuestionario de scope de H4 (#81-#85) cerradas en v0.22. Decisiones del cuestionario de scope del sub-paso 4b (#86-#91) cerradas en v0.23. Decisiones del cuestionario de scope del sub-paso 4c (#92-#94) cerradas en v0.24. Decisiones del PASO 2 del pipeline de 4c.2/4c.3 (#95-#96) cerradas en v0.25. El sub-paso 4c cierra con 4c.4 el 26/8/2026. Reordenación de H4 (#97) cerrada en v0.26. **Decisiones del cuestionario de scope del sub-paso 4d (#98-#100) y volcado documental del rango #48-#61 (#101) cerradas en v0.27.**
+**Estado hoy (26 agosto 2026):** biblia en v0.28. **H0, H1, H2 y H3 cerrados, PASO 4 del H3 archivado, cuestionario de scope de H4 cerrado, sub-pasos 4a, 4b.0, 4b y 4c completos (4c.0 a 4c.4).** El primer loop completo del juego (crear PJ → home → combate al Lobo → loot/epitafio → persistencia → home) corre en producción con statuses funcionales, 10 perks cableados, IA con 4 perfiles + intent visible, y `flee` 50% implementado. **534/534 tests verde** (21 ficheros), `tsc --noEmit` limpio, `vite build` limpio. Los 5 bloqueantes de diseño que restaban (v0.8) están cerrados (decisiones #41-#45 más #46 emergente). Lore (#47), reordenamiento de hitos (#62) y decisiones del cuestionario de visión (#63 en adelante) cerradas en v0.20. Decisiones del PASO 4 del H3 (#78-#80) cerradas en v0.21. Decisiones del cuestionario de scope de H4 (#81-#85) cerradas en v0.22. Decisiones del cuestionario de scope del sub-paso 4b (#86-#91) cerradas en v0.23. Decisiones del cuestionario de scope del sub-paso 4c (#92-#94) cerradas en v0.24. Decisiones del PASO 2 del pipeline de 4c.2/4c.3 (#95-#96) cerradas en v0.25. El sub-paso 4c cierra con 4c.4 el 26/8/2026. Reordenación de H4 (#97) cerrada en v0.26. **Decisiones del cuestionario de scope del sub-paso 4d (#98-#100) y volcado documental del rango #48-#61 (#101) cerradas en v0.27. Sub-paso 4f.0 cerrado el 26/8/2026 con la decisión #102: formato de entrada por POI, compilador de contenido y modelo de #92 cableado en el motor.**
 
-**Próximo:** **4f.0** (schema de entradas de POI + POI piloto escrito a mano), y después **4f** (tirada de exploración cableada). El orden de H4 cambia por decisión #97: 4f se adelanta a 4d y 4e porque no depende de ellos y porque escribir contenido sin poder verlo es la vía rápida a escribirlo mal. **El cuestionario de 4d está respondido y cerrado en v0.27** (#98-#100): 4d llega a su turno con el scope firmado y cero deuda de decisión, pero sigue detrás de 4f por el argumento de #97, que responder el cuestionario no invalida.
+**Próximo:** **4f** (tirada de exploración cableada en la vista de POI, sustituyendo los botones provisionales de #93). El orden de H4 cambia por decisión #97: 4f se adelanta a 4d y 4e porque no depende de ellos y porque escribir contenido sin poder verlo es la vía rápida a escribirlo mal. **El cuestionario de 4d está respondido y cerrado en v0.27** (#98-#100): 4d llega a su turno con el scope firmado y cero deuda de decisión, pero sigue detrás de 4f por el argumento de #97, que responder el cuestionario no invalida.
 
 **Deudas técnicas declaradas y con destino** (ninguna bloquea):
 
@@ -100,6 +100,9 @@ El marco lore queda fijado en decisión #47 (§5). Cualquier contenido, paleta, 
 | El combate en curso no se serializa: recargar dentro de un POI devuelve al POI sin combate. | #93 | Reabrible en 4d/4e |
 | En 4d no hay forma de conseguir raciones: crafteo es H7, tiendas son H8 y el loot no tiene tabla escrita. Un run de 4d muere de hambre en 7-9 días. Esperado, no es un bug. | #98 | 4f, banda 16-17 de §9.5 |
 | El efecto de `pocion_curacion_menor` está declarado en `data/items.ts` pero sin cablear. Con #98 (acampar no cura) es hoy la única vía de recuperar HP. | #98 | H6 |
+| Cero entradas de contenido escritas: los 14.400 slots están vacíos y la cascada no tiene dónde caer, así que hoy el motor no tiene nada que enseñar. Las 24 genéricas por banda los cubren todos de golpe. | #102 | Bazalo, empezando por `genericas-por-banda.md` |
+| Los efectos que `mechanic` declara (`enemy`, `item`, `gold`, `xp`, `status`, `reveal_poi`, `flag`) no los aplica nadie todavía: el motor los expone y falta el orquestador en `state/`. | #102 | 4f |
+| C1 del cuestionario de lore v2 sin cerrar: los nombres de las cinco regiones del dataset contradicen las respuestas del lore v1 en tres de cinco. Bloquea escribir nombres y descripciones de POI. | Lore v2 | Bazalo, Parte 0 del cuestionario |
 | Un POI de arquetipo asentamiento no puede alcanzar `completado`, así que su grid no puede derivar a `controlado`. | #95 | 4f, cuando la tirada sustituya a los botones |
 | Las 14.400 entradas de #92 no se editan a mano en JSON: hace falta herramienta de autoría. | #92 | Campo de pruebas (§4.14), primer hito de contenido |
 | Verificación visual de 4c.4 no ejecutada: el entorno de la sesión no tiene navegador y la vista exige login de Supabase. | 4c.4 | Bazalo, arrancando la app |
@@ -631,6 +634,78 @@ Campos de `evade_check`:
 
 `weight` = probabilidad relativa dentro de la tabla del bioma. `conditions` filtra elegibilidad. `payload` es específico del `type`.
 
+> **Aviso de modelo (v0.28, decisión #102).** Todo lo de arriba es el formato del
+> modelo de **tabla por bioma** de v0.20, donde las entradas compiten por peso y
+> el d20 normaliza los pesos a rangos. **La exploración de POI ya no usa ese
+> modelo**: #92 lo sustituyó por 20 slots numerados por POI. El formato vigente
+> para escribir contenido es §4.15.10. Esta subsección se conserva porque el
+> camino de bioma sigue implementado y con tests verdes en `exploration.ts`, no
+> porque sea donde se escribe.
+
+#### 4.15.10 Formato de entrada por POI (modelo vigente, #92 · cerrado en 4f.0)
+
+**La cara del d20 ES el slot.** Sale un 7, se resuelve el slot 07. No hay pesos
+que normalizar ni entradas que compitan: el balance lo garantiza el reparto de
+bandas de §9.5, idéntico en los 720 POIs, y no la disciplina del autor entrada a
+entrada. Ésta es la diferencia de fondo con §4.15.9 y la razón de que hiciera
+falta un formato nuevo.
+
+**El autor no escribe JSON.** Escribe Markdown en `contenido/` y un compilador
+(`scripts/compile-contenido.mjs`) lo traduce a `src/data/exploration/*.json`. El
+formato de autoría vive en `contenido/plantillas/PLANTILLA-POI.md`; lo que sigue
+es el shape compilado, que es lo que lee el motor.
+
+```json
+{
+  "poiId": "sur-014-poi-2",
+  "archetype": "ruina",
+  "curated": true,
+  "name": "Nave de los Contrafuertes",
+  "description": "Media bóveda sigue en pie porque las raíces la sostienen.",
+  "curatedEntry": {
+    "title": "Lo que quedó del archivo",
+    "text": "…",
+    "mechanic": [{ "kind": "item", "id": "pocion_curacion_menor", "count": 1 }],
+    "exhaustible": true
+  },
+  "slots": {
+    "2": {
+      "slot": 2,
+      "type": "combat",
+      "text": "Algo llevaba tiempo usando la bóveda como cubil.",
+      "mechanic": [{ "kind": "enemy", "id": "lobo_del_bosque", "count": 1 }],
+      "evade": { "skill": "sigilo", "opposed": true, "opposed_stat": "percepcion", "auto": false }
+    }
+  }
+}
+```
+
+**`slots` es disperso a propósito.** Sólo aparecen los escritos. Un hueco no es
+un error: lo resuelve la cascada.
+
+**`mechanic` declara, no ejecuta.** Es una lista de efectos
+(`enemy | item | damage | heal | gold | xp | status | reveal_poi | flag`) que el
+módulo sagrado expone y que aplica el orquestador de `state/`, por la misma
+frontera que #58 puso entre el loot y el motor de combate. El autor lo escribe
+como frase (`mecanica: oro 12 + estado poisoned`) y nunca ve este shape.
+
+**`evade` es override, no obligación.** `null` significa "usa el default de
+§4.15.7 para este tipo". #24 exige que toda entrada declare tirada reactiva, y
+escribir 14.400 a mano es imposible: el motor la inyecta y el autor sólo escribe
+la línea cuando esa entrada concreta se desvía.
+
+**Cascada de resolución** (`resolvePoiEntry`, §9.5): entrada propia del POI →
+entrada de la tabla de su arquetipo para ese slot → variante genérica de la
+banda. Devuelve `null` sólo si los tres escalones están vacíos, que es un hueco
+de datos y no un estado de juego. Con `genericas-por-banda.md` completo no puede
+ocurrir nunca, y por eso son las primeras entradas que conviene escribir: 24
+entradas hacen jugables los 14.400 slots.
+
+**Evento curado** (§9.3): los 80 POIs con `hasCuratedSlot` llevan `curatedEntry`
+**además** de sus 20 slots, no en lugar de. `exhaustible: true` lo dispara en la
+primera visita y devuelve el POI al d20 después. El estado de "ya consumido"
+vive en `world_state` (#94), no en el módulo sagrado.
+
 ---
 
 ## 5. Decisiones cerradas
@@ -739,6 +814,7 @@ Estas no se reabren sin motivo fuerte. Si Bazalo las cuestiona, la dirección le
 | 99 | **Acampar es siempre un acto explícito, y se acampa en cualquier sitio (cerrado en cuestionario de scope 4d, arbitraje delegado).** **Nunca hay acampada automática.** Q3b (bloqueo suave) y Q22a (botón explícito) son la regla; Q40 ("se fuerza acampar al cerrar combate") y Q45 ("acampa inmediatamente al recargar") se **corrigen**, porque rompían la regla justo donde más caro sale: acampar sin ración cuesta HP máximo por #98 y cobrarlo sin preguntar contradice la confirmación que el propio cuestionario exige en Q25. A 0 acciones los verbos de mundo (viajar, entrar a POI) quedan **deshabilitados con copy explicativo**, nunca un modal disparado solo; al cerrar combate con 0 acciones se vuelve a la vista de POI en ese mismo estado; al recargar con 0 acciones y 0 raciones el juego **abre el modal ya montado con la advertencia visible y sin confirmar**, y el click sigue siendo del jugador. **Se acampa en cualquier sitio** (Q23 llegó cortada y se resuelve por el motor, no por preferencia): con #88 el viaje deja al PJ **en el grid**, no dentro de un POI, y entrar a un POI **cuesta 1 acción** — un PJ que gasta su octava acción viajando quedaría con 0 acciones, fuera de POI, y sin la acción necesaria para entrar en uno. Exigir POI para acampar es por tanto un **softlock permanente con muerte garantizada**, alcanzable en la primera partida y sin salida. `[Acampar]` está disponible en los tres niveles de zoom mientras no haya combate ni modal abierto. **La capa de evento nocturno tiene un único destino: 4f.** Q9c la mandaba a H8 y Q26A/Q27A a 4f; se unifica en 4f porque ahí vive el d20 con bandas de §9.5 y montar un segundo motor de tirada para la noche sería duplicarlo. En 4d queda **sólo la penalización plana de #98**, sin tirada visible (Q28); la distinción seguro/inseguro (Asentamiento vs. raso, Controlado vs. Inexplorado) se declara en datos y queda **inerte** hasta 4f. **Modal de acampar** (Q24, lectura b+c): resumen del día y estado del PJ, y transición corta al despertar. | v0.27 |
 | 100 | **Arquitectura y HUD de 4d: ningún módulo SAGRADO se toca (cerrado en cuestionario de scope 4d, Bloque F por delegación).** **`Character` no se modifica y `combat.ts` tampoco.** `WorldState` ya trae `day` y `actionsSpent` desde 4b, con el comentario literal "los cablea 4d" (`src/rules/world-state.ts`): el hueco se dejó preparado a propósito, así que 4d no migra shape ni dispara parada de sagrados. Módulo nuevo **`src/rules/fatigue.ts`** SAGRADO — `world.ts` es geometría y mezclar la jornada ahí une dos ejes que no comparten nada. **`consumeAction(worldState, actionType)` y `camp()` son puras**; `camp()` devuelve `{ character, worldState }` nuevos y el escritor a backend vive en `state/world-flow.ts`, misma frontera que el resto del repo y que #94. **20-28 tests**, cubriendo acumulación, clamp, muerte y los edge cases de Q41/Q43/Q45. **HUD**: los **8 puntos** de Q16a (no texto, no barra) viven en los **tres niveles de zoom**, corrigiendo Q17a — viajar entre grids se hace desde la vista regional, así que limitar el contador a grid+POI lo escondería exactamente cuando se gasta la acción, y §9.1 no tiene pantallas donde aparecer y desaparecer. Color verde→amarillo→rojo (Q19a) y tinte de pantalla al caer el día (Q20), sin efectos numéricos (§4.10 los difiere a v1.1). **Raciones fuera del HUD permanente** (Q18), con la información puesta donde se toma la decisión: el modal de acampar las muestra, el copy del estado bloqueado a 0 acciones dice cuántas quedan, y **sólo con 0 raciones** aparece aviso persistente — sin eso, con #98 encima, el jugador decidiría a ciegas algo que cuesta HP máximo. **Coste de acción confirmado** (Q1): mover, entrar a POI, craftear y hablar cuestan 1; combatir y acampar son gratis. Entrar a un POI que dispara combate cobra la entrada y el combate sale gratis (Q41). **8 acciones fijas en H4**, abiertas a modulación por perks y atributos en H8 (Q2c). **Contador de día absoluto persistido** (Q6), incrementado al despertar (Q7); sin reset por tiempo real ni avance por reloj de pared (Q5, Q44). | v0.27 |
 | 101 | **Volcado del rango #48-#61 a la tabla de §5. El hueco documental se cierra (cerrado en el Bloque I del cuestionario de 4d).** La tabla de §5 tenía 77 filas para 94 números desde la auditoría de v0.23, que anotó el rango como "nunca volcado" sin decidir qué hacer con él. Al mirarlo de verdad el hueco se parte en dos mitades con respuestas distintas: **#48 y #49 no existen y nunca existieron** —v0.10 y v0.11 cierran ambas con "Sin nuevas decisiones" y la numeración salta de #47 a #50— y **#50 a #61 existen íntegras y fechadas dentro de §13**, así que volcarlas es copiar y pegar, no arqueología. **Q51 = a**: las 12 filas entran, y §5 pasa a ser la fuente única de decisiones cerradas. **Q52 = a**: #48-#49 reciben fila declarativa de "números no asignados" para que nadie vuelva a auditarlos como decisiones perdidas. **Q53 se corrige en la ejecución**: Bazalo respondió "colgado del bump de cierre" de 4d, pero #97 dejó 4d a tres sub-pasos vista y el motivo de arreglar el hueco era precisamente que no siguiera colgando — se ejecuta en v0.27, que es el siguiente bump real. **Por qué importaba**: #61 es el principio operativo que gobierna el scope del proyecto y se cita en #76, #79, #89 y #92; que la decisión más citada de la biblia no tuviera fila era la clase de hueco que hace que alguien la dé por no cerrada y la reabra sin saberlo. | v0.27 |
+| 102 | **Formato de entrada por POI cerrado y compilador de contenido (cerrado en el sub-paso 4f.0).** #97 mandó a 4f.0 "cerrar el formato de entrada de #92, que §4.15.9 nunca revisó tras el cambio de modelo". Al ir a hacerlo el hueco resultó mayor que documental: **`src/rules/exploration.ts` implementaba entero el modelo de bioma** —`BiomeTable`, pesos, `computeEffectiveWeight`, `selectByD20` normalizando a rangos sobre 20— y #92 lo había sustituido por 20 slots numerados por POI, donde **la cara del d20 ES el slot**. En ese modelo los pesos no tienen función: el balance lo garantiza el reparto de bandas de §9.5, idéntico en los 720, que es exactamente lo que #92 buscaba al sacarlo de la disciplina del autor. **Se resuelve añadiendo camino nuevo, no sustituyendo** (una de tres lecturas propuestas, elegida por Bazalo): `resolvePoiEntry`, `rollPoiEntry` y `shouldUseCuratedEntry` conviven con el camino de bioma, que queda intacto y con sus tests verdes. Lo que no se hace es usar los dos en el mismo sitio. **El motor declara efectos, no los aplica**: `mechanic` es una lista (`enemy | item | damage | heal | gold | xp | status | reveal_poi | flag`) que ejecuta el orquestador de `state/`, misma frontera que #58 puso entre el loot y el combate. **`evade` es override, no obligación**: `null` = default de §4.15.7 para el tipo, porque #24 exige tirada en toda entrada y escribir 14.400 a mano es imposible. **Capa de autoría**: el autor escribe Markdown en `contenido/` y `scripts/compile-contenido.mjs` traduce a `src/data/exploration/*.json`, validando bandas, tipos, gramática, duplicados y rangos, y fallando ruidosamente con archivo y línea. El JSON generado va commiteado porque el bundler lo importa y el build no corre el compilador; un test recompila y compara para que editar `contenido/` sin recompilar falle en rojo en vez de dejar datos viejos en silencio. **El POI piloto de #97 se entrega como fixture de formato, no como canon** (`contenido/plantillas/EJEMPLO-POI-RELLENO.md`, fuera del árbol que el compilador lee): #77 y la higiene de la propia plantilla reservan el texto para Bazalo, y C1 del cuestionario de lore v2 —los nombres de las cinco regiones se contradicen en tres de cinco— hace que cualquier descripción de paisaje escrita hoy sea una apuesta. El formato quedó validado igual, que era el objetivo de #97. **Reescribe**: §4.15.9 pasa a modelo histórico, §4.15.10 nueva. | v0.28 |
 
 ---
 
@@ -1585,7 +1661,7 @@ Próximo: **PASO 4 del Hito 3** (4a Statuses → 4b Perks aplicados → 4c IA co
 | 4b | Vista regional + zoom continuo a vista de grid. 180 grids con color por región e indicador del PJ. Vista de grid con ~4 POIs y niebla §9.9. Botón "Salir al mundo" sustituye "Explorar". Mirar (cámara libre) separado de viajar (acción, adyacencia cardinal) — decisión #88. Lectura visual completa en #91. **La home sigue siendo pantalla aparte y sólo cambia el botón** (decisión #87). | SÍ |
 | 4c | **Partido en 4c.0 a 4c.4.** Vista de POI por zoom continuo (#93) + entrada al combate Lobo placeholder. Persistencia de POIs revelados/completados en `world_state` (#94). Sistema de pausa global (#94). Home reinterpretada como POI del Sur + campamento completo (decisión #87). `last_damage_source='enemy'` explícito al cerrar combate por derrota. **No entra**: reanudar combate tras cerrar navegador (deuda declarada en #93) ni la tabla de 20 eventos por POI (#92, se cablea en 4f y se escribe en fase 2). | SÍ |
 | 4c.4 | **Añadido en v0.25 (decisión #95).** Selector de los 3 slots de §8.2 en el Menú principal, que cierra sus tres opciones de §8.1. Recoge el "Cambiar de personaje" que #87 puso en el campamento y #95 difirió. **Cerrado el 26/8/2026.** | SÍ |
-| 4f.0 | **Añadido en v0.26 (decisión #97).** Schema de entrada de #92 cerrado y validado escribiendo un POI completo (20 entradas) más las cuatro tablas de arquetipo de fallback. §4.15.9 nunca se revisó tras el cambio de modelo. | NO (motor + datos) |
+| 4f.0 | **Añadido en v0.26 (#97), cerrado en v0.28 (#102) el 26/8/2026.** Formato de entrada por POI cerrado (§4.15.10), compilador `contenido/` → `src/data/exploration/` con 41 tests, y modelo de #92 cableado en el motor (`resolvePoiEntry`, `rollPoiEntry`, `shouldUseCuratedEntry`) con 22 tests. El POI piloto se entrega como fixture de formato, no como canon (#77, C1 del lore v2). | NO (motor + datos) |
 | 4f | **Adelantado en v0.26 (#97).** Tirada de exploración con bandas + modal/banner de evento. `rollExplorationTick` sustituye "botón Combatir". Tirada visible (#75). Variables: bioma + nivel + suerte. | SÍ |
 | 4d | **Scope cerrado en v0.27 (#98-#100).** Acciones por día + acampar. 8 puntos en HUD persistente en los tres niveles de zoom. Acampar explícito, en cualquier sitio, gratis, 1 ración. Penalización acumulativa sin ración y muerte por fatiga. `src/rules/fatigue.ts` nuevo SAGRADO; ningún módulo sagrado existente se toca. **No entra**: capa de evento nocturno (diferida a 4f). | SÍ |
 | 4e | Fast travel + anclas. Condición de "Controlado" cerrada en este sub-paso. UI de anclas + lista de viaje. | SÍ |
@@ -1739,3 +1815,27 @@ El Bloque F quedó sin responder con un "responde a todo como más sentido tenga
 - Biblia: 13 secciones, 101 decisiones numeradas, 0 bloqueantes abiertos, 0 huecos en la tabla de §5.
 - Código: sin tocar. 534/534 tests, `main` en `19f5b64`.
 - Próximo: **4f.0** (schema de entradas de POI + POI piloto). El orden de #97 se mantiene: 4f.0 → 4f → 4d → 4e.
+
+---
+
+**v0.28** — **Sub-paso 4f.0 cerrado** (26/8/2026). Una decisión nueva (#102). El formato de #92 queda cerrado y el modelo entra en el motor.
+
+#97 mandó a 4f.0 "cerrar el formato de entrada de #92, que §4.15.9 nunca revisó tras el cambio de modelo". Al ir a hacerlo, el hueco resultó ser bastante mayor que documental:
+
+- **`exploration.ts` implementaba entero el modelo viejo.** `BiomeTable`, pesos por entrada, `computeEffectiveWeight`, `selectByD20` normalizando a rangos sobre 20. #92 había cambiado el modelo a **20 slots numerados por POI**, donde la cara del d20 **es** el slot, y en ese modelo los pesos no tienen función: el balance lo garantiza el reparto de bandas de §9.5, idéntico en los 720, que es justo lo que #92 buscaba al sacarlo de la disciplina del autor. La revisión de §4.15.9 no era una nota al pie; era la mitad de un motor.
+- **Se añade camino nuevo en vez de sustituir**, de tres lecturas puestas sobre la mesa y con OK explícito de Bazalo sobre módulo sagrado (§12). El camino de bioma queda intacto y con sus tests verdes; lo que no se hace es usar los dos en el mismo sitio.
+
+**Capa de autoría montada de punta a punta.** El autor escribe Markdown en `contenido/`, `scripts/compile-contenido.mjs` traduce a `src/data/exploration/*.json`, y el motor lee eso. El autor nunca escribe JSON ni un payload: escribe `mecanica: oro 12 + estado poisoned` y el compilador lo convierte. Valida bandas, tipos, gramática, duplicados y rangos, y falla con archivo, línea y motivo sin escribir nada si hay un solo error.
+
+**El POI piloto se entrega como fixture, no como canon.** #97 pedía "un POI completo escrito a mano" para validar el formato. El formato quedó validado —el ejemplo compila sus 21 bloques sin retocar el parser— pero el texto vive en `contenido/plantillas/`, fuera del árbol que el compilador lee: #77 y la higiene de la propia plantilla reservan el texto para Bazalo, y **C1 del cuestionario de lore v2 sigue abierta**, con los nombres de las cinco regiones contradiciéndose en tres de cinco. Escribir descripciones de paisaje antes de cerrar eso es apostar.
+
+- §3 actualizada: estado, próximo paso, fila 4f.0 de la tabla de sub-pasos y tres deudas nuevas.
+- §4.15.9 marcada como modelo histórico; **§4.15.10 nueva** con el formato vigente.
+- §5: decisión #102. **102 decisiones numeradas.**
+
+**Estado al cierre de v0.28:**
+
+- Biblia: 13 secciones, 102 decisiones numeradas, 0 bloqueantes abiertos.
+- Código: **597/597 tests** (+63 sobre v0.27), `tsc --noEmit` limpio. `main` en `82b05d0`.
+- Contenido: 0 de 14.400 entradas escritas. El andamiaje, el compilador y el motor están listos y esperando texto.
+- Próximo: **4f** (tirada cableada en la vista de POI), y en paralelo Bazalo puede empezar a escribir por `genericas-por-banda.md`, que son 24 entradas y cubren los 14.400 slots.
