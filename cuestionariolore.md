@@ -167,6 +167,7 @@ Los personajes con esta hjabilidad.
 41. ¿Hay ciclo día/noche **normal** o el cielo cambió tras el evento? Si cambió, describe qué se ve ahora cuando el jugador mira hacia arriba.
 - Es normal, pero debido a la inexistencia d contaminacion lumínica, el cielo está super potenciado. Es una vision ancestral.
 42. ¿Hay constelaciones, lunas, o cuerpos celestes con nombre y rol mítico?
+- La luna y el Sol, simplemente. 
 
 ### Bloque 4 — Historia y cronología
 
