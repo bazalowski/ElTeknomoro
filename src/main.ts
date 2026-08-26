@@ -45,7 +45,20 @@ let worldSession: { flow: WorldFlowHandle; character: Character } | null = null;
 // elige en el Menú principal cada vez que se entra y no se persiste en ningún
 // sitio. Adivinar por el jugador cuál de sus tres partidas quiere seguir sale
 // más caro que un click.
-let activeSlot: SlotIndex = 0;
+let activeSlot: SlotIndex | null = null;
+
+// El backend quitó a propósito el default de `slotIndex` porque un 0
+// silencioso es cómo se escriben los bugs de "cargas la partida A y guardas
+// encima de la B". Reintroducirlo aquí a nivel de sesión sería devolver el
+// mismo agujero por la puerta de atrás: hoy todos los caminos pasan por el
+// selector del Menú principal, pero eso lo garantiza la suerte, no el tipo.
+// Si algo intenta jugar sin slot elegido, revienta aquí y no en Supabase.
+function requireActiveSlot(): SlotIndex {
+  if (activeSlot === null) {
+    throw new Error('main: no hay slot activo. Nadie debería jugar sin pasar por el Menú principal.');
+  }
+  return activeSlot;
+}
 
 // De dónde vino el combate. Sólo el tutorial marca `tutorial_lobo_completed`
 // (#86): quien se lo saltó pagando el coste mecánico no lo recupera gratis
@@ -115,7 +128,7 @@ function startCombatRun(
       // logueamos: H3 no tiene UI de error de red todavía (entra en hitos
       // posteriores cuando toque hardening de persistencia).
       persisting = true;
-      saveCharacterUpdate(finalCharacter, activeSlot)
+      saveCharacterUpdate(finalCharacter, requireActiveSlot())
         .catch((err) => {
           console.error('main: saveCharacterUpdate falló al cerrar combate:', err);
         })
@@ -154,11 +167,11 @@ function startCombatRun(
 // monta el orquestador world-flow y pinta la vista. Fade de 300ms en la
 // entrada (decisión Q5 del cuestionario 4b, vía clase CSS).
 function startWorldRun(root: HTMLElement, character: Character): void {
-  loadWorldState(activeSlot)
+  loadWorldState(requireActiveSlot())
     .then((worldState) => {
       const flow = createWorldFlow({
         initialState: worldState,
-        persist: (ws) => saveWorldState(ws, activeSlot),
+        persist: (ws) => saveWorldState(ws, requireActiveSlot()),
       });
       worldSession = { flow, character };
       mountWorldView(root, flow, character);
@@ -193,7 +206,7 @@ function mountWorldView(root: HTMLElement, flow: WorldFlowHandle, character: Cha
     // epitafio. El Menú principal vuelve solo a su rama vacía porque
     // loadLastCharacter dejará de encontrar nada.
     onResetRun: () =>
-      deleteSlot(activeSlot).then(() => {
+      deleteSlot(requireActiveSlot()).then(() => {
         worldSession = null;
         mode = 'home';
         render();
@@ -246,7 +259,7 @@ function render(): void {
   }
   if (mode === 'h2-flow') {
     app.innerHTML = '';
-    startH2Flow(app, activeSlot, () => {
+    startH2Flow(app, requireActiveSlot(), () => {
       mode = 'home';
       render();
     });
@@ -274,7 +287,7 @@ function render(): void {
       // Recargamos el PJ vivo en el momento de entrar. home ya lo mostró,
       // pero el slot puede haber cambiado entre tabs; este load es la
       // fuente de verdad inmediata antes de combate o mundo.
-      loadCharacter(activeSlot)
+      loadCharacter(requireActiveSlot())
         .then((character) => {
           if (character === null || !character.alive) {
             console.warn(`main: ${intent} sin PJ vivo en slot; volviendo a home.`);
@@ -333,6 +346,7 @@ onSessionChange((session) => {
   if (!session && (mode === 'h2-flow' || mode === 'combat' || mode === 'world')) {
     mode = 'auth';
     worldSession = null;
+    activeSlot = null;
   }
   render();
 });

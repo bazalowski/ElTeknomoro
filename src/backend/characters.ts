@@ -170,24 +170,35 @@ export async function loadSlots(): Promise<SlotSummary[]> {
 
   const { data, error } = await supabase
     .from('save_slots')
-    .select('slot_index, character_data')
+    .select('slot_index, alive, character_data')
     .eq('user_id', userId);
 
   if (error) throw error;
 
-  const byIndex = new Map<number, unknown>();
+  const byIndex = new Map<number, { alive: boolean; character_data: unknown }>();
   for (const row of data ?? []) {
-    byIndex.set(row.slot_index as number, row.character_data);
+    byIndex.set(row.slot_index as number, {
+      alive: row.alive as boolean,
+      character_data: row.character_data,
+    });
   }
 
   return SLOT_INDICES.map((index) => {
-    const raw = byIndex.get(index);
-    if (raw === undefined || raw === null) return { index, state: 'vacio' as const, character: null };
-    const character = hydrateLoadedCharacter(raw);
-    // `alive` se lee del PJ y no de la columna homónima: el personaje es la
-    // fuente de verdad de su propia muerte, y la columna existe para que el
-    // servidor pueda filtrar sin abrir el JSON.
-    return { index, state: character.alive ? ('vivo' as const) : ('caido' as const), character };
+    const row = byIndex.get(index);
+    if (row === undefined || row.character_data === null) {
+      return { index, state: 'vacio' as const, character: null };
+    }
+    // `state` se deriva de la COLUMNA `alive`, no del JSON, aunque hoy se
+    // escriban juntas. Es la misma fuente que consulta la guard de
+    // `saveCharacter`, así que lo que el menú pinta es exactamente lo que el
+    // camino de escritura va a permitir. Derivarlo del JSON abriría la clase
+    // de fallo "el menú dice caído y guardar lanza CharacterAlreadyAliveError".
+    // El `character_data` se conserva para pintar: nivel, HP y la lápida.
+    return {
+      index,
+      state: row.alive ? ('vivo' as const) : ('caido' as const),
+      character: hydrateLoadedCharacter(row.character_data),
+    };
   });
 }
 
