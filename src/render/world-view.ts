@@ -1103,10 +1103,18 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
       svg.classList.add('world-view__svg--grid-focus');
     }
 
+    // Entrar cuesta una acción (#100) y el flow puede rechazarlo si la jornada
+    // se agotó. Ignorar ese `false` abriría la escena del POI mientras el
+    // estado persistido dice que el PJ nunca entró: la vista mentiría y al
+    // recargar aparecería en otro sitio.
+    if (!flow.enterPOI(poiId)) {
+      pintarFatiga();
+      paintPanel();
+      return;
+    }
+
     focusedPOIId = poiId;
     selection = { kind: 'poi', poiId };
-    // Una sola escritura de estado y un solo persist: revela + fija la vista.
-    flow.enterPOI(poiId);
     pintarFatiga();
 
     buildScene(poi);
@@ -1475,18 +1483,53 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
     panel.querySelector<HTMLButtonElement>('[data-wv-enter]')?.focus();
   }
 
-  // Seleccionar una celda ACERCÁNDOSE a ella. Ver la nota del listener de click.
+  // Seleccionar una celda. Un click NO acerca: mirar de lejos es legítimo y
+  // gratis (#88), y mover la cámara sola en cada click convierte una ojeada al
+  // mapa en un viaje. Para acercarse está el doble click, más abajo.
   function selectCell(gridId: string): void {
-    // Ya enfocada: sólo seleccionar. Volver a llamar a focusGrid relanzaría la
-    // animación de cámara sobre el sitio donde ya estás.
-    if (focusedGridId === gridId) {
-      selection = { kind: 'grid', gridId };
-      paintGridStates();
-      paintPanel();
+    selection = { kind: 'grid', gridId };
+    paintGridStates();
+    paintPanel();
+  }
+
+  // Doble click = "hazlo ya", sobre el mismo sitio donde está el ojo.
+  //
+  // El click sencillo selecciona y no compromete nada. El doble click ejecuta
+  // la acción evidente de lo que hay debajo: acercarse al grid, o entrar al
+  // POI. Los dos botones del panel lateral ("Acercar" y "Entrar") siguen ahí y
+  // siguen siendo el camino descubrible; esto es el atajo para quien ya sabe
+  // lo que quiere, que es el caso de las mil visitas al Hogar.
+  //
+  // Entrar cuesta una acción de jornada (#100) y #88 prohíbe que un click del
+  // mapa gaste recurso. Un doble click no es un click perdido: son dos
+  // pulsaciones deliberadas sobre el mismo objetivo, con el panel ya delante
+  // diciendo qué es y qué cuesta. Sigue siendo un acto explícito del jugador,
+  // que es lo que #88 protege.
+  svg.addEventListener('dblclick', (ev) => {
+    if (dragMoved) return;
+    if (focusedPOIId !== null || systemOpen()) return;
+    const target = ev.target as Element;
+
+    const poiGroup = target.closest<SVGGElement>('[data-poi-id]');
+    if (poiGroup?.dataset.poiId) {
+      ev.preventDefault();
+      const poiId = poiGroup.dataset.poiId;
+      const poi = getPOI(poiId);
+      // Sin jornada no se entra. El panel ya lo explica, así que aquí basta
+      // con no hacer nada en vez de abrir un modal que nadie pidió (#99).
+      if (poi === null || !canPerform(flow.getState(), character, 'enter_poi')) return;
+      focusPOI(poiId, true);
       return;
     }
-    focusGrid(gridId, true);
-  }
+
+    const cell = target.closest<SVGRectElement>('[data-grid-id]');
+    if (cell?.dataset.gridId) {
+      ev.preventDefault();
+      const gridId = cell.dataset.gridId;
+      if (focusedGridId === gridId) unfocusGrid(true);
+      else focusGrid(gridId, true);
+    }
+  });
 
   // Click = selección y cámara, nunca gasto de recurso (#88). Delegado en el SVG.
   //

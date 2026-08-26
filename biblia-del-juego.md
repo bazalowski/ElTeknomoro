@@ -1926,13 +1926,15 @@ Se retira el `[Descansar]` deshabilitado que 4c dejó en el POI Hogar: acampar e
 
 Se añade además el manejo de `pointercancel`, que faltaba: sin él, un gesto que el sistema interrumpe dejaba `dragging` en `true` y el mapa se arrastraba solo con el botón sin pulsar.
 
-**Flujo de selección de POI acortado (26/8/2026), a petición de Bazalo.** Entrar a un POI costaba **cuatro clicks**: celda, "Acercar" en el panel lateral, POI, "Entrar" en el panel lateral. Dos de ellos cruzaban la pantalla desde el mapa hasta el panel de la derecha.
+**Doble click como atajo, y corrección de un desincronizado de 4d.2 (26/8/2026, a petición de Bazalo).** Entrar a un POI costaba cuatro clicks, dos de ellos cruzando la pantalla hasta el panel lateral. Lo que más pesaba no era el mapamundi sino **las celdas interiores del grid**: el Hogar se visita cientos de veces y abrir su inventario eran cuatro pulsaciones.
 
-La mitad de esa fricción es deliberada y no se toca: #88 separó *mirar* de *viajar* para que un click en el mapa no pueda mover al PJ ni gastar jornada, y desde #100 entrar a un POI cuesta una acción de verdad. El botón explícito de "Entrar" se queda.
+La mitad de esa fricción es deliberada y se queda: #88 separó *mirar* de *viajar* para que un click del mapa no mueva al PJ ni gaste jornada, y desde #100 entrar a un POI cuesta una acción real. Los botones "Acercar" y "Entrar" siguen siendo el camino descubrible.
 
-La otra mitad no tenía decisión detrás. **"Acercar" es cámara, y #88 declara la cámara "gratis e ilimitada"**: obligar a un viaje al panel lateral para una operación que no cuesta nada la vestía igual que la que sí cobra un recurso. Ahora **el click en la celda acerca**, y entrar pasa de cuatro clicks a tres. Además el foco de teclado salta a "Entrar" al seleccionar un POI, así que el tercer paso se puede confirmar con Enter sin mover el ratón.
+Lo que se añade es un **atajo por doble click** sobre el propio objeto, que es donde ya está el ojo: doble click en un grid lo acerca (o lo aleja si ya lo estaba), doble click en un POI entra. **Un click sencillo sigue sin comprometer nada**, que era la línea que #88 protege: un doble click no es un click perdido, son dos pulsaciones deliberadas sobre el mismo objetivo con el panel ya delante diciendo qué cuesta. Se probó primero acercar con el click sencillo y Bazalo lo rechazó: mover la cámara sola convierte una ojeada al mapa en un viaje.
 
-Efecto colateral corregido: el manejador de teclado del SVG duplicaba la lógica del click con otro cuerpo, y ya habían divergido. Los dos caminos llaman ahora a las mismas dos funciones.
+**Bug de 4d.2 corregido**: `enterPOI` empezó a devolver `false` con la jornada agotada, pero `focusPOI` ignoraba el valor y abría la escena igualmente. La vista habría enseñado un POI abierto mientras el estado persistido decía que el PJ nunca entró, y al recargar habría aparecido en otro sitio.
+
+Efecto colateral: el manejador de teclado del SVG duplicaba la lógica del click con otro cuerpo y ya habían divergido. Los dos caminos llaman ahora a las mismas dos funciones.
 
 **Estado al cierre de v0.31:**
 
