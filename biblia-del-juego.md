@@ -1919,6 +1919,13 @@ Se retira el `[Descansar]` deshabilitado que 4c dejó en el POI Hogar: acampar e
 
 **Deuda del sub-paso:** sin verificación visual en navegador. El entorno de la sesión no tiene uno y la vista exige login de Supabase — misma deuda declarada en §3 desde 4c.4, y ahora cubre también 4d.2.
 
+**Corrección de 4b encontrada al probar 4d.2 (26/8/2026).** Bazalo reportó que las celdas del mapa no se podían seleccionar con el botón izquierdo, sólo con el derecho. Eran dos defectos de la cámara de #91, no de 4d:
+
+- **`setPointerCapture` en cada `pointerdown`.** La captura de puntero reapunta también los eventos de ratón de compatibilidad al elemento que captura, así que el `click` se disparaba sobre el viewport en lugar de sobre la celda del SVG. El listener de selección vive en el SVG, que es **hijo** del viewport, y los eventos burbujean hacia arriba: nunca lo veía. El botón derecho salía antes por la guarda `ev.button !== 0`, no capturaba, y por eso era el único que llegaba. Ahora la captura se pide sólo cuando el arrastre supera el umbral.
+- **Umbral de arrastre medido entre eventos consecutivos** en vez de desde el origen del gesto. Un arrastre lento avanza 2-3 px por evento y nunca superaba los 4 px, así que ir despacio no movía el mapa.
+
+Se añade además el manejo de `pointercancel`, que faltaba: sin él, un gesto que el sistema interrumpe dejaba `dragging` en `true` y el mapa se arrastraba solo con el botón sin pulsar.
+
 **Estado al cierre de v0.31:**
 
 - Biblia: 13 secciones, 102 decisiones numeradas, 0 bloqueantes abiertos.

@@ -1382,34 +1382,67 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   let dragging = false;
   let dragMoved = false;
   let lastPointer = { x: 0, y: 0 };
+  // Punto donde empezó el gesto. El umbral de arrastre se mide DESDE AQUÍ y no
+  // desde el último punto procesado: un arrastre lento avanza 2-3 px por
+  // evento y nunca superaría un umbral medido entre eventos consecutivos, así
+  // que el mapa no se movería por ir despacio.
+  let dragOrigin = { x: 0, y: 0 };
+  let capturedPointerId: number | null = null;
 
+  // NO se captura el puntero aquí. `setPointerCapture` reapunta también los
+  // eventos de ratón de compatibilidad al elemento que captura, así que
+  // capturar en cada pointerdown hacía que el `click` se disparase sobre el
+  // viewport en vez de sobre la celda del SVG: el listener de selección, que
+  // vive en el SVG (hijo), no llegaba a verlo nunca y las celdas no se podían
+  // seleccionar con el botón izquierdo. La captura se pide sólo cuando el
+  // arrastre empieza de verdad, que es cuando hace falta.
   viewport.addEventListener('pointerdown', (ev) => {
     if (ev.button !== 0) return;
     if (focusedPOIId !== null || systemOpen()) return; // superficie inerte
     dragging = true;
     dragMoved = false;
+    dragOrigin = { x: ev.clientX, y: ev.clientY };
     lastPointer = { x: ev.clientX, y: ev.clientY };
-    viewport.setPointerCapture(ev.pointerId);
   });
 
   viewport.addEventListener('pointermove', (ev) => {
     if (!dragging) return;
-    const dx = ev.clientX - lastPointer.x;
-    const dy = ev.clientY - lastPointer.y;
-    if (!dragMoved && Math.hypot(ev.clientX - lastPointer.x, ev.clientY - lastPointer.y) < 4) {
-      return;
+
+    // Umbral medido desde el origen del gesto, no desde el evento anterior.
+    if (!dragMoved) {
+      if (Math.hypot(ev.clientX - dragOrigin.x, ev.clientY - dragOrigin.y) < 4) return;
+      dragMoved = true;
+      // Ahora sí: a partir de aquí es un arrastre y el puntero se captura para
+      // que salirse del viewport no lo interrumpa.
+      viewport.setPointerCapture(ev.pointerId);
+      capturedPointerId = ev.pointerId;
     }
-    dragMoved = true;
+
     setAnimating(false);
-    cam.tx += dx;
-    cam.ty += dy;
+    cam.tx += ev.clientX - lastPointer.x;
+    cam.ty += ev.clientY - lastPointer.y;
     lastPointer = { x: ev.clientX, y: ev.clientY };
     applyCamera();
   });
 
-  viewport.addEventListener('pointerup', (ev) => {
+  viewport.addEventListener('pointerup', () => {
     dragging = false;
-    viewport.releasePointerCapture(ev.pointerId);
+    if (capturedPointerId !== null) {
+      viewport.releasePointerCapture(capturedPointerId);
+      capturedPointerId = null;
+    }
+  });
+
+  // Un gesto cancelado (el sistema se lleva el puntero) deja el estado limpio.
+  // Sin esto, `dragging` se quedaría en true y el siguiente movimiento del
+  // ratón, sin botón pulsado, arrastraría el mapa solo.
+  viewport.addEventListener('pointercancel', () => {
+    dragging = false;
+    dragMoved = false;
+    if (capturedPointerId !== null) {
+      viewport.releasePointerCapture(capturedPointerId);
+      capturedPointerId = null;
+    }
   });
 
   viewport.addEventListener(
