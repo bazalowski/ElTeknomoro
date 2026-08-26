@@ -91,7 +91,17 @@ El marco lore queda fijado en decisión #47 (§5). Cualquier contenido, paleta, 
 
 **Estado hoy (26 agosto 2026):** biblia en v0.25. **H0, H1, H2 y H3 cerrados, PASO 4 del H3 archivado, cuestionario de scope de H4 cerrado, sub-pasos 4a, 4b.0 y 4b cerrados, cuestionario de scope de 4c cerrado.** El primer loop completo del juego (crear PJ → home → combate al Lobo → loot/epitafio → persistencia → home) corre en producción con statuses funcionales, 10 perks cableados, IA con 4 perfiles + intent visible, y `flee` 50% implementado. **481/481 tests verde** (19 ficheros), `tsc --noEmit` limpio, `vite build` limpio. Los 5 bloqueantes de diseño que restaban (v0.8) están cerrados (decisiones #41-#45 más #46 emergente). Lore (#47), reordenamiento de hitos (#62) y decisiones del cuestionario de visión (#63 en adelante) cerradas en v0.20. Decisiones del PASO 4 del H3 (#78-#80) cerradas en v0.21. Decisiones del cuestionario de scope de H4 (#81-#85) cerradas en v0.22. Decisiones del cuestionario de scope del sub-paso 4b (#86-#91) cerradas en v0.23. Decisiones del cuestionario de scope del sub-paso 4c (#92-#94) cerradas en v0.24. Decisiones del PASO 2 del pipeline de 4c.2/4c.3 (#95-#96) cerradas en v0.25.
 
-**Próximo:** arrancar **sub-paso 4c de H4** por MODOPIPELINE completo (Prompt Master → director → impeccable): vista de POI por zoom continuo (#93), persistencia de POIs revelados/completados en `world_state` (#94), sistema de pausa global (#94) y home reinterpretada como POI Asentamiento del Sur con campamento completo (#87). Tras 4c, 4d (acciones por día + acampar).
+**Próximo:** **4c.4** (selector de los 3 slots de §8.2 en el Menú principal, #95), que cierra 4c. Después 4d (fatiga de jornada).
+
+**Deudas técnicas declaradas y con destino** (ninguna bloquea):
+
+| Deuda | Origen | Destino |
+|---|---|---|
+| El combate en curso no se serializa: recargar dentro de un POI devuelve al POI sin combate. | #93 | Reabrible en 4d/4e |
+| Un POI de arquetipo asentamiento no puede alcanzar `completado`, así que su grid no puede derivar a `controlado`. | #95 | 4f, cuando la tirada sustituya a los botones |
+| Las 14.400 entradas de #92 no se editan a mano en JSON: hace falta herramienta de autoría. | #92 | Campo de pruebas (§4.14), primer hito de contenido |
+| Las decisiones #48-#61 nunca se volcaron a la tabla de §5 (#48 y #49 nunca existieron; #50-#61 están íntegras en §13). | Auditoría v0.23 | Bloque I del cuestionario de 4d |
+| Verificación visual de 4c.1, 4c.2 y 4c.3 no ejecutada: el entorno de la sesión no tiene navegador y la vista exige login de Supabase. | 4c.1-4c.3 | Bazalo, arrancando la app |
 
 ### 3.1 Inventario binario de v1 (8 elementos)
 

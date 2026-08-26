@@ -1,7 +1,7 @@
 # El Teknomoro — Scope del MVP web
 
 > Contrato de alcance. Qué entra en v1 del navegador, qué no entra, en qué orden se construye y qué lo bloquea.
-> **Versión:** v0.8 · **Fecha:** 1 de mayo de 2026 (cierre H3 + reordenamiento de hitos: modo Historia separado a H5 nuevo)
+> **Versión:** v0.9 · **Fecha:** 26 de agosto de 2026 (sincronización con biblia v0.25: §1.4 y §1.4b describían el mundo anterior a la decisión #67, cerrada tres meses antes)
 > **Autor:** el-teknomoro-director
 > **Destino:** referencia firme del equipo (Bazalo + dirección) durante toda la construcción del MVP. Si algo no está aquí, no se construye en v1.
 
@@ -51,26 +51,30 @@ Las secciones §4-§7 son apoyo: bloqueantes, estimación, riesgos, definición 
 - [x] Botón Reset. Tras confirmar, personaje bloqueado. (cerrado en H2.5c, 2026-04-27, sub-pantalla 3 de 3 del paso 5/5; **Hito 2 completo**)
 
 ### 1.4 Mapa y exploración
-- Mapa-mundi con nodos (ciudades, mazmorras, POIs).
-- Sub-mapas en grid al entrar en un nodo.
-- Top-down 2D con tiles cuadrados, cámara con zoom.
-- Movimiento por turnos con puntos de acción.
-- Niebla de guerra.
-- **Viaje rápido híbrido** (solo a nodos descubiertos):
-  - Viaje seguro entre ciudades aliadas / bioma tranquilo → sin tiradas, solo coste de tiempo.
-  - Viaje arriesgado por zona salvaje u hostil → tiradas condensadas con resumen al llegar.
-- Día/noche visualmente (efectos numéricos diferidos).
-- HUD siempre visible: HP, recursos, mini-stats.
-- Interacción con POI por tap directo.
-- 1 mapa de historia completo + generación procedural para modo Libre con semilla derivada de frase.
-- Biomas provisionales (5): llanura, bosque, desierto, glaciar, ruinas arcanas.
+
+> **Reescrita en v0.9.** Lo que había aquí (mapa-mundi con nodos, sub-mapas al entrar, niebla de guerra por casilla, viaje rápido híbrido, generación procedural del mapa) describía el modelo anterior a la decisión **#67**, que la biblia cerró en v0.20 y que #69, #70, #72, #81 y #88 desarrollaron después. El scope se quedó sin actualizar tres meses. Esta sección es ahora lo que dice biblia §9.
+
+- **Overworld único con zoom semántico** (#67). No hay mapa-mundi separado de sub-mapas: tres niveles de cámara sobre el mismo dataset — vista regional (180 grids) → vista de grid (~4 POIs) → vista de POI (escena). El cambio entre niveles es continuo, nunca un router de pantallas (#83).
+- **180 grids en 5 regiones**: Centro 50, Norte 35, Sur 35, Este 30, Oeste 30. Las **5 son jugables en v1** con curaduría densa equivalente (#81). El Sur es el hub estructural y contiene el grid de inicio (#82).
+- **720 POIs** (~4 por grid) en 4 arquetipos: Natural, Ruina, Asentamiento, Arcano (#68). 80 llevan además hueco curado marcado en datos (#83).
+- **Mundo fijo entre runs** (#72). No hay generación procedural del mapa: los 180 grids y los 720 POIs son los mismos partida tras partida, porque el lore embebido (§10) y la memoria de progresión (#65) sólo funcionan sobre un mundo estable. El modo Libre sigue existiendo pero modula contenido dentro del mundo fijo, no lo regenera.
+- **Mapa visible desde el primer minuto, niebla a nivel de POI** (#69). No hay niebla de guerra por casilla: cada POI no visitado aparece como "???" hasta entrar. Los grids se leen como Inexplorado / Explorado / Controlado, estado **derivado** de los POIs y el ancla, no persistido aparte (#94).
+- **Mirar no es viajar** (#88). Zoom, pan e inspección son cámara: gratis, ilimitados, sobre cualquier grid, sin mover al PJ. Viajar es acción de juego con botón explícito de confirmación y sólo a **vecinos cardinales**.
+- **Fatiga de jornada** (#71): 8 acciones por día. Acampar consume una ración; sin ración, penalización de HP. Sustituye a los puntos de acción por casilla.
+- **Fast travel sólo entre grids Controlados** (#70), vía anclas colocadas por el jugador, con coste en ración y acciones. Sustituye al viaje rápido híbrido por nodos.
+- **El estado del mundo cuelga del slot, no del usuario** (#90), y se rebobina entero con la muerte del PJ (#94, C3b de #85).
+- **El "home" es un POI tipo Asentamiento del Sur** (#85), no una pantalla aparte. El Menú principal es la pantalla de fuera de la run (#87, #95).
+- HUD siempre visible con datos reales: HP, nombre, nivel. El contador de jornada aparece cuando #71 esté cableado (#91).
+- Día/noche visualmente (efectos numéricos diferidos a v1.1, #42).
 
 ### 1.4b Tirada de exploración (sistema raíz — ver biblia §4.15)
 - Tirada disparada por: pisar casilla, entrar a nodo, cruzar bioma, acampar, tramo de viaje rápido arriesgado.
 - 7 variables de entrada: bioma, hora, clima, nivel, reputación, flags, suerte.
 - 10 tipos de evento: combate, NPC, hallazgo, trampa, ambiental, POI descubierto, narrativo, emboscada, refugio, Nada.
 - Dado de exploración: **1d20** con mapeo por rangos sobre pesos de tabla (decisión cerrada, independiente del dado de combate).
-- Una tabla por bioma. Todas las demás variables modulan pesos, no cambian de tabla.
+- **Una tabla d20 propia por POI: 20 eventos escritos a mano en cada uno de los 720** (#92, v0.24). Sustituye al modelo de "una tabla por bioma" que había aquí. Las bandas de §9.5 son la plantilla de escritura, idéntica en los 720. Resolución en cascada — entrada propia del POI → entrada del arquetipo para esa banda → entrada genérica — de modo que el motor es jugable con cero entradas escritas y gana profundidad POI a POI.
+- Volumen declarado: **14.400 entradas**. Es el mayor entregable de contenido del proyecto y el cuello de botella de fase 2. Ninguna se genera con IA (#77).
+- Las tablas por bioma siguen existiendo para el resto de disparadores de §4.15.1 (pisar casilla, cruzar frontera, acampar, tramo de viaje rápido).
 - Tirada visible por completo (dado en log/HUD cada paso).
 - Toda entrada de tabla declara `evade_check` reactivo (mitigar / evitar el evento).
 - Trampas nunca matan: mínimo 1 HP garantizado.
@@ -89,7 +93,7 @@ Las secciones §4-§7 son apoyo: bloqueantes, estimación, riesgos, definición 
 - Animación de dado + texto en log por cada tirada.
 - Críticos diferenciados (color + sonido + shake).
 - Iconos de estados sobre el sprite.
-- Terreno con tags por casilla (efectos numéricos diferidos).
+- ~~Terreno con tags por casilla~~ — **retirado en v0.9**: #75 cerró el combate como resolución abstracta **sin grid**, así que no hay casillas que etiquetar.
 - Pausa del resto del mundo.
 - Consulta de hoja de personaje sin salir del combate.
 - **Motor de combate desacoplado del render** (requisito para 1.11).
@@ -203,7 +207,7 @@ Si durante la construcción de un hito aparece la tentación de meter algo de es
 
 Nueve hitos. Cada uno termina en un estado jugable concreto y testeable. No se arranca el hito N+1 hasta que el N pasa la validación de §7.
 
-### Hito 0 — Fundaciones (sin juego visible todavía)
+### Hito 0 — Fundaciones (sin juego visible todavía)  *(cerrado)*
 - Repositorio inicializado con Vite + TypeScript + Canvas.
 - Estructura de carpetas de §7 de la biblia (`rules/`, `render/`, `state/`, `backend/`, `dev/`, `data/`).
 - Supabase conectado: schema inicial (users, save_slots, banks).
@@ -213,7 +217,7 @@ Nueve hitos. Cada uno termina en un estado jugable concreto y testeable. No se a
 - Test runner (Vitest) con al menos un test del módulo de dados.
 - **Entregable:** URL accesible con login que muestra "Hola {usuario}" tras autenticarse.
 
-### Hito 1 — Motor de reglas núcleo
+### Hito 1 — Motor de reglas núcleo  *(cerrado)*
 - `rules/dice.ts` con los dos sistemas de dados (combate y exploración) como primitivas separadas.
 - `rules/character.ts` con creación, validación, cálculo de stats derivados.
 - `rules/progression.ts` con subida de habilidad por uso + por XP.
@@ -226,14 +230,14 @@ Nueve hitos. Cada uno termina en un estado jugable concreto y testeable. No se a
 - Ningún render todavía.
 - **Entregable:** suite de tests verde. Creación de personaje por consola con JSON de entrada/salida. Tirada de exploración dispara eventos resolubles sobre un `worldState` mock.
 
-### Hito 2 — Creación de personaje en UI
+### Hito 2 — Creación de personaje en UI  *(cerrado, 27/4/2026)*
 - Flujo "Empezar de cero" / "Empezar con preset".
 - Las 5 pantallas de creación (retrato, atributos, habilidades, perk, inventario) con preview en tiempo real.
 - Persistencia del personaje confirmado en Supabase.
 - 5 arquetipos en `data/` con stat-lines provisionales.
 - **Entregable:** crear personaje en navegador, guardarlo, cerrar pestaña, recargar, ver personaje guardado.
 
-### Hito 3 — Combate vertical slice
+### Hito 3 — Combate vertical slice  *(cerrado, 1/5/2026)*
 - `rules/combat.ts` completo: iniciativa, resolución de ataque, daño, estados, muerte.
 - UI de combate: timeline, targeting, botones de acción, log lateral, animación de dado.
 - **Un** enemigo tipo, **un** escenario de combate, **sin** mapa todavía.
@@ -241,21 +245,25 @@ Nueve hitos. Cada uno termina en un estado jugable concreto y testeable. No se a
 - Permadeath funcionando: al morir, slot pasa a epitafio en Supabase.
 - **Entregable:** combate jugable extremo a extremo. Personaje creado → combate → victoria o muerte.
 
-### Hito 4 — Mapa y exploración
-- `rules/world-gen.ts` con generación de mapa-mundi y sub-mapas en grid.
-- Mapa de historia hardcodeado (versión mínima, 1 ciudad + 2 mazmorras + zona exterior). **Geografía sin contenido narrativo de quest** — el contenido de quest llega en H5.
-- Generación procedural para modo Libre con frase-semilla hasheada (misma semilla alimenta mapa y sucesión de tiradas de exploración).
-- Movimiento por puntos de acción, niebla de guerra.
-- **Integración de la tirada de exploración:**
-  - Disparadores activos: pisar casilla, entrar a nodo, cruzar bioma, acampar.
-  - Tablas iniciales para los 5 biomas provisionales en `data/exploration/*.json`.
-  - Dado de exploración visible en HUD con cada tirada.
-  - Presentación de eventos: modal para eventos de peso, banner para ligeros.
-  - Resolución de tirada reactiva de mitigación cuando corresponda.
-  - Eventos `narrativo` y `NPC` resuelven con placeholders en H4; el enganche con sistema de quest llega en H5.
-- **Viaje rápido híbrido:** grafo de nodos marca tramos como seguro/arriesgado según bioma y reputación. Arriesgado dispara tiradas condensadas y muestra resumen al llegar.
-- Combate se dispara por evento de exploración tipo `combat`, ya no por colisión directa en mapa.
-- **Entregable:** jugar una partida corta extremo a extremo. Crear → explorar con tiradas visibles → evento → combate o evitación → morir → epitafio. **Cierre por muerte únicamente; la condición de victoria llega en H5.**
+### Hito 4 — Mapa y exploración  *(en curso)*
+
+> **Reescrito en v0.9** contra el modelo real de biblia §9. Lo que había aquí describía `world-gen.ts`, niebla de guerra y viaje rápido por grafo de nodos, todo sustituido por las decisiones #67-#72 y #81-#96.
+
+Se construye en sub-pasos. Los marcados **[x]** están cerrados y en `main`.
+
+- [x] **4a** — Modelo de datos del mundo: `regiones.json` + `grids.json` + `pois.json` (180 grids, 720 POIs, 80 huecos curados). `rules/world.ts` SAGRADO con tipos, validación y selectores. Campo `last_damage_source` y flag `tutorial_lobo_completed`.
+- [x] **4b.0** — Reparto determinista de los 4 arquetipos y variación de posiciones en el mini-grid 5×5 (#89). Columna `world_state jsonb` en `save_slots`: primera migración de schema desde H0 (#90).
+- [x] **4b** — Vista regional + zoom continuo a vista de grid. Mirar separado de viajar (#88). Lectura visual cerrada en #91.
+- [x] **4c.0** — Selectores de POI y derivación del estado del grid en `world-state.ts`. `last_damage_source='enemy'` sellado al cerrar por derrota. Reset del `world_state` al crear PJ sobre slot muerto.
+- [x] **4c.1** — Vista de POI como tercer nivel de cámara + combate Lobo desde el POI (#93).
+- [x] **4c.2** — Pausa global, opciones (3 tamaños de texto) e inventario placeholder (#94, #95).
+- [x] **4c.3** — Home repartida en Menú principal y campamento del POI Hogar (#85, #87, #95). Salto del tutorial cableado (#96).
+- [ ] **4c.4** — Selector de los 3 slots de §8.2 en el Menú principal, que cierra sus tres opciones de §8.1 (#95).
+- [ ] **4d** — Fatiga de jornada (#71): 8 acciones por día, acampar, ración, penalización de HP, muerte por fatiga con `last_damage_source='fatigue'`.
+- [ ] **4e** — Fast travel y anclas (#70). La condición de "Controlado" se cierra aquí.
+- [ ] **4f** — Tirada de exploración cableada end-to-end: `rollExplorationTick` sustituye el botón "Combatir" del POI por la tirada d20 con bandas (#83, #92). Variables activas en runtime: bioma, nivel y suerte.
+
+**Entregable:** jugar una partida corta extremo a extremo. Crear → explorar el overworld con tiradas visibles → evento → combate o evasión → morir → epitafio. **Cierre por muerte únicamente; la condición de victoria llega en H5.**
 
 ### Hito 5 — Modo Historia: quest principal, secundarias y eventos narrativos
 - `rules/quest.ts` puro y determinista: tipos `Quest`, `QuestStep`, `QuestProgress`, primitivas para avance, completion y persistencia. Sin imports de UI/Supabase.
@@ -489,3 +497,13 @@ Hito implícito de proceso: este es el primer ciclo en que el motor tiene contra
 - Sin cambios en §1 (qué hay dentro del MVP) ni §2 (qué queda fuera). El reordenamiento es de **orden de construcción**, no de inventario. El mismo juego se entrega en otro orden.
 
 Razón del reordenamiento: H4 actual mezclaba dos sistemas grandes (mapa + quest principal) en un mismo hito, violando "un hito entregable por bloque" (§0). Separar permite que H4 cierre como demo jugable sin victoria (entregable real) y que H5 acumule todo lo narrativo (quest, eventos, modo Historia) en un sistema coherente. Ver biblia v0.19 decisiones #44 (aclarada), #61 (actualizada), #62 (nueva).
+
+**v0.9** — **Sincronización con biblia v0.25** (26/8/2026), disparada al hacer inventario de cabos sueltos del proyecto entero tras cerrar 4c.3. Este documento llevaba desde el 1 de mayo sin tocarse mientras la biblia avanzaba de v0.19 a v0.25, y el desfase no era cosmético: **§1.4 seguía describiendo el mundo anterior a la decisión #67** (mapa-mundi con nodos, sub-mapas al entrar, niebla de guerra por casilla, viaje rápido híbrido, generación procedural del mapa), un modelo que la biblia sustituyó en v0.20 y que el código nunca implementó. El contrato de alcance contradecía a la biblia justo en la zona en construcción. Cambios:
+
+- **§1.4 reescrita entera** contra biblia §9: overworld único con zoom semántico, 180 grids, 720 POIs, mundo fijo entre runs, niebla a nivel de POI, mirar ≠ viajar, fatiga de jornada, fast travel por anclas, estado del mundo por slot, home como POI.
+- **§1.4b actualizada** con #92: la tabla d20 pasa de "una por bioma" a una propia por POI, 20 entradas escritas a mano en cada uno de los 720 (14.400 en total), con resolución en cascada. Las tablas por bioma sobreviven para los demás disparadores de §4.15.1.
+- **§1.5**: retirada la línea "terreno con tags por casilla" — #75 cerró el combate como resolución abstracta sin grid.
+- **§3 Hito 4 reescrito** con los sub-pasos reales (4a a 4f) y su estado. H0, H1, H2 y H3 marcados como cerrados con fecha.
+- Sin cambios en §2 (fuera del MVP), §4-§8: el inventario del MVP no cambia. Lo que se corrige es una descripción que había dejado de ser cierta.
+
+Lección de proceso, anotada a propósito: la biblia es documento vivo y el scope se trató como documento firmado, así que nadie lo releyó. A partir de aquí, **todo bump de biblia que toque §9 o §4.15 revisa §1.4 y §1.4b de este documento en el mismo movimiento**.
