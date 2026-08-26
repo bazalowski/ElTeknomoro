@@ -109,6 +109,26 @@ export const ITEMS: readonly Item[] = [
     weight: 0.2,
     stats: {},
   },
+  // Ración (#98, sub-paso 4d). Es moneda de jornada, no comida curativa: se
+  // gasta al acampar para resetear las 8 acciones y NO repone HP. La analogía
+  // del autor es la cinta de escribir de Resident Evil — no te cura, te deja
+  // seguir. La comida que sí cura y buffea es catálogo de H6 y es otro item.
+  //
+  // `stack_size: 99` cumple el "un solo slot stackable" de Q13: las raciones no
+  // deben competir por espacio de mochila con el loot, porque entonces la
+  // decisión de acampar se convertiría en gestión de inventario y no en gestión
+  // de jornada. Calibración a H6 como el resto de números de fase 1.
+  {
+    id: 'racion',
+    name: 'Ración',
+    category: 'consumable',
+    rarity: 'common',
+    slot: null,
+    stack_size: 99,
+    max_durability: null,
+    weight: 0.3,
+    stats: {},
+  },
 ] as const;
 
 export const ITEMS_BY_ID: Readonly<Record<ItemId, Item>> = Object.fromEntries(

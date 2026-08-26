@@ -14,10 +14,22 @@ describe('catálogo de items', () => {
     expect(ITEMS.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('tiene exactamente 3 items en fase 1 (Daga + Diente de Lobo + Poción)', () => {
+  it('tiene exactamente 4 items en fase 1 (Daga + Diente de Lobo + Poción + Ración)', () => {
     // PROVISIONAL FASE 1. Cuando se añadan más items en H5 este número crece;
     // mientras tanto, blindamos contra adiciones accidentales no documentadas.
-    expect(ITEMS.length).toBe(3);
+    // La Ración entra en el sub-paso 4d por #98: es moneda de jornada, no
+    // comida curativa, y la gasta `rules/fatigue.ts` al acampar.
+    expect(ITEMS.length).toBe(4);
+  });
+
+  it('la Ración es apilable y no ocupa slot de equipo (#98, Q13)', () => {
+    const racion = ITEMS_BY_ID['racion'];
+    expect(racion).toBeDefined();
+    expect(racion!.category).toBe('consumable');
+    expect(racion!.slot).toBeNull();
+    // "Un solo slot stackable": las raciones no deben competir por mochila con
+    // el loot, o acampar se convertiría en gestión de inventario.
+    expect(racion!.stack_size).toBeGreaterThan(20);
   });
 
   it('cada item tiene id no vacío', () => {

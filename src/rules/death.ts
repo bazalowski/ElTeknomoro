@@ -20,6 +20,9 @@ export type DeathCauseKind =
   | 'killed_by_trap'
   | 'killed_by_environment'
   | 'killed_by_status'
+  // Inanición (#98, sub-paso 4d). El helper vive en `rules/fatigue.ts`, no
+  // aquí, porque la causa la construye quien conoce la regla de la jornada.
+  | 'killed_by_fatigue'
   | 'unknown';
 
 // Decisión #44: la pantalla de victoria reutiliza el formato de epitafio,
