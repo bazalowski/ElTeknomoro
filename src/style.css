@@ -220,6 +220,229 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
   color: var(--c-rojo-oxido-enfermo);
 }
 
+/* =============================================================================
+   home-slots — selector de las tres partidas (H4 4c.4, §8.1/§8.2)
+   Lista vertical con divisores finos, NO rejilla de tarjetas clonadas: los
+   tres estados son tres contenidos distintos con tres pesos distintos, y
+   pintarlos como tres cards iguales sería justo el patrón que DESIGN prohíbe.
+   ========================================================================== */
+
+.home-screen__body[data-slots] {
+  justify-content: flex-start;
+}
+
+.home-screen__notice {
+  margin: 0 0 20px;
+  padding: 10px 16px;
+  width: 100%;
+  border-left: 1px solid var(--c-corteza-palida);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: left;
+  color: var(--c-hueso-descolorido);
+  background: var(--c-tinta-tierra-baja);
+}
+
+.home-slots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  text-align: left;
+}
+
+.home-slots__item + .home-slots__item {
+  border-top: 1px solid var(--c-tinta-tierra-media);
+}
+
+.home-slot {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 3vw, 32px);
+  padding: clamp(18px, 3vh, 28px) 4px;
+}
+
+/* --- Slot vacío: dice lo que es y se calla ---------------------------------- */
+
+.home-slot--empty {
+  justify-content: space-between;
+}
+
+.home-slot__vacant {
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+/* --- Slot vivo: la ficha densa --------------------------------------------- */
+
+.home-slot--alive {
+  flex-wrap: wrap;
+}
+
+.home-slot__identity {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.home-slot__name {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--c-hueso-claro);
+}
+
+.home-slot__archetype {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  color: var(--c-corteza-palida);
+}
+
+.home-slot__stats {
+  display: flex;
+  gap: clamp(16px, 3vw, 28px);
+  margin: 0;
+}
+
+.home-slot__stat dt {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+.home-slot__stat dd {
+  margin: 4px 0 0;
+}
+
+/* Numbers-In-Mono: nivel y HP son datos de reglamento, no prosa. */
+.home-slot__num {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.05rem;
+  color: var(--c-hueso-descolorido);
+}
+
+.home-slot__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.home-slot__cost {
+  margin: 0;
+  max-width: 40ch;
+  text-align: right;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--c-corteza-palida);
+}
+
+/* --- Slot caído: la lápida manda ------------------------------------------- */
+/* El contenido del slot ES el epitafio. La acción de reutilizar existe, pero
+   apagada y al margen: un botón dominando una lápida convierte al PJ muerto en
+   un hueco libre, y por ahí se diluye la gravedad de la muerte (#11). */
+
+.home-slot--fallen {
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding-top: clamp(24px, 4vh, 40px);
+  padding-bottom: clamp(20px, 3vh, 32px);
+}
+
+.home-slot--fallen .home-fallen {
+  border: none;
+  padding: 0;
+  gap: 8px;
+}
+
+/* La serif sigue siendo la serif —este es uno de los momentos narrativos que
+   Display-Is-Sacred protege— pero a escala de fila, no de pantalla completa:
+   aquí conviven tres partidas, no una lápida sola. */
+.home-slot--fallen .home-fallen__name {
+  margin: 0;
+  font-size: clamp(1.7rem, 3.6vw, 2.3rem);
+}
+
+/* --- Acciones de slot ------------------------------------------------------- */
+
+.home-slot__action {
+  flex: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  color: var(--c-hueso-descolorido);
+  background: transparent;
+  border: 1px solid var(--c-tinta-tierra-media);
+  border-radius: 2px;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition: border-color 150ms ease-out, background-color 150ms ease-out;
+}
+
+.home-slot__action:hover {
+  border-color: var(--c-corteza-palida);
+}
+
+.home-slot__action:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+.home-slot__action--primary {
+  min-width: 200px;
+  color: var(--c-hueso-claro);
+  background: var(--c-tinta-tierra-media);
+  border-color: var(--c-corteza-palida);
+}
+
+.home-slot__action--primary:hover {
+  background: var(--c-verde-musgo-profundo);
+}
+
+/* La vía secundaria de #96 y el "empezar de nuevo" del caído comparten peso:
+   los dos son elecciones que el jugador toma a sabiendas, no atajos que deban
+   competir por su atención. */
+.home-slot__action--quiet {
+  border-color: transparent;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 0.82rem;
+  color: var(--c-corteza-palida);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.home-slot__action--quiet:hover {
+  border-color: transparent;
+  color: var(--c-hueso-descolorido);
+}
+
+@media (max-width: 640px) {
+  .home-slot--alive,
+  .home-slot--empty {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .home-slot__actions {
+    margin-left: 0;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .home-slot__cost {
+    text-align: left;
+  }
+}
+
 .home-screen__nav {
   width: 100%;
   max-width: 540px;
@@ -327,130 +550,12 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
 }
 
 /* ----------------------------------------------------------------
-   Rama "sin PJ": umbral antes de empezar. Sans en heading
-   (Display-Is-Sacred: no es momento narrativo, es entrada técnica).
-   ---------------------------------------------------------------- */
-.home-empty {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  align-items: center;
-  max-width: 48ch;
-}
-
-.home-empty__heading {
-  margin: 0;
-  font-family: inherit;
-  font-weight: 500;
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  letter-spacing: -0.005em;
-  color: var(--c-hueso-claro);
-}
-
-.home-empty__lede {
-  margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.55;
-  color: var(--c-corteza-palida);
-}
-
-/* ----------------------------------------------------------------
-   Rama "PJ vivo": declarar, no celebrar. Sans en heading.
-   Datos numéricos (nivel, HP) en mono tabular.
-   ---------------------------------------------------------------- */
-.home-alive {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(12px, 2vh, 18px);
-  width: 100%;
-  max-width: 60ch;
-}
-
-.home-alive__heading {
-  margin: 0;
-  font-family: inherit;
-  font-weight: 500;
-  font-size: clamp(1.6rem, 3.4vw, 2.2rem);
-  line-height: 1.1;
-  letter-spacing: -0.005em;
-  color: var(--c-hueso-claro);
-}
-
-.home-alive__archetype {
-  margin: 0;
-  font-size: 0.78rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--c-corteza-palida);
-}
-
-.home-alive__stats {
-  margin: 6px 0 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(120px, 1fr));
-  gap: 0;
-  width: 100%;
-  max-width: 420px;
-  border-top: 1px solid var(--c-corteza-palida);
-  border-bottom: 1px solid var(--c-corteza-palida);
-}
-
-.home-alive__stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 14px 8px;
-}
-
-.home-alive__stat + .home-alive__stat {
-  border-left: 1px solid var(--c-tinta-tierra-media);
-}
-
-.home-alive__stat dt {
-  margin: 0;
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--c-corteza-palida);
-}
-
-.home-alive__stat dd {
-  margin: 0;
-  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
-  font-size: clamp(1.4rem, 2.4vw, 1.75rem);
-  font-variant-numeric: tabular-nums;
-  font-weight: 500;
-  line-height: 1;
-  color: var(--c-hueso-claro);
-}
-
-.home-alive__hp-sep {
-  color: var(--c-corteza-palida);
-  margin: 0 2px;
-}
-
-.home-alive__hp-max {
-  color: var(--c-corteza-palida);
-}
-
-.home-alive__call {
-  margin: 8px 0 0;
-  font-size: 0.95rem;
-  letter-spacing: 0.02em;
-  color: var(--c-corteza-palida);
-}
-
-/* ----------------------------------------------------------------
    Rama "PJ caído" — la lápida.
    Decisión: la SERIF carga el NOMBRE del caído (lo que personaliza
    la pérdida). El epitafio narrativo, ya generado por el motor en
    prosa corta, va en sans porque es una frase descriptiva, no el
    epígrafe. Sin íconos, sin rojo, sin glow: la severidad sale del
-   peso tipográfico, de los kickers en versalita corteza-pálida y
-   del aire vertical.
+   peso tipográfico, del aire vertical y de la contención del resto de la fila.
    ---------------------------------------------------------------- */
 .home-fallen {
   display: flex;
@@ -464,13 +569,207 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
   border-bottom: 1px solid var(--c-corteza-palida);
 }
 
-.home-fallen__kicker {
+.home-fallen__name {
   margin: 0;
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
+  font-size: clamp(1.7rem, 3.6vw, 2.3rem);
+}
+
+/* --- Acciones de slot ------------------------------------------------------- */
+
+.home-slot__action {
+  flex: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  color: var(--c-hueso-descolorido);
+  background: transparent;
+  border: 1px solid var(--c-tinta-tierra-media);
+  border-radius: 2px;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition: border-color 150ms ease-out, background-color 150ms ease-out;
+}
+
+.home-slot__action:hover {
+  border-color: var(--c-corteza-palida);
+}
+
+.home-slot__action:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+.home-slot__action--primary {
+  min-width: 200px;
+  color: var(--c-hueso-claro);
+  background: var(--c-tinta-tierra-media);
+  border-color: var(--c-corteza-palida);
+}
+
+.home-slot__action--primary:hover {
+  background: var(--c-verde-musgo-profundo);
+}
+
+/* La vía secundaria de #96 y el "empezar de nuevo" del caído comparten peso:
+   los dos son elecciones que el jugador toma a sabiendas, no atajos que deban
+   competir por su atención. */
+.home-slot__action--quiet {
+  border-color: transparent;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 0.82rem;
   color: var(--c-corteza-palida);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.home-slot__action--quiet:hover {
+  border-color: transparent;
+  color: var(--c-hueso-descolorido);
+}
+
+@media (max-width: 640px) {
+  .home-slot--alive,
+  .home-slot--empty {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .home-slot__actions {
+    margin-left: 0;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .home-slot__cost {
+    text-align: left;
+  }
+}
+
+.home-screen__nav {
+  width: 100%;
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Vía secundaria del Menú principal (#96: saltarse el tutorial). Deliberadamente
+   sin adorno y por debajo de la primaria: es una elección informada, no un
+   atajo que compita por la atención. */
+.home-screen__secondary {
+  flex: 0 1 auto;
+  min-width: 220px;
+  padding: 0.6rem 1.5rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--c-hueso-descolorido);
+  background: transparent;
+  border: 1px solid var(--c-tinta-tierra-media);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color 150ms ease-out;
+}
+
+.home-screen__secondary:hover {
+  border-color: var(--c-corteza-palida);
+}
+
+.home-screen__secondary:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+/* El precio se dice, no se esconde: #86 exige elección mecánica informada. */
+.home-screen__cost {
+  margin: 0;
+  max-width: 46ch;
+  text-align: center;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--c-corteza-palida);
+}
+
+.home-screen__tertiary {
+  font-family: inherit;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--c-corteza-palida);
+  background: none;
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.home-screen__tertiary:hover {
+  color: var(--c-hueso-descolorido);
+}
+
+.home-screen__tertiary:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+.home-screen__primary {
+  flex: 0 1 auto;
+  min-width: 220px;
+  padding: 0.8rem 1.5rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  background: var(--c-tinta-tierra-media);
+  color: var(--c-hueso-claro);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.home-screen__primary:hover:not(:disabled) {
+  background: oklch(34% 0.018 145);
+}
+
+.home-screen__primary:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+.home-screen__primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 560px) {
+  .home-screen__primary {
+    min-width: 0;
+    width: 100%;
+  }
+  .home-screen__nav {
+    max-width: none;
+  }
+}
+
+/* ----------------------------------------------------------------
+   Rama "PJ caído" — la lápida.
+   Decisión: la SERIF carga el NOMBRE del caído (lo que personaliza
+   la pérdida). El epitafio narrativo, ya generado por el motor en
+   prosa corta, va en sans porque es una frase descriptiva, no el
+   epígrafe. Sin íconos, sin rojo, sin glow: la severidad sale del
+   peso tipográfico, del aire vertical y de la contención del resto de la fila.
+   ---------------------------------------------------------------- */
+.home-fallen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(10px, 2vh, 16px);
+  width: 100%;
+  max-width: 56ch;
+  padding: clamp(20px, 4vh, 36px) clamp(16px, 3vw, 28px);
+  border-top: 1px solid var(--c-corteza-palida);
+  border-bottom: 1px solid var(--c-corteza-palida);
 }
 
 .home-fallen__name {

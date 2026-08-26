@@ -47,6 +47,13 @@ let worldSession: { flow: WorldFlowHandle; character: Character } | null = null;
 // más caro que un click.
 let activeSlot: SlotIndex | null = null;
 
+// Mensaje que el Menú principal debe enseñar al montar. Se consume en el
+// primer render y se limpia. Existe porque §8.2 promete los slots desde
+// cualquier dispositivo: que una partida cambie por debajo (otra pestaña, otro
+// login) es un caso REAL, y resolverlo rebotando al menú en silencio deja al
+// jugador mirando una pantalla que no pidió sin saber por qué.
+let homeNotice: string | null = null;
+
 // El backend quitó a propósito el default de `slotIndex` porque un 0
 // silencioso es cómo se escriben los bugs de "cargas la partida A y guardas
 // encima de la B". Reintroducirlo aquí a nivel de sesión sería devolver el
@@ -273,11 +280,13 @@ function render(): void {
     return;
   }
   mode = 'home';
+  const notice = homeNotice ?? undefined;
+  homeNotice = null;
   renderHomeView(app, currentSession, (intent, slot) => {
     // El slot elegido en el Menú principal manda a partir de aquí: toda
     // llamada de backend de esta sesión va contra él.
     activeSlot = slot;
-    if (intent === 'create-character' || intent === 'create-new-after-death') {
+    if (intent === 'create-character') {
       mode = 'h2-flow';
       render();
       return;
@@ -290,7 +299,12 @@ function render(): void {
       loadCharacter(requireActiveSlot())
         .then((character) => {
           if (character === null || !character.alive) {
-            console.warn(`main: ${intent} sin PJ vivo en slot; volviendo a home.`);
+            // La partida cambió entre que el menú la pintó y el jugador la
+            // pulsó. No es un error del programa, es una carrera legítima.
+            homeNotice =
+              character === null
+                ? 'Esa partida ya no existe. Puede que la borraras en otra pestaña.'
+                : 'Ese personaje ha muerto. La partida se ha cerrado en otro sitio.';
             mode = 'home';
             render();
             return;
@@ -306,11 +320,12 @@ function render(): void {
         })
         .catch((err) => {
           console.error(`main: loadCharacter falló en ${intent}:`, err);
+          homeNotice = 'No se ha podido abrir esa partida. Inténtalo otra vez.';
           mode = 'home';
           render();
         });
     }
-  });
+  }, { notice });
 }
 
 // Pintado inmediato antes de la primera respuesta del servidor. `getSession`

@@ -1112,7 +1112,7 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
     pause = requestConfirm(pause, 'reset-run');
     paintSystem();
     showConfirmModal(root, {
-      title: 'Vas a borrar esta partida. El personaje, el mundo explorado y el progreso desaparecen, y no queda epitafio.',
+      title: `Vas a borrar la partida de ${character.name}. El personaje, el mundo explorado y el progreso desaparecen, y no queda epitafio.`,
       confirmLabel: 'Borrar la partida',
       cancelLabel: 'Cancelar',
       checkbox: { label: 'Entiendo que se borra la partida', mode: 'gate' },

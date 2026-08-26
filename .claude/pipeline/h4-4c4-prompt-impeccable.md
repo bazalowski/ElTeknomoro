@@ -1,6 +1,6 @@
 # Pipeline H4 sub-paso 4c.4 — brief UI (PASO 1, carril B)
 
-**Estado**: PASO 1 compilado. **PASO 2: APTO CON CAMBIOS** (director) — 7 ediciones aplicadas, D-4c4-p1..p4 aceptadas. Endurecimientos del pase 4c.4.0 aplicados antes del PASO 3. Deuda documental derivada: decisión **#97** (matización de §8.2 + acotamiento de la "galería de epitafios" de #94), que no bloquea.
+**Estado**: PASO 1 compilado. **PASO 2: APTO CON CAMBIOS** (director) — 7 ediciones aplicadas, D-4c4-p1..p4 aceptadas. Endurecimientos del pase 4c.4.0 aplicados antes del PASO 3. Deuda documental derivada: decisión **#97** (matización de §8.2 + acotamiento de la "galería de epitafios" de #94), que no bloquea. **PASO 3: ejecutado** (impeccable, register product). 534/534 tests, `tsc` y `vite build` limpios, detector sin hallazgos nuevos. Verificación visual pendiente de Bazalo.
 **Carril**: B (2 pasos: director → impeccable).
 **Fecha**: 2026-08-26.
 **Fuentes**: biblia v0.25 (#10, #11, #44, #65, #87, #94, #95, #96), §8.1, §8.2, DESIGN.md, PRODUCT.md, repo en `a10acf6` (el pase 4c.4.0 ya está en `main`).

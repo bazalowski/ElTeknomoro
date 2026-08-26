@@ -208,7 +208,12 @@ export function renderH2ConfirmView(root: HTMLElement, ctx: H2StepCtx): void {
       console.error(err);
       setError(
         err instanceof CharacterAlreadyAliveError
-          ? 'Ya tienes un personaje vivo. Solo se permite uno a la vez.'
+          // Con tres slots legales (§8.2, #10) "solo se permite uno a la vez"
+          // pasó a ser falso. Y este error puede llegar al FINAL de la
+          // creación, cuando otra pestaña ha ocupado el slot mientras el
+          // jugador construía su PJ: tiene que decir qué pasó y dejar salida,
+          // no ser un callejón sin salida sobre cinco minutos de trabajo.
+          ? 'Esa partida ya tiene un personaje vivo. Vuelve al menú y elige otra ranura; lo que has creado sigue aquí.'
           : 'No se ha podido sellar al personaje. Inténtalo de nuevo.',
       );
       setLoading(false);
