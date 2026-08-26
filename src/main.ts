@@ -1,10 +1,11 @@
 import { getSession, onSessionChange } from './backend/auth';
 import {
-  loadLastCharacter,
+  loadCharacter,
   saveCharacterUpdate,
   loadWorldState,
   saveWorldState,
   deleteSlot,
+  type SlotIndex,
 } from './backend/characters';
 import { renderLoginView } from './render/login-view';
 import { renderHomeView } from './render/home-view';
@@ -39,6 +40,12 @@ let currentSession: Session | null = null;
 // mundo desde Supabase al volver sería una ida y vuelta innecesaria y una
 // ventana en la que el POI recién completado aún no ha llegado al servidor.
 let worldSession: { flow: WorldFlowHandle; character: Character } | null = null;
+
+// Slot que se está jugando (§8.2, #10). Es estado de SESIÓN, no de partida: se
+// elige en el Menú principal cada vez que se entra y no se persiste en ningún
+// sitio. Adivinar por el jugador cuál de sus tres partidas quiere seguir sale
+// más caro que un click.
+let activeSlot: SlotIndex = 0;
 
 // De dónde vino el combate. Sólo el tutorial marca `tutorial_lobo_completed`
 // (#86): quien se lo saltó pagando el coste mecánico no lo recupera gratis
@@ -108,7 +115,7 @@ function startCombatRun(
       // logueamos: H3 no tiene UI de error de red todavía (entra en hitos
       // posteriores cuando toque hardening de persistencia).
       persisting = true;
-      saveCharacterUpdate(finalCharacter)
+      saveCharacterUpdate(finalCharacter, activeSlot)
         .catch((err) => {
           console.error('main: saveCharacterUpdate falló al cerrar combate:', err);
         })
@@ -147,9 +154,12 @@ function startCombatRun(
 // monta el orquestador world-flow y pinta la vista. Fade de 300ms en la
 // entrada (decisión Q5 del cuestionario 4b, vía clase CSS).
 function startWorldRun(root: HTMLElement, character: Character): void {
-  loadWorldState()
+  loadWorldState(activeSlot)
     .then((worldState) => {
-      const flow = createWorldFlow({ initialState: worldState, persist: saveWorldState });
+      const flow = createWorldFlow({
+        initialState: worldState,
+        persist: (ws) => saveWorldState(ws, activeSlot),
+      });
       worldSession = { flow, character };
       mountWorldView(root, flow, character);
     })
@@ -183,7 +193,7 @@ function mountWorldView(root: HTMLElement, flow: WorldFlowHandle, character: Cha
     // epitafio. El Menú principal vuelve solo a su rama vacía porque
     // loadLastCharacter dejará de encontrar nada.
     onResetRun: () =>
-      deleteSlot().then(() => {
+      deleteSlot(activeSlot).then(() => {
         worldSession = null;
         mode = 'home';
         render();
@@ -236,7 +246,7 @@ function render(): void {
   }
   if (mode === 'h2-flow') {
     app.innerHTML = '';
-    startH2Flow(app, () => {
+    startH2Flow(app, activeSlot, () => {
       mode = 'home';
       render();
     });
@@ -250,7 +260,10 @@ function render(): void {
     return;
   }
   mode = 'home';
-  renderHomeView(app, currentSession, (intent) => {
+  renderHomeView(app, currentSession, (intent, slot) => {
+    // El slot elegido en el Menú principal manda a partir de aquí: toda
+    // llamada de backend de esta sesión va contra él.
+    activeSlot = slot;
     if (intent === 'create-character' || intent === 'create-new-after-death') {
       mode = 'h2-flow';
       render();
@@ -261,7 +274,7 @@ function render(): void {
       // Recargamos el PJ vivo en el momento de entrar. home ya lo mostró,
       // pero el slot puede haber cambiado entre tabs; este load es la
       // fuente de verdad inmediata antes de combate o mundo.
-      loadLastCharacter()
+      loadCharacter(activeSlot)
         .then((character) => {
           if (character === null || !character.alive) {
             console.warn(`main: ${intent} sin PJ vivo en slot; volviendo a home.`);
@@ -279,7 +292,7 @@ function render(): void {
           }
         })
         .catch((err) => {
-          console.error(`main: loadLastCharacter falló en ${intent}:`, err);
+          console.error(`main: loadCharacter falló en ${intent}:`, err);
           mode = 'home';
           render();
         });

@@ -9,7 +9,7 @@ import { renderH2ConfirmView } from '../render/h2-confirm-view';
 import { showConfirmModal } from '../render/confirm-modal';
 import { createCharacter, CREATION_RULES } from '../rules/character';
 import type { AttributeId } from '../rules/character';
-import { saveCharacter } from '../backend/characters';
+import { saveCharacter, type SlotIndex } from '../backend/characters';
 import { buildCreateInputFromDraft } from './h2-defaults';
 import { PORTRAITS_BY_ID } from '../data/portraits';
 import { SKILLS_BY_ID } from '../data/skills';
@@ -59,7 +59,10 @@ const ORDER: readonly H2Step[] = [
   'confirm',
 ];
 
-export function startH2Flow(root: HTMLElement, onExit: () => void): void {
+// `slotIndex` es el slot al que se está creando el personaje (§8.2, #10). No
+// tiene default a propósito: crear una partida sin decir en cuál es cómo se
+// escribe encima de la partida equivocada.
+export function startH2Flow(root: HTMLElement, slotIndex: SlotIndex, onExit: () => void): void {
   const draft: CharacterDraft = { mode: null };
   let step: H2Step = 'start';
   let exited = false;
@@ -120,7 +123,7 @@ export function startH2Flow(root: HTMLElement, onExit: () => void): void {
     confirmAndPersist: async () => {
       const input = buildCreateInputFromDraft(draft);
       const character = createCharacter(input);
-      await saveCharacter(character);
+      await saveCharacter(character, slotIndex);
       exitFlow();
     },
     setPortrait: (id: string) => {

@@ -1,6 +1,6 @@
 import type { Session } from '@supabase/supabase-js';
 import { signOut } from '../backend/auth';
-import { loadLastCharacter } from '../backend/characters';
+import { loadCharacter, type SlotIndex } from '../backend/characters';
 import type { Character } from '../rules/character';
 import { browserStorage, readPreferences, writePreferences } from '../state/preferences';
 import { renderOptionsPanel } from './options-panel';
@@ -26,7 +26,7 @@ type HomeBranch =
 export function renderHomeView(
   root: HTMLElement,
   session: Session,
-  onIntent?: (intent: HomeIntent) => void,
+  onIntent?: (intent: HomeIntent, slot: SlotIndex) => void,
 ): void {
   const email = session.user.email ?? 'jugador';
 
@@ -144,7 +144,7 @@ export function renderHomeView(
 
   applyBranch({ kind: 'loading' });
 
-  loadLastCharacter()
+  loadCharacter(0)
     .then((character) => {
       if (character === null) {
         applyBranch({ kind: 'empty' });
@@ -155,19 +155,19 @@ export function renderHomeView(
       }
     })
     .catch((err) => {
-      console.error('home-view: loadLastCharacter falló:', err);
+      console.error('home-view: loadCharacter falló:', err);
       applyBranch({ kind: 'error' });
     });
 
   primaryBtn.addEventListener('click', () => {
     if (primaryBtn.disabled) return;
-    onIntent?.(intent);
+    onIntent?.(intent, 0);
   });
 
   // La vía de salto de #96 va SIEMPRE al mundo, sea cual sea el intent
   // primario: es la otra puerta de la misma rama.
   secondaryBtn.addEventListener('click', () => {
-    onIntent?.('load-game');
+    onIntent?.('load-game', 0);
   });
 
   // §8.1 fija tres opciones en el Menú principal, y Opciones es la tercera.
