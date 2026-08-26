@@ -20,6 +20,16 @@ async function getCurrentUserId(): Promise<string> {
   return data.user.id;
 }
 
+// Crea el PJ del slot 0: primera partida (insert) o PJ nuevo sobre un slot
+// muerto (update). En AMBOS caminos rebobina el `world_state` al inicial.
+//
+// POR QUÉ SE REBOBINA AQUÍ (#94, C3b de #85, #44)
+// Un slot es una run. El PJ nuevo no hereda nada del anterior: ni grids
+// pisados, ni POIs revelados, ni anclas, ni el día, ni la vista donde murió.
+// Antes de 4c.0 esto costaba poco (se heredaban grids de 4b); en cuanto 4c.1
+// persiste POIs y vista, sin este reset el PJ nuevo nacería literalmente
+// dentro del POI donde cayó el anterior. Detectado por el director en el
+// PASO 2 del pipeline de 4c.1.
 export async function saveCharacter(character: Character): Promise<void> {
   const userId = await getCurrentUserId();
 
@@ -43,6 +53,8 @@ export async function saveCharacter(character: Character): Promise<void> {
         character_data: character,
         alive: character.alive,
         epitaph: character.epitaph,
+        // Run nueva sobre slot muerto: el mundo se rebobina con el PJ.
+        world_state: createInitialWorldState(),
       })
       .eq('id', existing.data.id);
     if (error) throw error;
@@ -55,6 +67,9 @@ export async function saveCharacter(character: Character): Promise<void> {
     character_data: character,
     alive: character.alive,
     epitaph: character.epitaph,
+    // Primera run del slot: mundo en su estado inicial, explícito y no por
+    // defecto de columna, para que el slot nazca completo.
+    world_state: createInitialWorldState(),
   });
   if (error) throw error;
 }
