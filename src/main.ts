@@ -15,6 +15,7 @@ import { startH2Flow } from './state/h2-flow';
 import { startCombatFlow } from './state/combat-flow';
 import { createWorldFlow } from './state/world-flow';
 import { createRng } from './rules/dice';
+import { actionsRemaining, camp, hasRation } from './rules/fatigue';
 import { applyTextSize } from './render/options-panel';
 import { browserStorage, readPreferences } from './state/preferences';
 import { ENEMIES_BY_ID } from './data/enemies';
@@ -179,9 +180,17 @@ function startWorldRun(root: HTMLElement, character: Character): void {
       const flow = createWorldFlow({
         initialState: worldState,
         persist: (ws) => saveWorldState(ws, requireActiveSlot()),
+        // Lectura del PJ vivo, no un snapshot: acampar y cerrar combate
+        // sustituyen el Character de la sesión, y world-flow necesita el
+        // vigente para resolver el techo de jornada.
+        getCharacter: () => worldSession?.character ?? character,
       });
       worldSession = { flow, character };
-      mountWorldView(root, flow, character);
+      // Arranque de sesión: es el único momento en que #99 permite montar el
+      // modal de acampar ya abierto (sin confirmar), y sólo si el día está
+      // agotado y no quedan raciones.
+      const jornadaAgotada = actionsRemaining(worldState, character) === 0;
+      mountWorldView(root, flow, character, jornadaAgotada && !hasRation(character));
     })
     .catch((err) => {
       console.error('main: loadWorldState falló al salir al mundo:', err);
@@ -194,14 +203,24 @@ function startWorldRun(root: HTMLElement, character: Character): void {
 // entrar desde home y al volver de un combate de POI: la vista se restaura
 // sola desde la vista persistida del flow (#90), así que volver de un combate
 // aterriza en el POI que lo lanzó sin que nadie se lo tenga que decir.
-function mountWorldView(root: HTMLElement, flow: WorldFlowHandle, character: Character): void {
+function mountWorldView(
+  root: HTMLElement,
+  flow: WorldFlowHandle,
+  character: Character,
+  // #99 caso (c). Se pasa explícitamente y NO se infiere del estado: esta
+  // función sirve también al retorno de un combate, y ahí #99 prohíbe abrir
+  // nada aunque el día esté agotado y no queden raciones.
+  openCampOnMount = false,
+): void {
   mode = 'world';
   worldSession = { flow, character };
   root.innerHTML = '';
   renderWorldView(root, {
     flow,
     character,
+    openCampOnMount,
     onEnterCombat: (poiId) => startPOICombat(root, poiId),
+    onCamp: () => campAndRemount(root, flow),
     // "Guardar y salir al menú" (4c.2). La vista ya ha esperado al flush del
     // world-flow: aquí sólo se desmonta.
     onExitToMenu: () => {
@@ -220,6 +239,49 @@ function mountWorldView(root: HTMLElement, flow: WorldFlowHandle, character: Cha
       }),
   });
   root.querySelector<HTMLElement>('[data-world-view]')?.classList.add('world-view--enter');
+}
+
+// Acampar (4d.2, decisiones #98 y #99).
+//
+// POR QUÉ VIVE AQUÍ Y NO EN world-flow. `camp()` devuelve un Character nuevo
+// (HP degradado, ración gastada, o muerto con epitafio) y `world-flow` sólo
+// tiene canal para persistir WorldState: su `persist` no sabe guardar un PJ.
+// Quien sabe es `saveCharacterUpdate`, y vive aquí. La vista tampoco acampa:
+// recoge el click y delega, porque no persiste nada por diseño.
+//
+// El remonte no es cosmético: la vista captura el Character por valor y pinta
+// el HP una sola vez, así que sin remontar, el HUD mentiría sobre la vida
+// después de una noche a la intemperie.
+function campAndRemount(root: HTMLElement, flow: WorldFlowHandle): void {
+  const session = worldSession;
+  if (!session) return;
+
+  const result = camp(session.character, flow.getState(), new Date().toISOString());
+
+  // El WorldState nuevo entra por el mismo canal que el resto del módulo, para
+  // que la jornada reseteada y el día nuevo se persistan como cualquier otra
+  // mutación del mundo.
+  flow.replaceState(result.worldState);
+
+  saveCharacterUpdate(result.character, requireActiveSlot()).catch((err) => {
+    console.error('main: saveCharacterUpdate falló al acampar:', err);
+  });
+
+  // Muerte por inanición (#98). El epitafio ya lo escribió `killCharacter`
+  // dentro del motor, así que aquí sólo se sale: la home pinta la rama de PJ
+  // caído. Es el mismo camino que el `defeat` de un combate de POI. No hay
+  // modal de epitafio reutilizable fuera del combate y 4d.2 no construye uno.
+  if (result.died) {
+    worldSession = null;
+    mode = 'home';
+    render();
+    return;
+  }
+
+  mountWorldView(root, flow, result.character);
+  // La transición cubre el remonte, que resetea el pan/zoom manual (no se
+  // persiste). Sin ella, despertar sería un salto de cámara sin explicación.
+  root.querySelector<HTMLElement>('[data-world-view]')?.classList.add('world-view--amanece');
 }
 
 // Combate lanzado desde un POI (4c.1, #93). Los tres cierres vuelven a sitios

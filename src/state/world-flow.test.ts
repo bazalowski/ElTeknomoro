@@ -4,6 +4,8 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { createWorldFlow } from './world-flow';
+import { createCharacter, type Character } from '../rules/character';
+import { FATIGUE_RULES, actionsRemaining } from '../rules/fatigue';
 import {
   createInitialWorldState,
   getGridState,
@@ -14,6 +16,21 @@ import { WORLD_CIFRAS, getCardinalNeighbours, getPOIsByGrid } from '../rules/wor
 import type { WorldState } from '../rules/world-state';
 
 const vecinoDeInicio = (): string => getCardinalNeighbours(WORLD_CIFRAS.startingGridId)[0]!.id;
+
+// PJ de fixture. Desde 4d.2 el flow necesita leerlo para resolver el techo de
+// jornada; nunca lo escribe.
+function pjDePrueba(): Character {
+  return createCharacter({
+    id: 'pj-flow',
+    name: 'Probador',
+    portraitId: 'retrato-01',
+    archetype: null,
+    attributes: { fue: 4, des: 3, con: 3, int: 1, vol: 1 },
+    skills: {},
+    perks: ['perk_pies_ligeros'],
+    location: { mapId: WORLD_CIFRAS.startingGridId, x: 0, y: 0 },
+  });
+}
 
 // Persist fake que registra cada snapshot que recibe.
 function makePersistFake(): { persist: (s: WorldState) => Promise<void>; calls: WorldState[] } {
@@ -30,12 +47,12 @@ function makePersistFake(): { persist: (s: WorldState) => Promise<void>; calls: 
 describe('world-flow — viaje', () => {
   it('viaje legal: mueve, marca explorado y persiste una vez', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
     const destino = vecinoDeInicio();
 
     const outcome = flow.travelTo(destino);
 
-    expect(outcome).toEqual({ moved: true });
+    expect(outcome).toMatchObject({ moved: true });
     expect(flow.getState().currentGridId).toBe(destino);
     expect(getGridState(flow.getState(), destino)).toBe('explorado');
     expect(fake.calls.length).toBe(1);
@@ -44,7 +61,7 @@ describe('world-flow — viaje', () => {
 
   it('viaje ilegal: no mueve, no persiste, y la razón discrimina el caso', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
 
     expect(flow.travelTo('no-existe')).toEqual({ moved: false, reason: 'unknown_grid' });
     expect(flow.travelTo(WORLD_CIFRAS.startingGridId)).toEqual({
@@ -59,13 +76,14 @@ describe('world-flow — viaje', () => {
   it('un fallo de red en persist no rompe el viaje (fire-and-forget)', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const flow = createWorldFlow({
+      getCharacter: () => pjDePrueba(),
       initialState: createInitialWorldState(),
       persist: () => Promise.reject(new Error('red caída')),
     });
 
     const outcome = flow.travelTo(vecinoDeInicio());
 
-    expect(outcome).toEqual({ moved: true });
+    expect(outcome).toMatchObject({ moved: true });
     expect(flow.getState().currentGridId).toBe(vecinoDeInicio());
     // Deja que la promesa rechazada se procese y se loguee.
     await Promise.resolve();
@@ -78,7 +96,7 @@ describe('world-flow — viaje', () => {
 describe('world-flow — cámara semántica (lookAt)', () => {
   it('mirar un grid lejano persiste la vista pero NO mueve al PJ (#88)', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
 
     flow.lookAt({ kind: 'grid', gridId: 'norte-001' });
 
@@ -90,7 +108,7 @@ describe('world-flow — cámara semántica (lookAt)', () => {
 
   it('una vista inválida es no-op y no persiste', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
 
     flow.lookAt({ kind: 'grid', gridId: 'grid-fantasma' });
 
@@ -100,7 +118,7 @@ describe('world-flow — cámara semántica (lookAt)', () => {
 
   it('la vista persistida sobrevive el round-trip: getState refleja lo mirado', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
 
     flow.travelTo(vecinoDeInicio());
     flow.lookAt({ kind: 'grid', gridId: vecinoDeInicio() });
@@ -120,7 +138,7 @@ const poiDeInicio = (): string => getPOIsByGrid(WORLD_CIFRAS.startingGridId)[1]!
 describe('world-flow — entrar y salir de POI', () => {
   it('enterPOI revela y fija la vista en UNA sola persistencia', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
     const poiId = poiDeInicio();
     expect(getPOIState(flow.getState(), poiId)).toBeNull();
 
@@ -138,7 +156,7 @@ describe('world-flow — entrar y salir de POI', () => {
 
   it('enterPOI sobre un POI inexistente no toca nada', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
     const antes = flow.getState();
 
     expect(flow.enterPOI('no-existe')).toBe(false);
@@ -149,7 +167,7 @@ describe('world-flow — entrar y salir de POI', () => {
 
   it('entrar al mismo POI dos veces no vuelve a persistir', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
     const poiId = poiDeInicio();
 
     flow.enterPOI(poiId);
@@ -160,7 +178,7 @@ describe('world-flow — entrar y salir de POI', () => {
 
   it('leavePOI devuelve la vista al grid que contiene el POI', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
     const poiId = poiDeInicio();
 
     flow.enterPOI(poiId);
@@ -172,7 +190,7 @@ describe('world-flow — entrar y salir de POI', () => {
 
   it('salir no degrada el estado del POI: sigue revelado', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
     const poiId = poiDeInicio();
 
     flow.enterPOI(poiId);
@@ -183,7 +201,7 @@ describe('world-flow — entrar y salir de POI', () => {
 
   it('leavePOI fuera de un POI no hace nada', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
 
     flow.leavePOI();
 
@@ -195,7 +213,7 @@ describe('world-flow — entrar y salir de POI', () => {
 describe('world-flow — completar POI', () => {
   it('completePOI marca completado y persiste', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
     const poiId = poiDeInicio();
 
     flow.enterPOI(poiId);
@@ -207,7 +225,7 @@ describe('world-flow — completar POI', () => {
 
   it('completar dos veces el mismo POI no vuelve a persistir', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
     const poiId = poiDeInicio();
 
     flow.completePOI(poiId);
@@ -221,7 +239,7 @@ describe('world-flow — completar POI', () => {
   // grid hacia 'controlado'.
   it('volver a entrar a un POI completado no lo degrada', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
     const poiId = poiDeInicio();
 
     flow.completePOI(poiId);
@@ -233,7 +251,7 @@ describe('world-flow — completar POI', () => {
 
   it('revelar POIs sube el estado derivado del grid sin escribirlo', () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
     const vecino = vecinoDeInicio();
     const poiVecino = getPOIsByGrid(vecino)[0]!.id;
 
@@ -254,7 +272,7 @@ describe('world-flow — completar POI', () => {
 describe('world-flow — flush', () => {
   it('sin escrituras pendientes resuelve igualmente', async () => {
     const fake = makePersistFake();
-    const flow = createWorldFlow({ initialState: createInitialWorldState(), persist: fake.persist });
+    const flow = createWorldFlow({ getCharacter: () => pjDePrueba(), initialState: createInitialWorldState(), persist: fake.persist });
     await expect(flow.flush()).resolves.toBeUndefined();
   });
 
@@ -265,6 +283,7 @@ describe('world-flow — flush', () => {
     let resolver: (() => void) | null = null;
     const orden: string[] = [];
     const flow = createWorldFlow({
+      getCharacter: () => pjDePrueba(),
       initialState: createInitialWorldState(),
       persist: () =>
         new Promise<void>((res) => {
@@ -286,6 +305,7 @@ describe('world-flow — flush', () => {
 
   it('propaga el fallo de la última escritura para que el caller no salga', async () => {
     const flow = createWorldFlow({
+      getCharacter: () => pjDePrueba(),
       initialState: createInitialWorldState(),
       persist: () => Promise.reject(new Error('red caída')),
     });
@@ -293,5 +313,118 @@ describe('world-flow — flush', () => {
     flow.travelTo(vecinoDeInicio());
 
     await expect(flow.flush()).rejects.toThrow('red caída');
+  });
+});
+
+// -----------------------------------------------------------------------------
+// Coste de jornada (sub-paso 4d.2, §9.7, decisiones #98/#99/#100)
+// -----------------------------------------------------------------------------
+
+describe('world-flow — coste de jornada', () => {
+  const flowDePrueba = (estado = createInitialWorldState()) =>
+    createWorldFlow({
+      getCharacter: () => pjDePrueba(),
+      initialState: estado,
+      persist: () => Promise.resolve(),
+    });
+
+  it('viajar cuesta una acción del día', () => {
+    const flow = flowDePrueba();
+    const antes = actionsRemaining(flow.getState(), pjDePrueba());
+
+    flow.travelTo(vecinoDeInicio());
+
+    expect(actionsRemaining(flow.getState(), pjDePrueba())).toBe(antes - 1);
+  });
+
+  it('el viaje devuelve la jornada restante en el outcome', () => {
+    const flow = flowDePrueba();
+    const outcome = flow.travelTo(vecinoDeInicio());
+    expect(outcome).toEqual({ moved: true, actionsLeft: FATIGUE_RULES.actionsPerDay - 1 });
+  });
+
+  it('un viaje ilegal no cobra nada', () => {
+    const flow = flowDePrueba();
+    flow.travelTo('no-existe');
+    flow.travelTo(WORLD_CIFRAS.startingGridId);
+    expect(flow.getState().actionsSpent).toBe(0);
+  });
+
+  it('sin jornada el viaje se rechaza con `no_actions` y no mueve', () => {
+    const flow = flowDePrueba({
+      ...createInitialWorldState(),
+      actionsSpent: FATIGUE_RULES.actionsPerDay,
+    });
+    const origen = flow.getState().currentGridId;
+
+    expect(flow.travelTo(vecinoDeInicio())).toEqual({ moved: false, reason: 'no_actions' });
+    expect(flow.getState().currentGridId).toBe(origen);
+  });
+
+  it('entrar a un POI cuesta una acción', () => {
+    const flow = flowDePrueba();
+    const poi = getPOIsByGrid(WORLD_CIFRAS.startingGridId)[0]!;
+
+    flow.enterPOI(poi.id);
+
+    expect(flow.getState().actionsSpent).toBe(1);
+  });
+
+  // C2 del brief: volver de un combate remonta la vista y reentra al mismo
+  // POI. Cobrar antes de la guarda `alreadyHere` haría que cada combate
+  // costase una acción extra, contra Q41 de #100 ("el combate sale gratis").
+  it('reentrar al mismo POI NO vuelve a cobrar', () => {
+    const flow = flowDePrueba();
+    const poi = getPOIsByGrid(WORLD_CIFRAS.startingGridId)[0]!;
+
+    flow.enterPOI(poi.id);
+    flow.enterPOI(poi.id);
+    flow.enterPOI(poi.id);
+
+    expect(flow.getState().actionsSpent).toBe(1);
+  });
+
+  it('salir y volver a entrar al mismo POI sí cobra otra vez', () => {
+    const flow = flowDePrueba();
+    const poi = getPOIsByGrid(WORLD_CIFRAS.startingGridId)[0]!;
+
+    flow.enterPOI(poi.id);
+    flow.leavePOI();
+    flow.enterPOI(poi.id);
+
+    expect(flow.getState().actionsSpent).toBe(2);
+  });
+
+  it('sin jornada no se puede entrar a un POI', () => {
+    const flow = flowDePrueba({
+      ...createInitialWorldState(),
+      actionsSpent: FATIGUE_RULES.actionsPerDay,
+    });
+    const poi = getPOIsByGrid(WORLD_CIFRAS.startingGridId)[0]!;
+
+    expect(flow.enterPOI(poi.id)).toBe(false);
+    expect(flow.getState().view.kind).not.toBe('poi');
+  });
+
+  it('mirar (lookAt) sigue siendo gratis: es cámara, no acción (#88)', () => {
+    const flow = flowDePrueba();
+    flow.lookAt({ kind: 'grid', gridId: vecinoDeInicio() });
+    flow.lookAt({ kind: 'region' });
+    expect(flow.getState().actionsSpent).toBe(0);
+  });
+
+  it('replaceState sustituye el estado entero y persiste', () => {
+    const fake = makePersistFake();
+    const flow = createWorldFlow({
+      getCharacter: () => pjDePrueba(),
+      initialState: createInitialWorldState(),
+      persist: fake.persist,
+    });
+
+    // Lo que devuelve `camp()`: jornada a cero y día siguiente.
+    flow.replaceState({ ...flow.getState(), day: 2, actionsSpent: 0 });
+
+    expect(flow.getState().day).toBe(2);
+    expect(fake.calls).toHaveLength(1);
   });
 });

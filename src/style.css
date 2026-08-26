@@ -4803,3 +4803,320 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
   letter-spacing: 0.04em;
   color: var(--c-corteza-palida);
 }
+
+/* =============================================================================
+   Fatiga de jornada (sub-paso 4d.2, §9.7, decisiones #98/#99/#100).
+   ========================================================================== */
+
+/* Los 8 puntos de Q16a. Puntos y no texto ni barra: el jugador debe poder leer
+   la jornada de un vistazo periférico, sin parsear un número, y #100 anota que
+   verlos subir en H8 es parte del atractivo.
+
+   Gastado y disponible se distinguen por RELLENO, no sólo por opacidad: el
+   compromiso de accesibilidad de PRODUCT pide que ningún estado importante
+   dependa sólo del hue, y un pip vacío se lee sin color. */
+.world-view__jornada {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 2px;
+}
+
+.world-view__pip {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c-verde-pantano);
+  border: 1px solid transparent;
+  transition:
+    background-color 200ms ease-out,
+    border-color 200ms ease-out;
+}
+
+.world-view__pip--gastado {
+  background: transparent;
+  border-color: var(--c-tinta-tierra-media);
+}
+
+/* Bandas de jornada. 8-5 verde, 4-2 ámbar, 1 rojo. El ámbar cubre tres
+   acciones y no una: un aviso que dura un solo click es un parpadeo. */
+.world-view__jornada[data-banda='aviso'] .world-view__pip:not(.world-view__pip--gastado) {
+  background: var(--c-ambar-enfermo);
+}
+
+.world-view__jornada[data-banda='critica'] .world-view__pip:not(.world-view__pip--gastado) {
+  background: var(--c-rojo-oxido-enfermo);
+}
+
+/* Estado 0: no queda ningún punto lleno que colorear, así que la señal la
+   lleva el grupo entero. Sin esto el aviso desaparece justo en el estado
+   crítico, que es cuando hace falta. */
+.world-view__jornada[data-banda='agotada'] .world-view__pip {
+  border-color: var(--c-rojo-oxido-enfermo);
+}
+
+/* Aviso de hambre. Vive FUERA del grupo de puntos y separado del HUD: en una
+   run de 4d el contador y este aviso se ponen en rojo a la vez, y pegados se
+   leerían como una sola señal en vez de dos. */
+.world-view__hambre {
+  margin: 0;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  line-height: 1.3;
+  max-width: 22ch;
+  color: var(--c-hueso-descolorido);
+  background: var(--c-tinta-tierra-baja);
+  border: 1px solid var(--c-rojo-oxido-enfermo);
+  border-radius: 2px;
+}
+
+/* Copy del verbo apagado por jornada agotada. Comparte anatomía con la razón
+   de "solo a grids colindantes" pero tiñe el borde: quedarse sin día no es una
+   regla del mapa, es presión de recurso. */
+.world-view__panel-reason--jornada {
+  color: var(--c-hueso-descolorido);
+  border-left: 1px solid var(--c-ambar-enfermo);
+  padding-left: 8px;
+}
+
+/* Tinte de noche (Q20). SÓLO la capa de mundo: el header, el HUD y los modales
+   quedan fuera, porque un HP tintado es una regresión de legibilidad.
+   Ocho pasos discretos, uno por acción gastada. El tope es bajo a propósito:
+   los marcadores de POI tienen carga semántica por color (#91) y una capa que
+   los apague rompería Color-Means-Something. */
+.world-view__viewport::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: oklch(14% 0.012 145);
+  opacity: 0;
+  transition: opacity 400ms ease-out;
+}
+
+.world-view__viewport[data-jornada='1']::after { opacity: 0.03; }
+.world-view__viewport[data-jornada='2']::after { opacity: 0.07; }
+.world-view__viewport[data-jornada='3']::after { opacity: 0.11; }
+.world-view__viewport[data-jornada='4']::after { opacity: 0.15; }
+.world-view__viewport[data-jornada='5']::after { opacity: 0.20; }
+.world-view__viewport[data-jornada='6']::after { opacity: 0.25; }
+.world-view__viewport[data-jornada='7']::after { opacity: 0.31; }
+.world-view__viewport[data-jornada='8']::after { opacity: 0.38; }
+
+/* Amanecer: cubre el remonte de la vista tras acampar, que resetea el pan y
+   el zoom manual. Sin esto, despertar sería un salto de cámara sin causa
+   visible. Va de oscuro a claro, al revés que la entrada normal. */
+.world-view--amanece {
+  animation: world-view-amanece 520ms ease-out;
+}
+
+@keyframes world-view-amanece {
+  from {
+    opacity: 0.15;
+    filter: brightness(0.4);
+  }
+  to {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-view--amanece {
+    animation: none;
+  }
+  .world-view__viewport::after,
+  .world-view__pip {
+    transition: none;
+  }
+}
+
+/* --- Modal de acampar ----------------------------------------------------- */
+
+.camp-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 3vw, 32px);
+  background: oklch(14% 0.012 145 / 0.78);
+  animation: confirm-modal-fade 120ms ease-out both;
+}
+
+.camp-modal__panel {
+  width: 100%;
+  max-width: 30rem;
+  padding: clamp(20px, 3vw, 32px);
+  background: var(--c-tinta-tierra-baja);
+  color: var(--c-hueso-descolorido);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* El borde cambia con la gravedad. Es el único indicio cromático del panel:
+   sin ración avisa, y con la muerte encima se afirma. */
+.camp-modal__panel--aviso {
+  border-color: var(--c-ambar-enfermo);
+}
+
+.camp-modal__panel--letal {
+  border-color: var(--c-rojo-oxido-enfermo);
+}
+
+.camp-modal__eyebrow {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+/* Serif display: acampar cierra un día y puede cerrar la partida. Es uno de
+   los momentos donde el juego habla con peso, no un heading menor. */
+.camp-modal__title {
+  margin: 0;
+  font-family: 'Cormorant Garamond', 'GT Sectra', 'Source Serif', Georgia, serif;
+  font-weight: 400;
+  font-size: 1.9rem;
+  line-height: 1.05;
+  color: var(--c-hueso-claro);
+}
+
+.camp-modal__panel--letal .camp-modal__title {
+  color: var(--c-rojo-oxido-enfermo);
+}
+
+/* Resumen del día. Tabla: aquí los números SÍ se comparan entre ellos, así que
+   van en mono (Numbers-In-Mono, sin la excepción inline de #54). */
+.camp-modal__summary {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--c-tinta-tierra-media);
+  border: 1px solid var(--c-tinta-tierra-media);
+}
+
+.camp-modal__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 7px 12px;
+  background: var(--c-tinta-tierra-baja);
+}
+
+.camp-modal__row dt {
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--c-corteza-palida);
+}
+
+.camp-modal__row dd {
+  margin: 0;
+}
+
+.camp-modal__row--alerta dd {
+  color: var(--c-rojo-oxido-enfermo);
+}
+
+.camp-modal__num {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Berkeley Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-hueso-descolorido);
+}
+
+/* Prosa. Los números embebidos van en sans como el resto de la frase
+   (excepción inline de #54): no hay nada adyacente con lo que compararlos. */
+.camp-modal__body {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  max-width: 62ch;
+  color: var(--c-hueso-descolorido);
+}
+
+.camp-modal__gate {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  background: var(--c-tinta-tierra-humeda);
+  border: 1px solid var(--c-rojo-oxido-enfermo);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.camp-modal__gate input {
+  margin: 2px 0 0;
+  accent-color: var(--c-rojo-oxido-enfermo);
+  flex: none;
+}
+
+.camp-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.camp-modal__btn {
+  font-family: inherit;
+  font-size: 0.88rem;
+  padding: 8px 16px;
+  color: var(--c-hueso-descolorido);
+  background: var(--c-tinta-tierra-media);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out;
+}
+
+.camp-modal__btn:hover:not(:disabled) {
+  background: var(--c-corteza-palida);
+  color: var(--c-tinta-tierra-humeda);
+}
+
+.camp-modal__btn:focus-visible {
+  outline: 2px solid var(--c-hueso-descolorido);
+  outline-offset: 2px;
+}
+
+.camp-modal__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.camp-modal__btn--confirm {
+  background: var(--c-verde-pantano);
+  border-color: var(--c-verde-pantano);
+  color: var(--c-tinta-tierra-humeda);
+}
+
+.camp-modal__btn--confirm:hover:not(:disabled) {
+  background: var(--c-hueso-descolorido);
+  border-color: var(--c-hueso-descolorido);
+}
+
+/* Sin ración el confirmar deja de ser el verde del mundo y pasa al rojo del
+   daño: Color-Means-Something, y aquí el daño es literal. */
+.camp-modal__btn--danger {
+  background: var(--c-rojo-oxido-enfermo);
+  border-color: var(--c-rojo-oxido-enfermo);
+  color: var(--c-hueso-claro);
+}
+
+.camp-modal__btn--danger:hover:not(:disabled) {
+  background: oklch(52% 0.11 30);
+  border-color: oklch(52% 0.11 30);
+}

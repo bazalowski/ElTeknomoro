@@ -54,6 +54,15 @@ import {
 import { browserStorage, readPreferences, writePreferences } from '../state/preferences';
 import { applyTextSize, renderOptionsPanel } from './options-panel';
 import { showConfirmModal } from './confirm-modal';
+import { showCampModal } from './camp-modal';
+import {
+  FATIGUE_RULES,
+  actionsRemaining,
+  canPerform,
+  countRations,
+  maxActionsPerDay,
+  nightsUntilStarvation,
+} from '../rules/fatigue';
 
 export interface WorldViewDeps {
   flow: WorldFlowHandle;
@@ -69,6 +78,15 @@ export interface WorldViewDeps {
   // "Reset run" (4c.2): borra el slot. Devuelve la promesa del borrado para
   // que el panel pueda fallar visible si la red falla.
   onResetRun: () => Promise<void>;
+  // Acampar (4d.2). La vista NO acampa: recoge el click y delega. `camp()`
+  // devuelve un Character nuevo y sólo main sabe persistirlo (C1 del brief de
+  // 4d.2), así que main llama al motor y remonta esta vista con el PJ nuevo.
+  onCamp: () => void;
+  // Montar el modal de acampar ya abierto, sin confirmar (#99, caso c).
+  // Es un flag EXPLÍCITO y no una inferencia del estado: `mountWorldView`
+  // sirve tanto al arranque de sesión como al retorno de un combate, y #99
+  // prohíbe abrir nada al volver de un combate. Sólo main sabe cuál es cuál.
+  openCampOnMount?: boolean;
 }
 
 // -----------------------------------------------------------------------------
@@ -200,7 +218,7 @@ type Selection =
   | { kind: 'poi'; poiId: string };
 
 export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
-  const { flow, character, onEnterCombat, onExitToMenu, onResetRun } = deps;
+  const { flow, character, onEnterCombat, onExitToMenu, onResetRun, onCamp } = deps;
   const storage = browserStorage();
   let prefs = readPreferences(storage);
   applyTextSize(prefs.textSize);
@@ -222,12 +240,17 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
         <div class="world-view__header-right">
           <button type="button" class="world-view__chip" data-wv-inventory>Inventario</button>
           <button type="button" class="world-view__chip" data-wv-pause>Pausa</button>
+          <button type="button" class="world-view__chip" data-wv-camp>Acampar</button>
           <div class="world-view__hud" role="status" aria-label="Estado del personaje">
             <span class="world-view__hud-name">${escapeHtml(character.name)}</span>
             <span class="world-view__hud-sep" aria-hidden="true"></span>
             <span class="world-view__hud-stat">HP <span class="world-view__hud-num" data-wv-hp></span></span>
             <span class="world-view__hud-stat">Nv <span class="world-view__hud-num">${character.level}</span></span>
+            <span class="world-view__hud-sep" aria-hidden="true"></span>
+            <span class="world-view__hud-stat">Día <span class="world-view__hud-num" data-wv-day></span></span>
+            <span class="world-view__jornada" data-wv-jornada role="img"></span>
           </div>
+          <p class="world-view__hambre" data-wv-hambre role="status" hidden></p>
         </div>
       </header>
       <div class="world-view__viewport" data-wv-viewport>
@@ -261,10 +284,122 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   const inventoryBtn = root.querySelector<HTMLButtonElement>('[data-wv-inventory]')!;
   const backBtn = root.querySelector<HTMLButtonElement>('[data-wv-back]')!;
   const hpEl = root.querySelector<HTMLElement>('[data-wv-hp]')!;
+  const dayEl = root.querySelector<HTMLElement>('[data-wv-day]')!;
+  const jornadaEl = root.querySelector<HTMLElement>('[data-wv-jornada]')!;
+  const hambreEl = root.querySelector<HTMLElement>('[data-wv-hambre]')!;
+  const campBtn = root.querySelector<HTMLButtonElement>('[data-wv-camp]')!;
   // HP máximo leído del PJ persistido, no recalculado: createCharacter ya
   // aplicó los bonos de perk sobre hp.max. Recomputarlo aquí duplicaría la
   // regla en la vista y derivaría en cuanto cambie la fórmula.
   hpEl.textContent = `${character.hp.current}/${character.hp.max}`;
+
+  // --- Fatiga de jornada (§9.7, decisiones #98/#99/#100) --------------------
+
+  const TOTAL_ACCIONES = maxActionsPerDay(character);
+
+  // Los 8 puntos de Q16a. Se construyen una vez y sólo cambian de clase: un
+  // innerHTML por acción gastada tiraría el foco de quien navegue a teclado.
+  const pips: HTMLElement[] = [];
+  for (let i = 0; i < TOTAL_ACCIONES; i++) {
+    const pip = document.createElement('span');
+    pip.className = 'world-view__pip';
+    pip.setAttribute('aria-hidden', 'true');
+    jornadaEl.appendChild(pip);
+    pips.push(pip);
+  }
+
+  // Banda de color por jornada restante (Q19a, C6 del brief). El ámbar cubre
+  // 4-2 y no sólo el último cuarto: con una sola acción en ámbar el aviso es
+  // un parpadeo, no un aviso. El 0 no tiene puntos que colorear, así que el
+  // grupo entero cambia de lectura — si no, la señal desaparece justo en el
+  // estado crítico.
+  function bandaDeJornada(restantes: number): 'holgada' | 'aviso' | 'critica' | 'agotada' {
+    if (restantes === 0) return 'agotada';
+    if (restantes === 1) return 'critica';
+    if (restantes <= 4) return 'aviso';
+    return 'holgada';
+  }
+
+  function pintarFatiga(): void {
+    const estado = flow.getState();
+    const restantes = actionsRemaining(estado, character);
+    const banda = bandaDeJornada(restantes);
+    const raciones = countRations(character);
+
+    dayEl.textContent = String(estado.day);
+
+    for (let i = 0; i < pips.length; i++) {
+      pips[i]!.classList.toggle('world-view__pip--gastado', i >= restantes);
+    }
+    jornadaEl.dataset['banda'] = banda;
+    jornadaEl.setAttribute(
+      'aria-label',
+      `Jornada: ${restantes} de ${TOTAL_ACCIONES} acciones restantes`,
+    );
+
+    // Tinte de noche (Q20, acotado por C11): sólo la capa de mundo, nunca el
+    // header ni los modales. Ocho pasos discretos, uno por acción gastada.
+    viewport.dataset['jornada'] = String(estado.actionsSpent);
+
+    // Aviso de hambre (C5, C7). Vive fuera del grupo de puntos: en una run de
+    // 4d los dos se ponen en rojo a la vez, y juntos se leerían como una sola
+    // señal. Informa, no instruye: en 4d no hay ninguna fuente de raciones,
+    // así que sugerir "busca comida" sería mentir sobre lo que la build tiene.
+    if (raciones === 0 && character.alive) {
+      const noches = nightsUntilStarvation(character);
+      hambreEl.hidden = false;
+      hambreEl.textContent =
+        noches <= 1
+          ? 'Sin raciones. La próxima noche a la intemperie es la última.'
+          : `Sin raciones. Aguantas ${noches} noches más.`;
+    } else {
+      hambreEl.hidden = true;
+    }
+
+    // #99: acampar SIEMPRE se puede, incluso a 0 acciones. Si no, el PJ que
+    // gasta su octava acción viajando se queda encerrado sin salida.
+    campBtn.disabled = !character.alive;
+  }
+
+  campBtn.addEventListener('click', () => abrirCampamento());
+
+  pintarFatiga();
+
+  // #99 caso (c): al ARRANCAR sesión con la jornada agotada y sin raciones, el
+  // modal se monta ya abierto con la advertencia visible y sin confirmar. El
+  // click sigue siendo del jugador y Cancelar devuelve a la vista bloqueada,
+  // que conserva Pausa y salida al menú.
+  //
+  // El flag lo pone main y no se infiere del estado a propósito: `mountWorldView`
+  // sirve también al retorno de un combate, y ahí #99 prohíbe abrir nada.
+  if (deps.openCampOnMount === true && character.alive) {
+    abrirCampamento();
+  }
+
+  function abrirCampamento(): void {
+    if (!character.alive) return;
+    const estado = flow.getState();
+    // Todos los números salen del motor. Escribir un 5 a mano aquí dejaría el
+    // copy mintiendo en cuanto H6 recalibre FATIGUE_RULES.
+    const maxTrasPenalizacion = character.hp.max - FATIGUE_RULES.hpMaxPenaltyPerNight;
+    showCampModal(root, {
+      data: {
+        day: estado.day,
+        rations: countRations(character),
+        hpCurrent: character.hp.current,
+        hpMax: character.hp.max,
+        actionsSpent: estado.actionsSpent,
+        actionsTotal: TOTAL_ACCIONES,
+        hpMaxPenalty: FATIGUE_RULES.hpMaxPenaltyPerNight,
+        hpCurrentPenalty: Math.max(
+          1,
+          Math.ceil(Math.max(0, maxTrasPenalizacion) * FATIGUE_RULES.hpCurrentPenaltyRatio),
+        ),
+        nightsLeft: nightsUntilStarvation(character),
+      },
+      onConfirm: () => onCamp(),
+    });
+  }
 
   // --- SVG base -------------------------------------------------------------
 
@@ -630,6 +765,10 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
     // están aquí: son menú de sistema y viven en la pausa, que es global —
     // con #88 (viajar cuesta) atarlos a la casa dejaría al PJ lejos sin poder
     // tocarlos.
+    // "Descansar" ya no está aquí (4d.2): acampar es global y vive en el
+    // header, disponible en los tres niveles de zoom porque #99 permite
+    // acampar en cualquier sitio. Dos entradas al mismo acto en la misma
+    // pantalla es ruido, y el verbo del producto es "Acampar", no "Descansar".
     if (poi.id === getHomePOI().id) {
       actions.push({
         id: 'inventario',
@@ -637,13 +776,6 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
         enabled: true,
         primary: true,
         onActivate: () => openInventory(),
-      });
-      actions.push({
-        id: 'descansar',
-        label: 'Descansar',
-        enabled: false,
-        // Acampar es §9.7 y su mecánica entra en 4d. El botón existe y lo dice.
-        disabledReason: 'Disponible en 4d',
       });
       actions.push({ id: 'salir', label: 'Salir', enabled: true, onActivate: () => leavePOIView(true) });
       return actions;
@@ -860,12 +992,25 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
           `;
         }
 
+        // Jornada agotada: el verbo se apaga y DICE por qué, con las raciones
+        // que quedan dentro del copy (#99, Q3b + Q18). Nunca se abre un modal
+        // solo: acampar sigue siendo un click del jugador en su botón.
+        const hayJornada = canPerform(flow.getState(), character, 'travel');
+        const raciones = countRations(character);
+        const copySinJornada =
+          raciones > 0
+            ? `El día se acabó. Acampa para empezar el siguiente: te ${raciones === 1 ? 'queda 1 ración' : `quedan ${raciones} raciones`}.`
+            : 'El día se acabó y no te quedan raciones. Acampar te costará vida.';
+
         const travelControl = isHere
           ? `<p class="world-view__panel-here">Estás aquí.</p>`
-          : adjacent
-            ? `<button type="button" class="world-view__panel-btn world-view__panel-btn--travel" data-wv-travel>Viajar aquí</button>`
-            : `<button type="button" class="world-view__panel-btn" disabled title="Solo puedes viajar a grids colindantes.">Viajar aquí</button>
-               <p class="world-view__panel-reason">Solo a grids colindantes.</p>`;
+          : !adjacent
+            ? `<button type="button" class="world-view__panel-btn" disabled title="Solo puedes viajar a grids colindantes.">Viajar aquí</button>
+               <p class="world-view__panel-reason">Solo a grids colindantes.</p>`
+            : hayJornada
+              ? `<button type="button" class="world-view__panel-btn world-view__panel-btn--travel" data-wv-travel>Viajar aquí</button>`
+              : `<button type="button" class="world-view__panel-btn" disabled>Viajar aquí</button>
+                 <p class="world-view__panel-reason world-view__panel-reason--jornada">${escapeHtml(copySinJornada)}</p>`;
 
         // La cámara no se anuncia dos veces: si ya estás dentro de este grid,
         // el botón deja de ofrecer acercarse y ofrece salir.
@@ -892,8 +1037,14 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
             paintGridStates();
             paintMarker();
             paintChrome();
+            pintarFatiga();
             paintPanel();
             if (focusedGridId !== null) buildDetail(getGrid(focusedGridId)!);
+          } else if (outcome.reason === 'no_actions') {
+            // El botón ya estaba apagado por `hayJornada`; llegar aquí sería
+            // una carrera entre repintados. Se repinta y se deja constancia.
+            pintarFatiga();
+            paintPanel();
           }
         });
         return;
@@ -956,6 +1107,7 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
     selection = { kind: 'poi', poiId };
     // Una sola escritura de estado y un solo persist: revela + fija la vista.
     flow.enterPOI(poiId);
+    pintarFatiga();
 
     buildScene(poi);
     // La superficie de debajo queda inerte mientras el POI está abierto: sin
