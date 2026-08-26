@@ -89,9 +89,9 @@ El marco lore queda fijado en decisión #47 (§5). Cualquier contenido, paleta, 
 
 ## 3. Estado actual y roadmap
 
-**Estado hoy (26 agosto 2026):** biblia en v0.30. **H0, H1, H2 y H3 cerrados, PASO 4 del H3 archivado, cuestionario de scope de H4 cerrado, sub-pasos 4a, 4b.0, 4b y 4c completos (4c.0 a 4c.4).** El primer loop completo del juego (crear PJ → home → combate al Lobo → loot/epitafio → persistencia → home) corre en producción con statuses funcionales, 10 perks cableados, IA con 4 perfiles + intent visible, y `flee` 50% implementado. **648/648 tests verde** (24 ficheros), `tsc --noEmit` limpio, `vite build` limpio. Los 5 bloqueantes de diseño que restaban (v0.8) están cerrados (decisiones #41-#45 más #46 emergente). Lore (#47), reordenamiento de hitos (#62) y decisiones del cuestionario de visión (#63 en adelante) cerradas en v0.20. Decisiones del PASO 4 del H3 (#78-#80) cerradas en v0.21. Decisiones del cuestionario de scope de H4 (#81-#85) cerradas en v0.22. Decisiones del cuestionario de scope del sub-paso 4b (#86-#91) cerradas en v0.23. Decisiones del cuestionario de scope del sub-paso 4c (#92-#94) cerradas en v0.24. Decisiones del PASO 2 del pipeline de 4c.2/4c.3 (#95-#96) cerradas en v0.25. El sub-paso 4c cierra con 4c.4 el 26/8/2026. Reordenación de H4 (#97) cerrada en v0.26. **Decisiones del cuestionario de scope del sub-paso 4d (#98-#100) y volcado documental del rango #48-#61 (#101) cerradas en v0.27. Sub-paso 4f.0 cerrado el 26/8/2026 con la decisión #102: formato de entrada por POI, compilador de contenido y modelo de #92 cableado en el motor.** Mapa de H4 y roadmap de §3.2 puestos al día en v0.29, y ocho cuestionarios ya codeados movidos a `docs/archivo/`. **Motor de 4d codeado en v0.30** (`src/rules/fatigue.ts`); queda su UI.
+**Estado hoy (26 agosto 2026):** biblia en v0.31. **H0, H1, H2 y H3 cerrados, PASO 4 del H3 archivado, cuestionario de scope de H4 cerrado, sub-pasos 4a, 4b.0, 4b y 4c completos (4c.0 a 4c.4).** El primer loop completo del juego (crear PJ → home → combate al Lobo → loot/epitafio → persistencia → home) corre en producción con statuses funcionales, 10 perks cableados, IA con 4 perfiles + intent visible, y `flee` 50% implementado. **658/658 tests verde** (24 ficheros), `tsc --noEmit` limpio, `vite build` limpio. Los 5 bloqueantes de diseño que restaban (v0.8) están cerrados (decisiones #41-#45 más #46 emergente). Lore (#47), reordenamiento de hitos (#62) y decisiones del cuestionario de visión (#63 en adelante) cerradas en v0.20. Decisiones del PASO 4 del H3 (#78-#80) cerradas en v0.21. Decisiones del cuestionario de scope de H4 (#81-#85) cerradas en v0.22. Decisiones del cuestionario de scope del sub-paso 4b (#86-#91) cerradas en v0.23. Decisiones del cuestionario de scope del sub-paso 4c (#92-#94) cerradas en v0.24. Decisiones del PASO 2 del pipeline de 4c.2/4c.3 (#95-#96) cerradas en v0.25. El sub-paso 4c cierra con 4c.4 el 26/8/2026. Reordenación de H4 (#97) cerrada en v0.26. **Decisiones del cuestionario de scope del sub-paso 4d (#98-#100) y volcado documental del rango #48-#61 (#101) cerradas en v0.27. Sub-paso 4f.0 cerrado el 26/8/2026 con la decisión #102: formato de entrada por POI, compilador de contenido y modelo de #92 cableado en el motor.** Mapa de H4 y roadmap de §3.2 puestos al día en v0.29, y ocho cuestionarios ya codeados movidos a `docs/archivo/`. **Sub-paso 4d cerrado entero en v0.31**: motor (`src/rules/fatigue.ts`) y UI (HUD de jornada, modal de acampar, tinte de noche).
 
-**Próximo:** **4d.2** (UI de la fatiga: HUD de 8 puntos, modal de acampar y tinte de noche, por MODOPIPELINE), y después **4f** (tirada de exploración cableada en la vista de POI, sustituyendo los botones provisionales de #93). 4d se adelanta a 4f a petición de Bazalo: no depende de él y su scope ya estaba firmado desde v0.27. El orden de H4 cambia por decisión #97: 4f se adelanta a 4d y 4e porque no depende de ellos y porque escribir contenido sin poder verlo es la vía rápida a escribirlo mal. **El cuestionario de 4d está respondido y cerrado en v0.27** (#98-#100): 4d llega a su turno con el scope firmado y cero deuda de decisión, pero sigue detrás de 4f por el argumento de #97, que responder el cuestionario no invalida.
+**Próximo:** **4f** (tirada de exploración cableada en la vista de POI, sustituyendo los botones provisionales de #93), y después **4e** (fast travel y anclas), que cierra H4. 4d se adelantó a 4f a petición de Bazalo y quedó cerrado el 26/8/2026. El orden de H4 cambia por decisión #97: 4f se adelanta a 4d y 4e porque no depende de ellos y porque escribir contenido sin poder verlo es la vía rápida a escribirlo mal. **El cuestionario de 4d está respondido y cerrado en v0.27** (#98-#100): 4d llega a su turno con el scope firmado y cero deuda de decisión, pero sigue detrás de 4f por el argumento de #97, que responder el cuestionario no invalida.
 
 **Mapa de H4** (orden vigente por #97; detalle de cada fila en la tabla de sub-pasos de §13):
 
@@ -103,8 +103,8 @@ El marco lore queda fijado en decisión #47 (§5). Cualquier contenido, paleta, 
 | 4c | Vista de POI, combate desde POI, pausa global, campamento, selector de slots | ✅ cerrado (4c.0 a 4c.4) |
 | 4f.0 | Formato de entrada por POI (§4.15.10), compilador de contenido, modelo de #92 en el motor | ✅ cerrado |
 | 4d.1 | Motor de fatiga: `rules/fatigue.ts` SAGRADO, ración en el catálogo y en el inventario inicial, muerte por inanición | ✅ cerrado |
-| **4d.2** | **HUD de 8 puntos + modal de acampar + tinte de noche** | **🔄 siguiente (MODOPIPELINE)** |
-| 4f | Tirada cableada en la vista de POI + orquestador de efectos | ⏳ pendiente |
+| 4d.2 | HUD de 8 puntos, modal de acampar, tinte de noche, cobro en viaje y entrada a POI | ✅ cerrado |
+| **4f** | **Tirada cableada en la vista de POI + orquestador de efectos** | **🔄 siguiente** |
 | 4e | Fast travel, anclas y condición de "Controlado" | ⏳ sin cuestionario responder |
 
 H4 cierra cuando los tres pendientes estén dentro. **4e depende de los otros dos**: su coste de viaje es "1 ración + 2 acciones" (#83, §9.8), que son recursos que construye 4d, y su condición de Controlado necesita que un POI pueda alcanzar `completado`, que es lo que desbloquea 4f (deuda de #95).
@@ -1903,3 +1903,24 @@ Bazalo adelanta 4d a 4f. Es válido y sólo reordena: 4d no depende de 4f, su sc
 Tres tests que asumían "la mochila arranca vacía" se actualizan, y uno de ellos deja una lección: el smoke test de combate buscaba el arma con `findIndex(s => s !== null)`, o sea "el primer slot ocupado". Con la mochila vacía funcionaba por accidente. Ahora busca la espada por id, que es lo que siempre quiso decir.
 
 648/648 tests, `tsc` y `vite build` limpios.
+
+---
+
+**v0.31** — **Sub-paso 4d cerrado entero** (26/8/2026). Sin decisiones nuevas: ejecuta #98, #99 y #100.
+
+4d.2 pasó por MODOPIPELINE en **carril B** — el scope estaba cerrado desde v0.27, así que el brief se compiló citando las decisiones en vez de invocar a Prompt Master, y el director validó la traducción decisión→UI en lugar de revalidar la decisión. Devolvió **APTO CON CAMBIOS** con doce correcciones. Cuatro merecen quedar escritas porque sin ellas el sub-paso habría salido mal:
+
+- **El cobro de `enterPOI` va después de la guarda `alreadyHere`**, no donde el comentario de la costura lo dejó apuntado desde 4c.1. Volver de un combate remonta la vista y reentra al mismo POI: cobrar antes de la guarda habría hecho que **cada combate costase una acción extra**, contra Q41 de #100 ("entrar cobra, el combate sale gratis"). Hay test de regresión.
+- **`world-flow.ts` no puede orquestar `camp()`.** Su `persist` sólo escribe `WorldState` y `camp()` devuelve un `Character`. Lo orquesta `main.ts`, que sí sabe guardarlo. El remonte de la vista no es cosmético: la vista captura el PJ **por valor**, así que sin remontar el HUD mentiría sobre la vida tras una noche a la intemperie.
+- **El invariante de #99 es "ninguna acampada sin click", no "ningún modal se monta solo".** El brief los había fundido en uno y se contradecía con el propio texto de #99. Al arrancar sesión con 0 acciones y 0 raciones el modal se monta abierto y sin confirmar; al volver de un combate no se abre nada. La distinción es un **flag explícito** desde `main`, no una inferencia del estado, porque `mountWorldView` sirve a los dos casos.
+- **Con `hp.max ≤ 5`, acampar sin ración mata.** El modal cambia de registro y exige **doble confirmación**, la misma que #94 pide para borrar la partida: con permadeath (#65) la consecuencia es idéntica. El umbral de la UI coincide con el del motor en todo el rango de HP.
+
+Se retira el `[Descansar]` deshabilitado que 4c dejó en el POI Hogar: acampar es global desde #99 y el verbo del producto es **Acampar**.
+
+**Deuda del sub-paso:** sin verificación visual en navegador. El entorno de la sesión no tiene uno y la vista exige login de Supabase — misma deuda declarada en §3 desde 4c.4, y ahora cubre también 4d.2.
+
+**Estado al cierre de v0.31:**
+
+- Biblia: 13 secciones, 102 decisiones numeradas, 0 bloqueantes abiertos.
+- Código: **658/658 tests** (+10), `tsc --noEmit` y `vite build` limpios.
+- H4: 6 de 8 sub-pasos cerrados. Quedan **4f** y **4e**.
