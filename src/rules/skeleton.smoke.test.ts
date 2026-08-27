@@ -47,13 +47,10 @@ import {
   generateFreeWorld,
   generateHistoryWorld,
   hashSeedPhrase,
-  type NodeId,
   type WorldMap,
 } from './world-gen';
-import { isEdgeTraversable, planFastTravel, resolveTravel } from './fast-travel';
 import {
   rollExplorationTick,
-  type BiomeId,
   type BiomeTable,
   type WorldState,
 } from './exploration';
@@ -872,10 +869,10 @@ describe('smoke: crafteo operativo', () => {
 });
 
 // -----------------------------------------------------------------------------
-// 12. World-gen + fast-travel operativos (Ronda 3)
+// 12. World-gen operativo (Ronda 3)
 // -----------------------------------------------------------------------------
 
-describe('smoke: world-gen historia + fast-travel', () => {
+describe('smoke: world-gen historia', () => {
   it('generateHistoryWorld devuelve grafo coherente', () => {
     const world = generateHistoryWorld();
     expect(world.mode).toBe('history');
@@ -893,66 +890,9 @@ describe('smoke: world-gen historia + fast-travel', () => {
     expect(() => generateFreeWorld('test')).toThrow(/NOT_IMPLEMENTED/);
   });
 
-  it('planFastTravel construye camino BFS hasta nodo descubierto', () => {
-    const world = generateHistoryWorld();
-    const discovered = new Set<NodeId>(['ciudad_capital', 'exterior_llano', 'mazmorra_bosque']);
-    const plan = planFastTravel(world, 'ciudad_capital', 'mazmorra_bosque', discovered);
-    expect(plan.legs).toHaveLength(2);
-    expect(plan.legs[0]!.to).toBe('exterior_llano');
-    expect(plan.legs[1]!.to).toBe('mazmorra_bosque');
-    expect(plan.has_risky).toBe(true);
-    expect(plan.total_ticks).toBeGreaterThan(0);
-  });
-
-  it('planFastTravel rechaza destino no descubierto', () => {
-    const world = generateHistoryWorld();
-    const discovered = new Set<NodeId>(['ciudad_capital']);
-    expect(() =>
-      planFastTravel(world, 'ciudad_capital', 'mazmorra_bosque', discovered),
-    ).toThrow(/no descubierto/);
-  });
-
-  it('isEdgeTraversable refleja descubrimiento', () => {
-    const world = generateHistoryWorld();
-    const edge = world.edges[0]!;
-    const character = makeTestCharacter();
-    expect(isEdgeTraversable(edge, character, new Set())).toBe(false);
-    expect(isEdgeTraversable(edge, character, new Set([edge.to]))).toBe(true);
-  });
-
-  it('resolveTravel con leg arriesgado dispara tirada con la tabla del bioma', () => {
-    const world = generateHistoryWorld();
-    const discovered = new Set<NodeId>(['ciudad_capital', 'exterior_llano', 'mazmorra_bosque']);
-    const plan = planFastTravel(world, 'ciudad_capital', 'mazmorra_bosque', discovered);
-
-    const tablaBosque: BiomeTable = {
-      biome: 'bosque',
-      entries: [
-        { id: 'nada', biome: 'bosque', weight: 100, conditions: {}, type: 'nothing', payload: {}, evade_check: null },
-      ],
-    };
-    const tablaLlanura: BiomeTable = {
-      biome: 'llanura',
-      entries: [
-        { id: 'nada', biome: 'llanura', weight: 100, conditions: {}, type: 'nothing', payload: {}, evade_check: null },
-      ],
-    };
-    const tableLookup = (biome: BiomeId): BiomeTable => {
-      if (biome === 'bosque') return tablaBosque;
-      if (biome === 'llanura') return tablaLlanura;
-      throw new Error(`Sin tabla para ${biome}`);
-    };
-
-    const baseWorldState: WorldState = {
-      biome: 'llanura', time_of_day: 'day', weather: 'clear',
-      faction_reputation: {}, flags: {}, luck: 0,
-    };
-    const resolution = resolveTravel(plan, makeTestCharacter(), baseWorldState, tableLookup, createRng(7));
-    // Llegamos al destino porque la tabla sólo tiene 'nothing' (no interrumpe).
-    expect(resolution.final_node).toBe('mazmorra_bosque');
-    expect(resolution.summaries).toHaveLength(2);
-    // Leg seguro: sin events. Leg arriesgado: 1 event (provisional).
-    expect(resolution.summaries[0]!.events).toHaveLength(0);
-    expect(resolution.summaries[1]!.events).toHaveLength(1);
-  });
+  // Los tests de fast-travel que vivían aquí se retiraron en 4e (#105). Corrían
+  // sobre el grafo procedural de `world-gen.ts`, que el modelo vigente jubiló:
+  // el mundo son 180 grids fijos (#72) y `fast-travel.ts` se reescribió entero.
+  // La cobertura nueva vive en `fast-travel.test.ts`. `world-gen.ts` sigue como
+  // estaba y sus tests, arriba, siguen siendo válidos.
 });

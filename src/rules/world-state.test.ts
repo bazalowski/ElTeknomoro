@@ -16,6 +16,7 @@ import {
   moveToGrid,
   setView,
   placeAnchor,
+  removeAnchor,
   revealPOI,
   completePOI,
   getGridPOIProgress,
@@ -43,7 +44,9 @@ describe('world-state — estado inicial', () => {
     expect(s.view).toEqual({ kind: 'region' });
     expect(s.day).toBe(1);
     expect(s.actionsSpent).toBe(0);
-    expect(s.anchors).toEqual([]);
+    // El grid natal arranca con ancla (#103, Q6): es la única excepción a "no
+    // hay anclas prediseñadas", y sin ella el PJ no tendría a dónde volver.
+    expect(s.anchors).toEqual([WORLD_CIFRAS.startingGridId]);
   });
 
   it('sólo el grid natal arranca explorado (Q16a del cuestionario de 4b)', () => {
@@ -176,7 +179,7 @@ describe('world-state — monotonía de la niebla', () => {
     let s = createInitialWorldState();
     s = placeAnchor(s, 'centro-001');
     s = placeAnchor(s, 'centro-001');
-    expect(s.anchors).toEqual(['centro-001']);
+    expect(s.anchors).toEqual([WORLD_CIFRAS.startingGridId, 'centro-001']);
     expect(hasAnchor(s, 'centro-001')).toBe(true);
     expect(placeAnchor(s, 'no-existe')).toBe(s);
   });
@@ -216,7 +219,7 @@ describe('world-state — hydrateWorldState', () => {
     expect(s.view).toEqual({ kind: 'region' });
     expect(Object.keys(s.gridStates).sort()).toEqual(['centro-001', WORLD_CIFRAS.startingGridId]);
     expect(Object.keys(s.poiStates)).toEqual(['centro-001-poi-1']);
-    expect(s.anchors).toEqual(['centro-001']);
+    expect(s.anchors).toEqual(['centro-001', WORLD_CIFRAS.startingGridId]);
     expect(s.day).toBe(4);
     expect(s.actionsSpent).toBe(3);
   });
@@ -231,7 +234,8 @@ describe('world-state — hydrateWorldState', () => {
     });
     expect(s.gridStates['centro-001']).toBeUndefined();
     expect(s.poiStates['centro-001-poi-1']).toBeUndefined();
-    expect(s.anchors).toEqual([]);
+    // Las anclas basura se descartan, pero la del Hogar se repone siempre.
+    expect(s.anchors).toEqual([WORLD_CIFRAS.startingGridId]);
     expect(s.day).toBe(1);
     expect(s.actionsSpent).toBe(0);
   });
@@ -326,23 +330,39 @@ describe('world-state — deriveGridState (#94)', () => {
     expect(deriveGridState(s, destino)).toBe('explorado');
   });
 
-  it('100% completados sin ancla NO es controlado', () => {
+  // LA FÓRMULA CAMBIÓ EN 4e (#103, #105). Hasta aquí Controlado pedía
+  // `completados al 100% + ancla`, y los tres tests de abajo afirmaban esa
+  // versión. Las dos mitades cayeron: el ancla creaba una circularidad (se
+  // planta SOBRE un grid Controlado) y `completado` es deuda de 4f, así que
+  // ningún grid podía llegar a Controlado todavía.
+  it('100% de POIs revelados es controlado, sin ancla ninguna', () => {
     let s = createInitialWorldState();
-    for (const poi of getPOIsByGrid('centro-001')) s = completePOI(s, poi.id);
-    expect(deriveGridState(s, 'centro-001')).toBe('explorado');
+    for (const poi of getPOIsByGrid('centro-001')) s = revealPOI(s, poi.id);
+    expect(hasAnchor(s, 'centro-001')).toBe(false);
+    expect(deriveGridState(s, 'centro-001')).toBe('controlado');
   });
 
-  it('ancla sin el 100% completados NO es controlado', () => {
+  it('visitar no es completar: revelar basta, completar no hace falta', () => {
     let s = createInitialWorldState();
-    s = completePOI(s, 'centro-001-poi-1');
+    for (const poi of getPOIsByGrid('centro-001')) s = revealPOI(s, poi.id);
+    const soloRevelados = deriveGridState(s, 'centro-001');
+    for (const poi of getPOIsByGrid('centro-001')) s = completePOI(s, poi.id);
+    expect(deriveGridState(s, 'centro-001')).toBe(soloRevelados);
+  });
+
+  it('sin el 100% revelado NO es controlado, aunque tenga ancla', () => {
+    let s = createInitialWorldState();
+    s = revealPOI(s, 'centro-001-poi-1');
     s = placeAnchor(s, 'centro-001');
     expect(deriveGridState(s, 'centro-001')).toBe('explorado');
   });
 
-  it('100% completados + ancla es controlado', () => {
+  it('recoger el ancla NO devuelve el grid a explorado (Q11)', () => {
     let s = createInitialWorldState();
-    for (const poi of getPOIsByGrid('centro-001')) s = completePOI(s, poi.id);
+    for (const poi of getPOIsByGrid('centro-001')) s = revealPOI(s, poi.id);
     s = placeAnchor(s, 'centro-001');
+    s = removeAnchor(s, 'centro-001');
+    expect(hasAnchor(s, 'centro-001')).toBe(false);
     expect(deriveGridState(s, 'centro-001')).toBe('controlado');
   });
 

@@ -112,7 +112,9 @@ describe('coste de acciones (#100, Q1)', () => {
   });
 
   it('el catálogo de costes cubre todos los verbos del enum', () => {
-    const verbos: FatigueActionType[] = ['travel', 'enter_poi', 'craft', 'talk', 'fight', 'camp'];
+    const verbos: FatigueActionType[] = [
+      'travel', 'enter_poi', 'place_anchor', 'craft', 'talk', 'fight', 'camp',
+    ];
     for (const v of verbos) expect(ACTION_COSTS[v]).toBeTypeOf('number');
     expect(Object.keys(ACTION_COSTS)).toHaveLength(verbos.length);
   });

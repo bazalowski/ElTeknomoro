@@ -48,12 +48,18 @@ export const FATIGUE_RULES = {
 // si mañana aparece un verbo nuevo, el compilador obliga a decidir su coste en
 // vez de dejarlo colar como gratis por omisión.
 export type FatigueActionType =
-  | 'travel'      // mover al grid adyacente
-  | 'enter_poi'   // entrar a un POI
-  | 'craft'       // craftear (H7)
-  | 'talk'        // hablar con un NPC (H8)
-  | 'fight'       // combatir
-  | 'camp';       // acampar
+  | 'travel'        // mover al grid adyacente
+  | 'enter_poi'     // entrar a un POI
+  | 'place_anchor'  // plantar o recoger un ancla (#103)
+  | 'craft'         // craftear (H7)
+  | 'talk'          // hablar con un NPC (H8)
+  | 'fight'         // combatir
+  | 'camp';         // acampar
+
+// El fast travel NO está en este enum a propósito. Su coste es variable —
+// entre 2 y 5 acciones según distancia (#104)— y `ACTION_COSTS` es un record
+// de coste FIJO por verbo. Meterlo aquí obligaría a mentir con un número y
+// cobrarlo por otra vía. Para eso está `consumeActions`, más abajo.
 
 // Coste confirmado en #100 (Q1 del cuestionario de 4d). Combatir es gratis: la
 // acción se cobró al entrar al POI, y cobrarla dos veces haría que un POI con
@@ -61,6 +67,11 @@ export type FatigueActionType =
 export const ACTION_COSTS: Readonly<Record<FatigueActionType, number>> = {
   travel: 1,
   enter_poi: 1,
+  // Plantar cuesta 1 acción (#103, la rama del default de Q14 que aplica
+  // cuando el ancla es un item físico). Recoger cuesta lo mismo: si recoger
+  // fuese gratis, mover un ancla costaría lo mismo que plantarla y el cap por
+  // nivel dejaría de significar nada — bastaría con ir arrastrando la misma.
+  place_anchor: 1,
   craft: 1,
   talk: 1,
   fight: 0,
@@ -133,14 +144,45 @@ export function consumeAction(
 ): WorldState {
   const cost = actionCost(action);
   if (cost === 0) return worldState;
-  if (!canPerform(worldState, character, action)) {
+  return consumeActions(worldState, character, cost, action);
+}
+
+// ¿Alcanza la jornada para gastar `n` acciones de golpe? La usa el fast
+// travel, cuyo coste sale de `computeFastTravelCost` y no de un verbo fijo.
+export function canAfford(
+  worldState: WorldState,
+  character: Character,
+  n: number,
+): boolean {
+  if (n <= 0) return true;
+  return actionsRemaining(worldState, character) >= n;
+}
+
+// Gasta `n` acciones de una sola escritura (#104, sub-paso 4e).
+//
+// Existe porque el fast travel cuesta entre 2 y 5 acciones según distancia y
+// `ACTION_COSTS` sólo sabe de costes fijos. La alternativa era llamar a
+// `consumeAction('travel')` entre dos y cinco veces seguidas: funcionaría, y
+// dejaría un viaje convertido en cinco transiciones de estado que cualquier
+// log, undo o test de regresión leería como cinco viajes distintos.
+//
+// `label` es sólo para el mensaje de error. Lanza por la misma razón que
+// `consumeAction`: llegar sin jornada es un bug del orquestador.
+export function consumeActions(
+  worldState: WorldState,
+  character: Character,
+  n: number,
+  label = 'acción',
+): WorldState {
+  if (n <= 0) return worldState;
+  if (!canAfford(worldState, character, n)) {
     throw new Error(
-      `consumeAction: no quedan acciones para "${action}" ` +
-        `(gastadas ${worldState.actionsSpent} de ${maxActionsPerDay(character)}). ` +
-        `Comprueba canPerform antes de llamar.`,
+      `consumeActions: no quedan acciones suficientes para "${label}" ` +
+        `(pedidas ${n}, gastadas ${worldState.actionsSpent} de ${maxActionsPerDay(character)}). ` +
+        `Comprueba canAfford antes de llamar.`,
     );
   }
-  return { ...worldState, actionsSpent: worldState.actionsSpent + cost };
+  return { ...worldState, actionsSpent: worldState.actionsSpent + n };
 }
 
 // -----------------------------------------------------------------------------
@@ -174,7 +216,11 @@ export function deathByFatigue(): EndOfRunCause {
 
 // Quita una ración de la mochila. Devuelve el inventario nuevo, o null si no
 // había ninguna.
-function spendOneRation(inventory: Inventory): Inventory | null {
+//
+// Exportada desde 4e: `rules/fast-travel.ts` también cobra una ración por
+// viaje (#104), y reimplementar ahí la búsqueda del slot es la forma clásica
+// de que las dos copias se separen el día que la ración cambie de forma.
+export function spendOneRation(inventory: Inventory): Inventory | null {
   for (let i = 0; i < inventory.slots.length; i++) {
     const stack = inventory.slots[i];
     if (stack !== null && stack !== undefined && stack.item_id === FATIGUE_RULES.rationItemId) {

@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   STARTING_RATION_ID,
   STARTING_RATIONS,
+  STARTING_ANCHOR_ID,
+  STARTING_ANCHORS,
   EQUIPMENT_SLOTS,
   ITEMS,
   ITEMS_BY_ID,
@@ -16,12 +18,13 @@ describe('catálogo de items', () => {
     expect(ITEMS.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('tiene exactamente 4 items en fase 1 (Daga + Diente de Lobo + Poción + Ración)', () => {
+  it('tiene exactamente 5 items en fase 1 (Daga + Diente de Lobo + Poción + Ración + Ancla)', () => {
     // PROVISIONAL FASE 1. Cuando se añadan más items en H5 este número crece;
     // mientras tanto, blindamos contra adiciones accidentales no documentadas.
     // La Ración entra en el sub-paso 4d por #98: es moneda de jornada, no
-    // comida curativa, y la gasta `rules/fatigue.ts` al acampar.
-    expect(ITEMS.length).toBe(4);
+    // comida curativa, y la gasta `rules/fatigue.ts` al acampar. El Ancla entra
+    // en 4e por #103: no se consume al usarse, se planta y se puede recoger.
+    expect(ITEMS.length).toBe(5);
   });
 
   it('la Ración es apilable y no ocupa slot de equipo (#98, Q13)', () => {
@@ -169,7 +172,19 @@ describe('buildStartingInventory', () => {
       quantity: STARTING_RATIONS,
       durability: null,
     });
-    expect(inv.slots.slice(1).every((s) => s === null)).toBe(true);
+    // Desde 4e (#103) el PJ también arranca con anclas: sin ellas sólo tendría
+    // la del Hogar y nunca llegaría a plantar una segunda, dejando el cap por
+    // nivel y el recoger-y-replantar sin poder verse.
+    expect(inv.slots[1]).toEqual({
+      item_id: STARTING_ANCHOR_ID,
+      quantity: STARTING_ANCHORS,
+      durability: null,
+    });
+    expect(inv.slots.slice(2).every((s) => s === null)).toBe(true);
+  });
+
+  it('las anclas iniciales caben en un solo stack y no pasan del cap (#103)', () => {
+    expect(STARTING_ANCHORS).toBeLessThanOrEqual(ITEMS_BY_ID[STARTING_ANCHOR_ID]!.stack_size);
   });
 
   it('las raciones iniciales caben en un solo stack', () => {

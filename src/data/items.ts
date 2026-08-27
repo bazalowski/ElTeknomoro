@@ -56,6 +56,21 @@ export const STARTING_WEAPON_ID: ItemId = 'daga';
 export const STARTING_RATION_ID: ItemId = 'racion';
 export const STARTING_RATIONS = 4;
 
+// Anclas iniciales del PJ (#103, sub-paso 4e). Q13 manda las anclas a
+// contenido y Q6 da el Hogar gratis sin consumir item, así que sin este stock
+// el PJ nace con cero anclas y NUNCA llega a plantar la segunda: el cap por
+// nivel, el bloqueo al alcanzarlo, el recoger-y-replantar y una lista de
+// destinos con más de una entrada quedarían construidos y sin poder verse.
+//
+// PROVISIONAL FASE 1, misma deuda declarada que las raciones en #98: no hay
+// forma de conseguir más (crafteo es H7, tiendas son H8, el loot no tiene
+// tabla escrita). Destino: 4f, banda de recurso de §9.5. Calibración a H6.
+//
+// Dos y no más: con el ancla automática del Hogar dan tres puntos de viaje,
+// que es lo justo para ejercitar el sistema sin regalarlo.
+export const STARTING_ANCHOR_ID: ItemId = 'ancla';
+export const STARTING_ANCHORS = 2;
+
 export const ITEMS: readonly Item[] = [
   {
     id: 'daga',
@@ -135,6 +150,26 @@ export const ITEMS: readonly Item[] = [
     weight: 0.3,
     stats: {},
   },
+  // Ancla de viaje (#103, sub-paso 4e). Es `misc` y no `consumable` porque no
+  // se consume al usarse: se planta en un grid Controlado y se puede recoger
+  // para replantarla en otro (Q15a). Sale del inventario mientras está
+  // plantada y vuelve al recogerla.
+  //
+  // `stack_size: 6` coincide con el tope del cap por nivel de #103: más de
+  // seis anclas en la mochila no puede tenerlas nadie, y un stack mayor
+  // mentiría sobre el techo del sistema. Pesa: plantarlas lejos de casa es
+  // una decisión, no un trámite.
+  {
+    id: 'ancla',
+    name: 'Ancla de viaje',
+    category: 'misc',
+    rarity: 'uncommon',
+    slot: null,
+    stack_size: 6,
+    max_durability: null,
+    weight: 1.5,
+    stats: {},
+  },
 ] as const;
 
 export const ITEMS_BY_ID: Readonly<Record<ItemId, Item>> = Object.fromEntries(
@@ -190,8 +225,23 @@ export function buildStartingInventory(): Inventory {
     );
   }
 
+  // Anclas iniciales (#103, Q13). Mismo patrón que las raciones: un stack en
+  // la mochila, declarado arriba para que H6 recalibre sin leer el cuerpo.
+  const anchorItem = ITEMS_BY_ID[STARTING_ANCHOR_ID];
+  if (anchorItem === undefined) {
+    throw new Error(
+      `data/items: STARTING_ANCHOR_ID "${STARTING_ANCHOR_ID}" no resuelve a ningún Item del catálogo.`,
+    );
+  }
+  if (STARTING_ANCHORS > anchorItem.stack_size) {
+    throw new Error(
+      `data/items: ${STARTING_ANCHORS} anclas iniciales no caben en un stack de ${anchorItem.stack_size}.`,
+    );
+  }
+
   const slots: (ItemStack | null)[] = new Array(INVENTORY_RULES.totalSlots).fill(null);
   slots[0] = { item_id: rationItem.id, quantity: STARTING_RATIONS, durability: null };
+  slots[1] = { item_id: anchorItem.id, quantity: STARTING_ANCHORS, durability: null };
 
   return {
     slots: slots as SlotArray,

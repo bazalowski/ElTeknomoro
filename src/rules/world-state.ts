@@ -30,7 +30,7 @@ import { WORLD_CIFRAS, getGrid, getPOI, getPOIsByGrid, areGridsAdjacent } from '
 // -----------------------------------------------------------------------------
 
 // Las tres capas de §9.6. 'inexplorado' es el default y no se persiste.
-// 'controlado' lo abre 4e (anclas + fast travel).
+// 'controlado' lo cierra #103: los POIs del grid revelados al 100%.
 export type GridState = 'inexplorado' | 'explorado' | 'controlado';
 
 // Estado de un POI para la niebla de §9.9 y la lectura visual de #91.
@@ -58,8 +58,9 @@ export interface WorldState {
   gridStates: Readonly<Record<string, GridState>>;
   // Sólo POIs que ya no están bajo niebla.
   poiStates: Readonly<Record<string, POIState>>;
-  // Grids con ancla colocada por el jugador (§9.8). Los cablea 4e; aquí sólo
-  // reservamos el campo para no volver a migrar el shape.
+  // Grids con ancla colocada por el jugador (§9.8, #103). Cableado en 4e.
+  // Vive aquí y no en `Character` porque el slot se rebobina entero con la
+  // muerte (#90, #94), que es justo lo que Q3a pide: las anclas no cruzan runs.
   anchors: readonly string[];
   // Fatiga de jornada (§9.7). Los cablea 4d; en 4b se persisten pero nadie los
   // decrementa todavía.
@@ -74,6 +75,12 @@ export interface WorldState {
 // Estado de una run recién empezada: el PJ en el grid de inicio, mirando el
 // overworld, con su grid natal ya explorado (Q16a del cuestionario de 4b: sólo
 // `sur-001` arranca a color pleno) y el Hogar revelado, porque el PJ vive ahí.
+//
+// El grid natal arranca CON ANCLA (#103, Q6). Es la única excepción a "no hay
+// anclas prediseñadas" de §9.8: es el punto de aparición y el hub, y sin ella el
+// PJ no tendría a dónde volver hasta plantar la primera por su cuenta. No salió
+// de un item, así que no cuenta para el cap por nivel ni se puede recoger —
+// `rules/fast-travel.ts` guarda las dos reglas.
 export function createInitialWorldState(): WorldState {
   return {
     version: 1,
@@ -81,7 +88,7 @@ export function createInitialWorldState(): WorldState {
     view: { kind: 'region' },
     gridStates: { [WORLD_CIFRAS.startingGridId]: 'explorado' },
     poiStates: { [WORLD_CIFRAS.homePOIId]: 'revelado' },
-    anchors: [],
+    anchors: [WORLD_CIFRAS.startingGridId],
     day: 1,
     actionsSpent: 0,
   };
@@ -123,11 +130,26 @@ export function getGridPOIProgress(state: WorldState, gridId: string): GridPOIPr
 // Estado REAL del grid (#94, Q21 del cuestionario de 4c: "se deriva").
 //
 // No se persiste un estado calculado: se calcula desde lo que sí se persiste,
-// que son los POIs y el ancla. Así no hay dos verdades que sincronizar.
+// que son los POIs. Así no hay dos verdades que sincronizar.
 //
-//   controlado  -> POIs del grid completados al 100% + ancla colocada (4e).
+//   controlado  -> los POIs del grid REVELADOS al 100%.
 //   explorado   -> al menos un POI revelado, O el PJ pisó el grid.
 //   inexplorado -> ni una cosa ni la otra.
+//
+// EL ANCLA SALIÓ DE LA FÓRMULA (#103, #105). Hasta 4e esto pedía
+// `completed === total && hasAnchor(...)`, y las dos mitades estaban mal:
+//
+//   1. `hasAnchor` creaba una circularidad. El ancla se planta SOBRE un grid
+//      Controlado, así que si Controlado exige ancla, ninguno de los dos
+//      puede ocurrir primero. Y con Q15a (recoger el ancla para replantarla)
+//      un grid Controlado habría vuelto a Explorado, contra Q11. Controlado
+//      es una condición del grid; el ancla es un permiso de viaje encima.
+//
+//   2. `completed` era más duro que lo decidido. #103 (Q7a) mide Controlado
+//      en POIs VISITADOS, no completados. La diferencia no es cosmética:
+//      `completado` lo escribe el cierre del evento del POI, que es deuda de
+//      4f, así que con la fórmula vieja ningún grid podía ser Controlado
+//      todavía y 4e no habría podido probarse.
 //
 // La segunda vía de 'explorado' (haber pisado el grid) es deliberada y no
 // estaba en la letra de Q20: sin ella, viajar a un grid y salir sin entrar a
@@ -135,11 +157,20 @@ export function getGridPOIProgress(state: WorldState, gridId: string): GridPOIPr
 // jugador vería deshacerse un viaje que hizo. Pisar es explorar.
 export function deriveGridState(state: WorldState, gridId: string): GridState {
   if (!getGrid(gridId)) return 'inexplorado';
-  const { total, revealed, completed } = getGridPOIProgress(state, gridId);
-  if (total > 0 && completed === total && hasAnchor(state, gridId)) return 'controlado';
+  const { total, revealed } = getGridPOIProgress(state, gridId);
+  if (total > 0 && revealed === total) return 'controlado';
   if (revealed > 0) return 'explorado';
   if (state.currentGridId === gridId) return 'explorado';
   return getGridState(state, gridId) === 'inexplorado' ? 'inexplorado' : 'explorado';
+}
+
+// ¿Está este grid Controlado? Azúcar sobre `deriveGridState` para los callers
+// que sólo preguntan por el permiso de plantar ancla (#103). Se declara aparte
+// porque es la pregunta que hace `fast-travel.ts`, y leer
+// `deriveGridState(...) === 'controlado'` en cinco sitios invita a que alguien
+// escriba la comparación mal.
+export function isGridControlled(state: WorldState, gridId: string): boolean {
+  return deriveGridState(state, gridId) === 'controlado';
 }
 
 // null = el POI sigue bajo niebla y se pinta "???" (§9.9).
@@ -220,9 +251,25 @@ export function completePOI(state: WorldState, poiId: string): WorldState {
   return setPOIState(state, poiId, 'completado');
 }
 
+// Planta el ancla en un grid. NO valida el cap por nivel ni que el grid esté
+// Controlado ni que el PJ tenga el item: eso lo decide `rules/fast-travel.ts`,
+// que es quien conoce al PJ. Aquí sólo vive la escritura del estado del mundo.
+// Idempotente: plantar dos veces en el mismo grid no duplica.
 export function placeAnchor(state: WorldState, gridId: string): WorldState {
   if (!getGrid(gridId) || state.anchors.includes(gridId)) return state;
   return { ...state, anchors: [...state.anchors, gridId] };
+}
+
+// Recoge el ancla de un grid (#103, Q15a). Devuelve el mismo estado si no
+// había ninguna, para que el caller no tenga que comprobarlo antes.
+//
+// NO toca `gridStates`: recoger un ancla no degrada el grid. Con #103 el
+// estado se deriva de los POIs revelados y el ancla ya no entra en la fórmula,
+// así que un grid Controlado sigue Controlado sin ella — que es exactamente lo
+// que Q11 pide ("el estado no retrocede").
+export function removeAnchor(state: WorldState, gridId: string): WorldState {
+  if (!state.anchors.includes(gridId)) return state;
+  return { ...state, anchors: state.anchors.filter((a) => a !== gridId) };
 }
 
 // -----------------------------------------------------------------------------
@@ -271,6 +318,13 @@ export function hydrateWorldState(raw: unknown): WorldState {
   const anchors = Array.isArray(r.anchors)
     ? r.anchors.filter((a): a is string => typeof a === 'string' && getGrid(a) !== null)
     : [];
+  // El ancla del Hogar se repone siempre (#103, Q6). Cubre los saves anteriores
+  // a 4e, que se guardaron con `anchors: []` y se quedarían sin punto de
+  // retorno. Es seguro reponerla porque no se puede recoger: si falta, es que
+  // el save es viejo o vino corrupto, nunca que el jugador la levantó.
+  if (!anchors.includes(WORLD_CIFRAS.startingGridId)) {
+    anchors.push(WORLD_CIFRAS.startingGridId);
+  }
 
   return {
     version: 1,

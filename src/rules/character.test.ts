@@ -14,7 +14,14 @@ import {
 import { applyDamageToCharacter, buildAttackInputFromCharacter } from './combat';
 import { deathByEnemy, killCharacter } from './death';
 import { equippedWeapon } from './inventory';
-import { ITEMS_BY_ID, STARTING_WEAPON_ID, STARTING_RATION_ID, STARTING_RATIONS } from '../data/items';
+import {
+  ITEMS_BY_ID,
+  STARTING_WEAPON_ID,
+  STARTING_RATION_ID,
+  STARTING_RATIONS,
+  STARTING_ANCHOR_ID,
+  STARTING_ANCHORS,
+} from '../data/items';
 
 // Plantilla válida mínima. Cada test la clona y muta el campo a probar.
 function baseInput(overrides: Partial<CreateCharacterInput> = {}): CreateCharacterInput {
@@ -196,6 +203,7 @@ describe('createCharacter', () => {
     expect(c.inventory.slots).toHaveLength(20);
     expect(c.inventory.slots.filter((s) => s !== null)).toEqual([
       { item_id: STARTING_RATION_ID, quantity: STARTING_RATIONS, durability: null },
+      { item_id: STARTING_ANCHOR_ID, quantity: STARTING_ANCHORS, durability: null },
     ]);
     expect(c.inventory.equipped.main_hand?.item_id).toBe(STARTING_WEAPON_ID);
 
