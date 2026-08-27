@@ -190,8 +190,13 @@ function cuerpo(data: CampModalData, sinRaciones: boolean, letal: boolean): stri
       aviso
     );
   }
+  const heridas = data.hpMax - data.hpCurrent;
+  const cura =
+    heridas > 0
+      ? ` Comer y dormir del tirón te devuelve los ${heridas} de vida que traías de menos.`
+      : '';
   return (
-    `Gastas una ración y duermes. Recuperas la jornada completa y amanece el día ${data.day + 1}. ` +
-    'La comida repone el ánimo para caminar, no las heridas.'
+    `Gastas una ración y duermes. Recuperas la jornada completa y amanece el día ${data.day + 1}.` +
+    cura
   );
 }

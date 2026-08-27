@@ -3998,11 +3998,17 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
   display: none;
 }
 
+/* Marcador del PJ en la vista regional. Sutil a propósito: el anillo ocupaba
+   más de la mitad de la celda y sobre las regiones cálidas (#8B7355 del Centro,
+   #A87B5C del Este) el conjunto anillo-blanco + punto-blanco se leía como una
+   chapa dorada encima del mapa. Ahora es una marca fina: dice "estás aquí" sin
+   tapar el grid que señala. */
 .world-view__marker-ring {
   fill: none;
   stroke: var(--c-hueso-descolorido);
-  stroke-width: 1.5px;
+  stroke-width: 1px;
   vector-effect: non-scaling-stroke;
+  opacity: 0.85;
 }
 
 .world-view__marker-dot {

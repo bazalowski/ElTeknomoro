@@ -356,7 +356,7 @@ Q10 = b decía "HP actual"; Q11 = a, Q29 = a y §9.7 construyen la muerte sobre 
 
 **Q31 = c queda satisfecha sin contador artificial.** `computeMaxHp = 8 + 2·CON` da 14-18 HP máx con CON 3-5, así que la inanición mata en **3-4 noches**. La "agonía" de Q31c no necesita mecánica propia: es la acumulación. Lo único que hay que construir es el aviso visible, que es UI.
 
-**Acampar CON ración no cura.** Q12b lo dice y la analogía de Bazalo lo cierra sola: una cinta de escribir de Resident Evil tampoco te cura, sólo te deja seguir. El HP se recupera con `pocion_curacion_menor`, que ya existe en `src/data/items.ts` con su efecto pendiente de cablear. El "recuperas todo" de Q24 son los 8 puntos volviendo a llenarse.
+**Acampar CON ración cura hasta el máximo vigente.** *(Corregido el 26/8/2026, al probar 4d.2.)* La resolución original dijo que no curaba, apoyándose en Q12b y en tu analogía de la cinta de Resident Evil. Era leer de más: **Q12b habla de comer una ración FUERA de acampar**, no de dormir alimentado, y el "recuperas todo" de Q24 incluía la vida además de los 8 puntos. Dormir con el estómago lleno repone; lo que no repone es masticar de pie a mitad de jornada. El techo es el `hp.max` vigente: la inanición previa no se revierte (Q33 sigue postergada).
 
 ### C2 — Acampar es SIEMPRE un click. No hay acampada automática en ningún caso
 

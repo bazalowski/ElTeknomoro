@@ -478,8 +478,11 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
 
   // Marcador del PJ en la regional: círculo sólido con anillo (#91).
   const marker = svgEl('g', { class: 'world-view__marker', 'aria-hidden': 'true' });
-  marker.appendChild(svgEl('circle', { class: 'world-view__marker-ring', r: '2.6' }));
-  marker.appendChild(svgEl('circle', { class: 'world-view__marker-dot', r: '1.5' }));
+  // Radios sobre una celda de CELL=10. El anillo pasó de 2.6 a 1.5 y el punto
+  // de 1.5 a 0.5: antes ocupaban el 52% y el 30% de la celda y el marcador
+  // competía con el propio mapa en vez de anotarlo.
+  marker.appendChild(svgEl('circle', { class: 'world-view__marker-ring', r: '1.5' }));
+  marker.appendChild(svgEl('circle', { class: 'world-view__marker-dot', r: '0.5' }));
   markerLayer.appendChild(marker);
 
   // --- Estado de interacción ------------------------------------------------

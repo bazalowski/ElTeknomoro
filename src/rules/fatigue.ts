@@ -152,6 +152,8 @@ export interface CampResult {
   worldState: WorldState;
   // false = se acampó a pelo y se pagó la penalización de #98.
   usedRation: boolean;
+  // HP recuperado al dormir comiendo. 0 si se acampó sin ración.
+  hpRestored: number;
   hpMaxLost: number;
   hpCurrentLost: number;
   // true = el PJ no despertó. `character.alive` es false y lleva epitafio.
@@ -184,10 +186,18 @@ function spendOneRation(inventory: Inventory): Inventory | null {
 
 // Acampar: cierra el día y abre el siguiente.
 //
-// CON RACIÓN: gasta una, resetea las 8 acciones, incrementa el día. **No cura**
-// (#98). La analogía es del propio autor y cierra el asunto sola: una cinta de
-// escribir de Resident Evil tampoco te cura, sólo te deja seguir. El HP se
-// recupera con consumibles, no durmiendo.
+// CON RACIÓN: gasta una, resetea las 8 acciones, incrementa el día y **cura
+// hasta el máximo vigente** (#98, matizada el 26/8/2026 al probar 4d.2).
+//
+// La versión anterior no curaba, apoyándose en Q12b. Era una lectura de más:
+// Q12b dice que comer una ración **fuera** de acampar no repone HP, no que
+// dormir alimentado tampoco lo haga, y Q24 pedía literalmente "ver que
+// recuperas todo" en el resumen del día. Dormir con el estómago lleno repone;
+// lo que no repone es masticar de pie a mitad de jornada.
+//
+// El techo es `hp.max` VIGENTE: si la inanición ya lo degradó, comer devuelve
+// al nuevo máximo, no al original. Revertir la pérdida de máximo sigue siendo
+// balance postergado (#98, Q33).
 //
 // SIN RACIÓN: acampa igual —el jugador no se queda encerrado a 0 acciones—
 // pero paga. El orden importa y está fijado en #98: primero cae el máximo,
@@ -212,10 +222,16 @@ export function camp(
   };
 
   if (usedRation) {
+    const restaurado = Math.max(0, character.hp.max - character.hp.current);
     return {
-      character: { ...character, inventory: inventarioSinRacion },
+      character: {
+        ...character,
+        inventory: inventarioSinRacion,
+        hp: { current: character.hp.max, max: character.hp.max },
+      },
       worldState: despierto,
       usedRation: true,
+      hpRestored: restaurado,
       hpMaxLost: 0,
       hpCurrentLost: 0,
       died: false,
@@ -238,6 +254,7 @@ export function camp(
       character: killCharacter(agotado, deathByFatigue(), ended_at_iso),
       worldState: despierto,
       usedRation: false,
+      hpRestored: 0,
       hpMaxLost: character.hp.max,
       hpCurrentLost: character.hp.current,
       died: true,
@@ -258,6 +275,7 @@ export function camp(
     },
     worldState: despierto,
     usedRation: false,
+    hpRestored: 0,
     hpMaxLost: FATIGUE_RULES.hpMaxPenaltyPerNight,
     hpCurrentLost: character.hp.current - nuevoActual,
     died: false,

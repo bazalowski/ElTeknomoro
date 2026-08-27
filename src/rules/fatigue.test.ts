@@ -238,12 +238,29 @@ describe('acampar con ración', () => {
     expect(r.worldState.day).toBe(6);
   });
 
-  it('NO cura: la ración es moneda de jornada, no comida (#98, Q12b)', () => {
+  it('cura hasta el máximo vigente (#98, matizada el 26/8/2026)', () => {
     const herido = conHp(conRaciones(pj(), 1), 3, 14);
     const r = camp(herido, mundo(), AYER);
-    expect(r.character.hp).toEqual({ current: 3, max: 14 });
+    expect(r.character.hp).toEqual({ current: 14, max: 14 });
+    expect(r.hpRestored).toBe(11);
     expect(r.hpMaxLost).toBe(0);
     expect(r.hpCurrentLost).toBe(0);
+  });
+
+  it('a tope de vida no recupera nada y no lo anuncia', () => {
+    const r = camp(conHp(conRaciones(pj(), 1), 14, 14), mundo(), AYER);
+    expect(r.hpRestored).toBe(0);
+    expect(r.character.hp.current).toBe(14);
+  });
+
+  it('cura al máximo VIGENTE, no al original: la inanición previa no se revierte', () => {
+    // Q33 dejó postergado revertir la pérdida de máximo. Comer devuelve al
+    // techo que quedó, no al que había antes de pasar hambre.
+    const primeraNoche = camp(conHp(pj(), 14, 14), mundo(), AYER);
+    expect(primeraNoche.character.hp.max).toBe(9);
+
+    const conComida = camp(conRaciones(primeraNoche.character, 1), primeraNoche.worldState, AYER);
+    expect(conComida.character.hp).toEqual({ current: 9, max: 9 });
   });
 
   it('acampar antes de agotar el día pierde las acciones no usadas (Q4)', () => {
@@ -353,6 +370,8 @@ describe('la agonía es acumulación, no un contador aparte (#98 sobre Q31c)', (
     const conComida = camp(conRaciones(tras.character, 1), tras.worldState, AYER);
     expect(conComida.character.hp.max).toBe(9);
     expect(conComida.hpMaxLost).toBe(0);
+    // Y el actual sí vuelve a tope: comer cura, lo que no revierte es el techo.
+    expect(conComida.character.hp.current).toBe(9);
   });
 });
 
