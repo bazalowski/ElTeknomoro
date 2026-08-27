@@ -1,7 +1,7 @@
 # El Teknomoro — Biblia del juego
 
 > Documento vivo. Consolida todo lo que sabemos (y lo que no sabemos) sobre el proyecto.
-> **Versión:** v0.32 · **Fecha:** 27 de agosto de 2026 · **Autor:** Bazalo con dirección de el-teknomoro-director
+> **Versión:** v0.33 · **Fecha:** 27 de agosto de 2026 · **Autor:** Bazalo con dirección de el-teknomoro-director
 
 ---
 
@@ -89,9 +89,9 @@ El marco lore queda fijado en decisión #47 (§5). Cualquier contenido, paleta, 
 
 ## 3. Estado actual y roadmap
 
-**Estado hoy (27 agosto 2026):** biblia en v0.32. **H0, H1, H2 y H3 cerrados, PASO 4 del H3 archivado, cuestionario de scope de H4 cerrado, sub-pasos 4a, 4b.0, 4b y 4c completos (4c.0 a 4c.4).** El primer loop completo del juego (crear PJ → home → combate al Lobo → loot/epitafio → persistencia → home) corre en producción con statuses funcionales, 10 perks cableados, IA con 4 perfiles + intent visible, y `flee` 50% implementado. **660/660 tests verde** (24 ficheros), `tsc --noEmit` limpio, `vite build` limpio. Los 5 bloqueantes de diseño que restaban (v0.8) están cerrados (decisiones #41-#45 más #46 emergente). Lore (#47), reordenamiento de hitos (#62) y decisiones del cuestionario de visión (#63 en adelante) cerradas en v0.20. Decisiones del PASO 4 del H3 (#78-#80) cerradas en v0.21. Decisiones del cuestionario de scope de H4 (#81-#85) cerradas en v0.22. Decisiones del cuestionario de scope del sub-paso 4b (#86-#91) cerradas en v0.23. Decisiones del cuestionario de scope del sub-paso 4c (#92-#94) cerradas en v0.24. Decisiones del PASO 2 del pipeline de 4c.2/4c.3 (#95-#96) cerradas en v0.25. El sub-paso 4c cierra con 4c.4 el 26/8/2026. Reordenación de H4 (#97) cerrada en v0.26. **Decisiones del cuestionario de scope del sub-paso 4d (#98-#100) y volcado documental del rango #48-#61 (#101) cerradas en v0.27. Sub-paso 4f.0 cerrado el 26/8/2026 con la decisión #102: formato de entrada por POI, compilador de contenido y modelo de #92 cableado en el motor.** Mapa de H4 y roadmap de §3.2 puestos al día en v0.29, y ocho cuestionarios ya codeados movidos a `docs/archivo/`. **Sub-paso 4d cerrado entero en v0.31**: motor (`src/rules/fatigue.ts`) y UI (HUD de jornada, modal de acampar, tinte de noche). **Decisiones del cuestionario de scope del sub-paso 4e (#103-#105) cerradas en v0.32**, con once contradicciones internas arbitradas por delegación; #103 desbloquea 4e al medir Controlado en POIs visitados y no completados.
+**Estado hoy (27 agosto 2026):** biblia en v0.33. **H0, H1, H2 y H3 cerrados, PASO 4 del H3 archivado, cuestionario de scope de H4 cerrado, sub-pasos 4a, 4b.0, 4b y 4c completos (4c.0 a 4c.4).** El primer loop completo del juego (crear PJ → home → combate al Lobo → loot/epitafio → persistencia → home) corre en producción con statuses funcionales, 10 perks cableados, IA con 4 perfiles + intent visible, y `flee` 50% implementado. **660/660 tests verde** (24 ficheros), `tsc --noEmit` limpio, `vite build` limpio. Los 5 bloqueantes de diseño que restaban (v0.8) están cerrados (decisiones #41-#45 más #46 emergente). Lore (#47), reordenamiento de hitos (#62) y decisiones del cuestionario de visión (#63 en adelante) cerradas en v0.20. Decisiones del PASO 4 del H3 (#78-#80) cerradas en v0.21. Decisiones del cuestionario de scope de H4 (#81-#85) cerradas en v0.22. Decisiones del cuestionario de scope del sub-paso 4b (#86-#91) cerradas en v0.23. Decisiones del cuestionario de scope del sub-paso 4c (#92-#94) cerradas en v0.24. Decisiones del PASO 2 del pipeline de 4c.2/4c.3 (#95-#96) cerradas en v0.25. El sub-paso 4c cierra con 4c.4 el 26/8/2026. Reordenación de H4 (#97) cerrada en v0.26. **Decisiones del cuestionario de scope del sub-paso 4d (#98-#100) y volcado documental del rango #48-#61 (#101) cerradas en v0.27. Sub-paso 4f.0 cerrado el 26/8/2026 con la decisión #102: formato de entrada por POI, compilador de contenido y modelo de #92 cableado en el motor.** Mapa de H4 y roadmap de §3.2 puestos al día en v0.29, y ocho cuestionarios ya codeados movidos a `docs/archivo/`. **Sub-paso 4d cerrado entero en v0.31**: motor (`src/rules/fatigue.ts`) y UI (HUD de jornada, modal de acampar, tinte de noche). **Decisiones del cuestionario de scope del sub-paso 4e (#103-#105) cerradas en v0.32**, con once contradicciones internas arbitradas por delegación; #103 desbloquea 4e al medir Controlado en POIs visitados y no completados. **Sub-paso 4e cerrado entero en v0.33**: motor (`src/rules/fast-travel.ts` reescrito, `state/travel-flow.ts` nuevo) y UI (marca de ancla en el mapa, verbos de plantar y recoger, lista de destinos, propuesta al Controlar, fundido del viaje).
 
-**Próximo:** **4e** (fast travel, anclas y condición de Controlado). Su scope quedó cerrado en v0.32 con #103-#105, y la propia #103 lo desbloquea: Controlado pasa a medirse en POIs **visitados** y no completados, así que deja de esperar a 4f. Después, **4f** (tirada de exploración cableada en la vista de POI, sustituyendo los botones provisionales de #93), que cierra H4. El argumento de #97 sigue intacto —4f es el sub-paso grande y el que abre la escritura de contenido—; lo que cambia es que 4e ya no depende de nadie y es el barato. El orden de H4 lo fijó #97 (4f.0 → 4f → 4d → 4e) y lo corrige #103: 4d ya se adelantó a 4f a petición de Bazalo y cerró el 26/8/2026, y ahora 4e hace lo mismo. **Orden vigente: 4e → 4f.**
+**Próximo:** **4f** (tirada de exploración cableada en la vista de POI, sustituyendo los botones provisionales de #93). Es el último sub-paso de H4 y el grande: cierra el hito y abre la escritura de las 14.400 entradas de contenido, que es lo que #97 quería desbloquear cuanto antes. 4e cerró el 27/8/2026 tras adelantarse por #103, igual que 4d se había adelantado el 26/8. **De los ocho sub-pasos de H4 quedan siete cerrados y uno abierto.**
 
 **Mapa de H4** (orden vigente por #97; detalle de cada fila en la tabla de sub-pasos de §13):
 
@@ -104,10 +104,11 @@ El marco lore queda fijado en decisión #47 (§5). Cualquier contenido, paleta, 
 | 4f.0 | Formato de entrada por POI (§4.15.10), compilador de contenido, modelo de #92 en el motor | ✅ cerrado |
 | 4d.1 | Motor de fatiga: `rules/fatigue.ts` SAGRADO, ración en el catálogo y en el inventario inicial, muerte por inanición | ✅ cerrado |
 | 4d.2 | HUD de 8 puntos, modal de acampar, tinte de noche, cobro en viaje y entrada a POI | ✅ cerrado |
-| **4e** | **Fast travel, anclas y condición de "Controlado"** | **🔄 siguiente** (scope cerrado en v0.32) |
-| 4f | Tirada cableada en la vista de POI + orquestador de efectos | ⏳ pendiente |
+| 4e.1 | Motor: `rules/fast-travel.ts` reescrito, item `ancla`, `deriveGridState` de fórmula nueva, `state/travel-flow.ts` | ✅ cerrado |
+| 4e.2 | Marca de ancla en el mapa, verbos de plantar y recoger, lista de destinos, propuesta al Controlar, fundido del viaje | ✅ cerrado |
+| **4f** | **Tirada cableada en la vista de POI + orquestador de efectos** | **🔄 siguiente** |
 
-H4 cierra cuando los dos pendientes estén dentro. **4e ya no depende de 4f** (#103): su condición de Controlado se mide en POIs **visitados**, y `revelado` lo escribe 4c al entrar. La otra mitad de la dependencia sí era real y está cubierta: el coste de viaje se paga en raciones y acciones (#83, §9.8), que es lo que 4d cerró en v0.31.
+H4 cierra cuando entre 4f. La dependencia que §3 tenía escrita —"4e depende de 4d y de 4f"— resultó ser media verdad: la mitad de 4d era real y la cubrió v0.31, y la de 4f la disolvió #103 al medir Controlado en POIs **visitados**, que `revelado` ya escribe desde 4c.
 
 **Deudas técnicas declaradas y con destino** (ninguna bloquea):
 
@@ -2001,3 +2002,34 @@ Dos correcciones más que no venían del cuestionario sino de cruzarlo con el re
 - Biblia: 13 secciones, **105 decisiones numeradas**, 0 bloqueantes abiertos.
 - Código: sin tocar todavía. Siguen 660/660 tests, `tsc --noEmit` y `vite build` limpios.
 - H4: 6 de 8 sub-pasos cerrados. Quedan **4e** (siguiente, scope firmado) y **4f**.
+
+
+---
+
+**v0.33** — **Sub-paso 4e cerrado entero** (27/8/2026). Sin decisiones nuevas: ejecuta #103, #104 y #105, cerradas en v0.32.
+
+4e.2 pasó por MODOPIPELINE en **carril B**, como 4d.2: con el scope firmado, el brief se compiló citando las decisiones en vez de invocar a Prompt Master, y el director validó la traducción decisión→UI en lugar de revalidar la decisión.
+
+**El fallo que encontró la validación, y que era de 4e y no heredado.** La vista de mundo captura el `Character` **por valor** al montar. Hasta 4d eso bastaba, porque las dos únicas cosas que mutaban al PJ —acampar y combatir— **remontan la vista entera**. Las tres operaciones de 4e no remontan, y no deben: plantar un ancla no puede resetear la cámara ni el zoom. Sin corregirlo, tras plantar la primera ancla la vista habría seguido contando las raciones y las anclas de hace cinco acciones, y `canPlaceAnchorAt` habría ofrecido un botón sobre un inventario que ya no existía. `WorldViewDeps` gana `getCharacter` y **todas** las lecturas de estado mutable del PJ pasan por él; el snapshot queda sólo para lo que no cambia —nombre, nivel, retrato—. De paso, el HP del HUD se repinta en cada acción en vez de fijarse al montar: es el mismo fallo que 4d.2 encontró tras una noche a la intemperie, visto desde el otro lado.
+
+**Segundo fallo del montaje**: `paintAnchors` no se llamaba en el pintado inicial. Como toda partida nace con el ancla del Hogar (#103, Q6), el mapa habría arrancado sin ninguna marca hasta la primera operación de 4e — y en una partida nueva eso es exactamente el momento en que el jugador va a buscar por dónde se vuelve a casa.
+
+**Tres traducciones de decisión a UI que merecen quedar escritas:**
+
+- **La marca de ancla se resuelve con forma, no con color.** Q46 pedía "sutil pero diferenciable". Un tinte plano se pierde sobre la mitad de las cinco paletas del dataset —el ocre del Centro y el del Este se comen cualquier acento cálido—, así que la marca es un ancla **dibujada**, con halo oscuro debajo, legible sobre las cinco. Es la lección de #91 aplicada al revés: allí el marcador del PJ ocupaba el 52% de la celda y se leía como una chapa pegada encima; aquí la marca ocupa el 30% de una esquina y anota el grid en vez de taparlo. Dentro de un grid enfocado baja al 25% de opacidad: el interior manda.
+- **El destino bloqueado no se esconde.** La lista muestra el grid donde está el PJ apagado con "Ya estás aquí", que es literalmente lo que Q22 pedía ("botón gris en la propia ancla"). Esconderlo haría que el jugador buscase un ancla que sabe que plantó.
+- **La propuesta de plantar sólo aparece si se puede aceptar.** Q12c pide un modal al Controlar el grid, y se dispara sólo en la **transición** —se mide el estado antes de entrar al POI, porque entrar es lo que revela— y sólo si `canPlaceAnchorAt` dice que sí. Un modal que existe para informar de que no se puede es una interrupción, y el motivo ya está escrito en el panel del grid.
+
+**El coste variable no cabía en el enum de 4d.** `ACTION_COSTS` es un record de coste **fijo** por verbo y el viaje cuesta entre 2 y 5 acciones. Se añade `consumeActions(n)` junto a `consumeAction`, en vez de llamar al de siempre entre dos y cinco veces seguidas: eso habría convertido un viaje en cinco transiciones de estado que cualquier log o test de regresión leería como cinco viajes. `place_anchor` sí entra en el enum, con coste 1 tanto al plantar como al recoger — si recoger fuese gratis, mover un ancla costaría lo mismo que plantarla y el cap por nivel dejaría de significar nada.
+
+**Consecuencia declarada: 4e tampoco tiene fuente de anclas.** Misma forma que la deuda de las raciones en #98, y se resuelve igual: `STARTING_ANCHORS = 2` en `data/items.ts`. Sin ese stock el PJ sólo tendría la del Hogar y **nunca llegaría a plantar la segunda**, dejando el cap por nivel, el bloqueo al alcanzarlo y el recoger-y-replantar construidos y sin poder verse. Con dos más el Hogar hay tres puntos de viaje: lo justo para ejercitar el sistema sin regalarlo. Destino: 4f, banda de recurso de §9.5.
+
+**Lo que se retiró.** Los tres smoke tests de fast travel del esqueleto (`skeleton.smoke.test.ts`, bloque 12) corrían sobre el grafo procedural de `world-gen.ts` y se van con el módulo que probaban. **`world-gen.ts` no se toca**: no está en scope de 4e, ningún otro módulo lo usa, y sus propios tests siguen verdes.
+
+**Deuda del sub-paso:** sin verificación visual en navegador. El entorno de la sesión no tiene uno y la vista exige login de Supabase — misma deuda declarada en §3 desde 4c.4, que ahora cubre también 4e.2.
+
+**Estado al cierre de v0.33:**
+
+- Biblia: 13 secciones, 105 decisiones numeradas, 0 bloqueantes abiertos.
+- Código: **716/716 tests** (+56), `tsc --noEmit` y `vite build` limpios.
+- H4: **7 de 8 sub-pasos cerrados. Queda 4f**, que cierra el hito.
