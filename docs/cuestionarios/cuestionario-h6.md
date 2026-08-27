@@ -230,11 +230,13 @@
 
 ## Bloque G — Calibración fina de H4 (acciones / raciones / fast travel)
 
-35. [★] Decisión #83: "Calibración fina de los tres sistemas (acciones, ración, coste de viaje) diferida a H6". ¿En H6 se calibran los **números reales** de:
-   - Acciones por día (8 → ¿confirmado o ajustado?).
-   - Coste de ración por acampar (1 → ¿confirmado o ajustado?).
-   - Penalización HP sin ración (default H4: -5 HP máx → ¿confirmado o ajustado?).
-   - Coste de fast travel (1 ración + 2 acciones plano → fórmula proporcional a distancia).
+35. [★] Decisión #83: "Calibración fina de los tres sistemas (acciones, ración, coste de viaje) diferida a H6". **Actualizado el 27/8/2026**: los tres sistemas ya están construidos y en producción, así que esto deja de ser una lista de intenciones y pasa a ser una lista de números vivos que H6 confirma o mueve. Lo que hay hoy:
+   - **Acciones por día: 8** (`FATIGUE_RULES.actionsPerDay`, #71/#100). Fijas para todos; #100 las abre a modulación por perks y atributos en H8.
+   - **Acampar con ración: 1 ración**, resetea la jornada, sube el día y **cura hasta el `hp.max` vigente** (#98, matizado el 26/8).
+   - **Acampar sin ración: `hp.max −5` acumulativo y sin cap, más `hp.current −10%`** del máximo ya reducido, redondeado hacia arriba con mínimo 1, y clamp detrás (#98). Mata en 2 a 4 noches con un PJ recién creado.
+   - **Fast travel: `1 ración + (1 + ceil(d / 5))` acciones, clamp [2, 5]**, distancia Manhattan (#104). Ojo: #83 decía "plano hoy, proporcional mañana" y #104 lo matizó — entró proporcional desde el primer día, así que aquí no hay que convertir nada, sólo recalibrar la curva.
+   - **Cap de anclas: 3, +1 cada 3 niveles, tope 6** (#103). No estaba en el encargo de #83 y también es número de fase 1.
+   - **Anclas y raciones iniciales: 2 y 4** (`STARTING_ANCHORS`, `STARTING_RATIONS`), ambas PROVISIONAL con calibración aquí.
    - **¿Quieres los valores definitivos ya en este cuestionario, o se cierran al ejecutar H6 con simulación?**
 -
 

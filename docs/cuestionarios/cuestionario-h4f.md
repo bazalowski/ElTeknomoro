@@ -1,384 +1,328 @@
 # Cuestionario de Scope — Sub-paso 4f del Hito 4
 
 > **Director:** el-teknomoro-director
-> **Fecha de redacción:** 6 de mayo de 2026
+> **Fecha de redacción:** 27 de agosto de 2026. **Reescritura completa** del cuestionario del 6 de mayo.
 > **Lector:** Bazalo. Responde en bloques. El director procesa bloque por bloque al ejecutar el sub-paso.
-> **Propósito:** cerrar las decisiones de UX/UI/cableado del sub-paso 4f (tirada de exploración con bandas + modal/banner de evento + 4 arquetipos POI + variables runtime: bioma + nivel + suerte) antes de disparar MODOPIPELINE. **Es el sub-paso más denso de H4 — es el latido del juego.** El scope macro de H4 ya está cerrado en biblia v0.22 (decisión #83 confirma "rollExplorationTick cableado al final del hito + variables runtime: bioma + nivel + suerte"). Este cuestionario refina los detalles operativos.
+> **Propósito:** cerrar las decisiones de UX/UI/cableado del sub-paso 4f —la tirada de exploración cableada en la vista de POI, el orquestador de efectos, y la sustitución de los botones provisionales de #93— antes de disparar MODOPIPELINE. **Es el sub-paso más denso de H4 y el que cierra el hito.**
 > **Aviso de revisabilidad:** las respuestas son válidas al momento de redactar.
+
+---
+
+## Por qué este cuestionario se reescribió entero
+
+El anterior se redactó el **6 de mayo**, y desde entonces el modelo cambió dos veces por debajo:
+
+- **#92** (v0.24) sustituyó las tablas por bioma por **una tabla de 20 entradas por POI**.
+- **#102** (v0.28, sub-paso 4f.0) cerró el formato de entrada en §4.15.10 y lo cableó en el motor. **La cara del d20 ES el slot**: no hay pesos que normalizar ni entradas que compitan.
+
+El cuestionario viejo preguntaba por pesos por defecto, tablas por bioma y combinatoria arquetipo × bioma: cuarenta y tres referencias a un modelo que ya no existe. Responderlo habría cerrado decisiones sobre un sistema muerto. Se conserva en el historial de git; esta versión lo sustituye.
 
 ---
 
 ## A. Qué NO debe ser este cuestionario
 
-1. **No reabre decisiones cerradas en biblia v0.22 / §4.15 / §9.5-9.6.** Tabla d20 con bandas (decisión #68 + §9.5). 4 arquetipos POI (#68 + §9.4). Variables runtime: bioma + nivel + suerte (#83). Tres capas de modulación: bioma + estado del grid + memoria de progresión (§9.6). 10 tipos de evento (§4.15.3). Marco común de tirada reactiva (§4.15.6 + decisión #27). Estos no se discuten.
-2. **No diseña tablas concretas para los 5 biomas.** Eso es contenido de fase 2 (biblia §6 línea 727). 4f cablea el sistema y entrega tablas placeholder con pesos por defecto.
-3. **No es la escritura de los 80 POIs curados.** Esos son `hasCuratedSlot=true` con texto provisional desde 4a. El contenido real es fase 2.
-4. **No diseña eventos narrativos / facciones.** Eso es H5+H8.
+1. **No reabre el modelo de #92 ni el formato de #102.** Una tabla de 20 slots por POI, la cara del d20 es el slot, cascada POI → arquetipo → genérica, bandas de §9.5 idénticas en los 720. Estos no se discuten.
+2. **No es la escritura del contenido.** Las 14.400 entradas son trabajo tuyo, con el compilador que 4f.0 entregó. Aquí sólo se decide **cuánto contenido mínimo necesita 4f para ser jugable**.
+3. **No diseña la quest principal ni eventos narrativos de facción.** Eso es H5.
+4. **No calibra números finos.** La densidad de eventos, las DIF de §4.15.7 y el peso de combate se calibran en H6/H9.
 
 **Convención de marcas:**
 - **[★]** = bloqueante de decisión.
-- **[REPO]** = ya existe respuesta parcial en biblia/scope. Confirmar o matizar.
+- **[REPO]** = ya existe respuesta parcial en biblia o código. Confirmar o matizar.
 - Sin marca = respuesta de calibración.
 
 ---
 
-## Bloque A — Disparadores de la tirada
+## Bloque A — Qué sustituye a los botones provisionales
 
-1. [★] §4.15.1 lista 5 disparadores. ¿Cuáles se cablean en 4f?
-   - **Pisar casilla nueva en sub-mapa** (movimiento entre grids).
-   - **Entrar a nodo (POI) desde el mapa-mundi**.
-   - **Cruzar frontera de bioma** dentro de un sub-mapa.
-   - **Acampar / dormir** (cubierto por 4d, ¿también dispara tirada en 4f?).
-   - **Tramo de viaje rápido arriesgado** (cubierto por 4e, ¿dispara tiradas condensadas en 4f?).
-   - Mi propuesta: en 4f cableamos los disparadores 1, 2 y 5 (pisar grid, entrar POI, fast travel arriesgado). Acampar (4d) y cruzar bioma quedan placeholders en 4f y se calibran en H6.
-   - ¿Coherente con tu cabeza?
+Hoy la vista de POI tiene tres botones cableados a mano (#93): `[Combatir]`, `[Inspeccionar]` (inerte) y `[Salir]`; en POIs de arquetipo asentamiento, `[Combatir]` se sustituye por `[Hablar]` placeholder. `[Combatir]` lanza el Lobo, único enemigo del catálogo.
+
+1. [★] Al entrar a un POI, ¿la tirada se dispara **sola** o hay un verbo que la lanza?
+   - (a) **Automática al entrar**: entrar es tirar. El POI se abre ya con el resultado en pantalla.
+   - (b) **Un botón `[Explorar]`**: entrar te deja en la escena y la tirada es un acto aparte.
+   - (c) Automática la primera vez; botón para volver a tirar en visitas siguientes.
 -
 
-2. [★] El tutorial Lobo (combate forzado, decisión #84) es **scriptado** según §4.15.1, NO pasa por la tirada. ¿Confirmas que el primer combate Lobo del run NO dispara `rollExplorationTick`?
+2. [★] Si la tirada es automática al entrar (1a), **entrar ya cuesta 1 acción** (#100). ¿Volver a entrar al mismo POI para volver a tirar cuesta otra acción?
+   - Asumo que sí: es lo que hace que el farmeo tenga precio, y §9.5 ya dice que la depleción es "el techo natural del farmeo". Confirma.
 -
 
-3. ¿Cada movimiento entre grids dispara **una sola tirada** o puede haber tirada doble (al salir del grid actual + al entrar al nuevo)?
-   - Default propuesto: una sola tirada al entrar al nuevo grid. Confirma.
+3. ¿Qué pasa con `[Inspeccionar]`? #93 lo dejó inerte y el comentario del código dice que 4f "lo activa".
+   - (a) Desaparece: la tirada lo absorbe.
+   - (b) Se convierte en la acción de volver a tirar.
+   - (c) Se convierte en otra cosa (dime cuál).
 -
 
-4. ¿Entrar a un POI dispara tirada **adicional** a la del grid? Es decir, ¿el flujo es: muevo grid (tirada 1) → entro a POI (tirada 2)?
-   - (a) Sí, dos tiradas independientes.
-   - (b) No, solo la tirada de entrar al POI cuenta.
-   - (c) La tirada del grid solo se aplica si NO entras a POI inmediatamente (e.g. si te quedas explorando el grid sin entrar).
+4. [REPO] `[Salir]` se queda tal cual, ¿no? Cerrar el POI es cámara, no acción de juego, y no cuesta jornada.
 -
 
-5. [REPO] §9.5 dice que cada POI genérico "tira sobre la tabla activa al visitarlo". ¿La tabla d20 con bandas se aplica al **POI** (nivel POI) o al **grid** (al moverte entre grids)?
-   - Mi lectura: la tabla d20 con bandas se aplica **dentro del POI**. La "tirada de exploración" §4.15.3 (10 tipos) se aplica **al moverte entre grids**. ¿Confirmas esta separación?
+5. [★] **El POI de arquetipo asentamiento.** Deuda #95: un asentamiento no puede alcanzar `completado`, así que su grid no derivaba a Controlado. Con #103 eso ya no bloquea nada —Controlado se mide en POIs **visitados**— pero el asentamiento sigue sin tener qué hacer dentro.
+   - (a) El asentamiento **también tira** en la tabla d20 como los demás. `[Hablar]` desaparece hasta H8.
+   - (b) El asentamiento **no tira**: es un lugar seguro con servicios, y sus 20 slots quedan sin usar hasta H8.
+   - (c) Tira, pero su tabla de arquetipo está sesgada a encuentros neutrales y recursos.
 -
 
----
-
-## Bloque B — Tabla d20 con bandas (POI genéricos)
-
-6. [★] §9.5 cierra los pesos por defecto:
-    - 1: Peligro real (5%).
-    - 2-3: Combate menor (10%).
-    - 4-12: Color del mundo (45%).
-    - 13-15: Encuentro neutral (15%).
-    - 16-17: Recurso (10%).
-    - 18: Pista / rumor (5%).
-    - 19: Oportunidad (5%).
-    - 20: Legendario (5%).
-    - ¿Estos pesos se respetan literal en 4f, o el director propone calibración antes de cablear?
--
-
-7. ¿Cada POI tiene su **propia tabla d20** o todos los POIs comparten la misma tabla por arquetipo?
-   - (a) Una tabla por arquetipo (4 tablas: Natural / Ruina / Asentamiento / Arcano).
-   - (b) Una tabla por (arquetipo × bioma) — N×M tablas.
-   - (c) Una tabla global con modulación por arquetipo.
-   - (d) Una tabla por bioma (5 tablas) con modulación por arquetipo.
--
-
-8. [★] Los 80 POIs `hasCuratedSlot=true`: ¿la tabla d20 NO se aplica a ellos (se dispara evento curado), o sí se aplica una vez consumido el evento curado?
-   - (a) POIs curados ignoran la tabla d20: siempre disparan su evento curado (visita 1, 2, 3...).
-   - (b) POIs curados disparan curado solo en visita 1; visitas 2+ caen en tabla d20.
-   - (c) En 4f los POIs `hasCuratedSlot=true` muestran el placeholder "POI sin contenido" y NO disparan tabla d20.
--
-
-9. ¿Las **bandas vacías** (4-12 = Color del mundo) son entradas concretas de la tabla d20?
-   - Cada banda es una **entrada** de la tabla con su `weight`, `payload`, `evade_check` (§4.15.9).
-   - O cada banda es una **categoría** que mapea a M entradas concretas (e.g. "Color del mundo" tiene 30 frases distintas, una se elige al random dentro).
--
-
-10. ¿La banda **20 Legendario** (5%) tiene contenido en 4f? ¿O es placeholder hasta fase 2?
-    - Mi propuesta: en 4f es placeholder ("Has encontrado algo legendario, pero el contenido aún no existe"). Confirma.
--
-
-11. ¿Las bandas son **idénticas** para los 4 arquetipos, o cada arquetipo tiene su propia tabla con bandas distintas?
-    - Default: las bandas son las mismas (1=peligro, 4-12=color, etc), pero el **contenido** de cada banda cambia por arquetipo.
+6. ¿El POI Hogar (`sur-001`, el campamento de #95) tira?
+   - Asumo que **no**: es tu casa, y #95 le dio acciones propias de campamento. Confirma.
 -
 
 ---
 
-## Bloque C — Variables activas en runtime: bioma + nivel + suerte
+## Bloque B — La tirada y su visibilidad
 
-12. [★] Decisión #83 confirma "Variables activas en runtime durante H4 = bioma + nivel + suerte". ¿Cómo influye cada una en la tirada?
-    - **Bioma**: filtra entradas por `conditions.biome` (no aplican entradas de otros biomas).
-    - **Nivel del PJ**: filtra entradas por `conditions.min_level` / `max_level`.
-    - **Suerte (`luck = floor((INT+VOL)/2) - floor(level/10)`)**: modifica pesos vía `weight_modifiers.if_min_luck` / `if_max_luck`.
-    - ¿Coherente?
+7. [REPO] §4.15.5 dice que la visibilidad de la tirada es **completa**, y lo llama "un punto de identidad del juego: presumimos reglas de rol, enseñamos los dados". #75 lo repite. ¿Se mantiene en 4f?
 -
 
-13. ¿La **suerte** mueve pesos en sentido literal o probabilístico?
-    - (a) Literal: si entrada tiene `weight: 30` y `if_min_luck: 5`, con suerte ≥ 5 el peso pasa a 30+5 = 35. Si `if_max_luck: -5`, con suerte ≤ -5 el peso pasa a 30-5 = 25.
-    - (b) Probabilístico: la suerte multiplica pesos de eventos positivos (legendario, oportunidad) y divide negativos (peligro, combate).
+8. [★] ¿Cómo se enseña el d20?
+   - (a) **Animación de dado rodando** antes de revelar la entrada, con el número final grande.
+   - (b) **Número directo** con la banda nombrada ("14 — Encuentro neutral"), sin animación.
+   - (c) Animación corta (200-400 ms) y luego el texto, en el mismo panel.
 -
 
-14. ¿Hay **cap superior e inferior** a la influencia de la suerte? Si `luck` es 10 y todos los pesos suben x2, ¿se aplica cap en 1.5x?
-    - Default propuesto: sin cap, fórmula lineal. Confirma.
+9. ¿Se muestra **la banda** además del número? Es decir, ¿el jugador aprende que 4-12 es "color del mundo"?
+   - (a) Sí, con nombre: enseña el sistema y hace legible la suerte.
+   - (b) Sólo el número: la banda es andamiaje de autor, no información de jugador.
+   - (c) El número siempre; la banda sólo con el flag de dev de #16.
 -
 
-15. [REPO] §9.6 cierra **3 capas de modulación**: bioma + estado del grid + memoria de progresión.
-    - Bioma: cubierto por #12.
-    - Estado del grid (Inexplorado/Explorado/Controlado): ¿se cablea en 4f?
-    - Memoria de progresión (eventos vistos pierden peso): ¿se cablea en 4f?
-    - Mi propuesta: bioma + estado del grid en 4f. Memoria de progresión queda como placeholder (`weight_modifiers.if_seen_before` declarado pero ignorado en runtime).
+10. ¿Se muestra de qué escalón de la cascada salió la entrada (`source`: propia / arquetipo / genérica)?
+    - Asumo que **sólo con el flag de dev**: enseñárselo al jugador le dibuja el mapa del contenido escrito a mano, que es justo lo que #81 y #93 protegen. Confirma.
 -
 
-16. ¿El **modo Libre** (decisión #13) modula tablas en 4f? §9.10 dice "modo Libre modula contenido dentro del mundo fijo (eventos, frecuencia)". En 4f:
-    - (a) Sí, frase-semilla del modo Libre alimenta el PRNG y cambia outcomes específicos.
-    - (b) No, modo Libre no afecta 4f (placeholder hasta H5/H6).
+11. ¿Hay **log de tiradas** persistente en la sesión (una lista de qué salió en cada POI), o cada tirada vive y muere en su modal?
 -
 
 ---
 
-## Bloque D — Catálogo de eventos: 10 tipos (§4.15.3)
+## Bloque C — Presentación: modal contra banner
 
-17. [★] §4.15.3 lista 10 tipos de evento. ¿Cuáles se cablean **funcionalmente** en 4f?
-    - 1. **Combate** — sí, dispara motor de combate existente con enemigo de la entrada.
-    - 2. **Encuentro NPC** — placeholder (modal con `[Hablar]` `[Ignorar]` `[Atacar]`, sin contenido real, sistema de NPCs es H8).
-    - 3. **Hallazgo** — placeholder ("Has encontrado X" + add ítem genérico al inventario).
-    - 4. **Trampa / hazard** — sí, daño al PJ (mín 1 HP, decisión #25). Setea `last_damage_source='trap'` (#85).
-    - 5. **Evento ambiental** — placeholder (texto + status temporal sobre el PJ).
-    - 6. **Estructura / POI descubierto** — actualiza visibilidad de POI vecino.
-    - 7. **Evento narrativo** — placeholder ("Evento narrativo, contenido pendiente"; sistema de quest es H5).
-    - 8. **Emboscada** — sí, similar a combate pero con desventaja inicial (cómo cablear "desventaja" en motor sagrado, ver pregunta 23).
-    - 9. **Refugio / punto de descanso** — placeholder (modal "Descansas un rato, +5 HP", sin tabla rica).
-    - 10. **Nada** — sí, sin modal, +1-2 HP, -1 durabilidad mínima.
-    - ¿Coherente?
+§4.15.5 reparte: **modal a pantalla completa** para eventos de peso (combate, narrativo, POI descubierto, emboscada) y **banner superior con acciones** para los ligeros (hallazgo, NPC ambulante, refugio, trampa mitigada).
+
+12. [★] Ese reparto se escribió antes de que existiera el zoom continuo de §9.1, que #83 blindó contra los routers modales. ¿Se mantiene el modal a pantalla completa, o el evento se pinta **dentro de la escena del POI** que 4c ya construyó?
+    - (a) Modal a pantalla completa, como dice §4.15.5.
+    - (b) **Dentro de la escena del POI**: el evento sustituye el texto placeholder de #93 y los botones salen debajo. Sin capa nueva.
+    - (c) Mixto: dentro de la escena para los ligeros, modal sólo para combate.
 -
 
-18. [★] El "Nada" (banda 4-12 / 45%) es **el evento dominante**. §4.15 lo describe como "color del mundo". ¿En 4f tiene **texto narrativo** o es silencio total?
-    - (a) Silencio: sin modal, sin texto, solo +1-2 HP.
-    - (b) Texto sutil: pequeño banner inferior con frase atmosférica ("La luz del sol filtra las hojas. Sigues caminando.").
-    - (c) Texto + sonido ambiente.
+13. Con la banda "color del mundo" al **45%**, casi la mitad de las tiradas son texto ambiental sin decisión. ¿Esas merecen algún tratamiento distinto para que no se sientan como un muro de "no pasa nada"?
+    - Mi lectura: es literalmente "Nada con sustancia" y su valor está en el texto, no en la mecánica. Pero cuarenta y cinco de cada cien interacciones con un botón `[Cerrar]` es un riesgo de ritmo real. Dime si lo ves.
 -
 
-19. Si "Nada" tiene texto, ¿cuántas frases distintas hay en pool en 4f? Mínimo 5-10 para que no se repita constantemente. ¿O lo dejamos en placeholder único hasta fase 2?
+14. ¿El resultado de la tirada **se queda en pantalla** al cerrar (el POI recuerda lo último que salió) o la escena vuelve a su estado neutro?
 -
 
-20. ¿La **Trampa** del tipo 4 cómo se cablea?
-    - Tira d20 contra DIF (cabe en marco común reactivo §4.15.7).
-    - Si éxito → no se activa.
-    - Si fracaso → daño + cascada a tirada de Reflejos.
-    - ¿Confirma esto, o el director simplifica en 4f?
--
-
-21. ¿La **Emboscada** del tipo 8 cómo se cablea en motor de combate?
-    - (a) Combate normal con flag `surprise: true` que da +1 turno al enemigo antes del PJ.
-    - (b) Combate con `Character.statuses` con status `stunned` aplicado por 1 turno.
-    - (c) Combate con `EnemyState.intent` ya pre-calculado y ejecutado antes del primer turno PJ.
--
-
-22. ¿Las trampas / emboscadas que aparecen en 4f tienen **enemigos ya definidos** o se reusa el Lobo para todo?
-    - Default propuesto: en 4f reutilizamos el Lobo del tutorial. El catálogo de 15 enemigos es H8.
+15. ¿Hay diferencia visual entre el **1** (peligro real), el **20** (legendario) y el resto? §4.15.6 pide color-coding para las reactivas; ¿la raíz también?
 -
 
 ---
 
-## Bloque E — Marco común de tirada reactiva (`evade_check`)
+## Bloque D — El orquestador de efectos
 
-23. [★] §4.15.6 cierra el marco común de tirada reactiva (10 puntos: momento, coste mixto, etc). ¿En 4f se cablea **todo el marco** o solo lo esencial?
-    - Default propuesto: en 4f cableamos todo el marco (es el punto de identidad del juego, dijiste explícito en cuestionariovision Bloque 5). Confirma.
+`PoiMechanic` declara nueve efectos: `enemy`, `item`, `damage`, `heal`, `gold`, `xp`, `status`, `reveal_poi`, `flag`. El motor los expone y **no los aplica nadie** — es deuda declarada con destino 4f.
+
+16. [★] ¿Los nueve se cablean en 4f, o hay un subconjunto?
+    - Mi propuesta: **siete sí** (`enemy`, `item`, `damage`, `heal`, `gold`, `xp`, `status`), porque los siete tienen motor detrás desde H3. **`reveal_poi` y `flag` quedan fuera**: `reveal_poi` revela un POI de otro grid y eso toca la niebla de §9.9 de una forma que nadie ha decidido; `flag` no tiene consumidor hasta H5/H8. Confirma o ajusta.
 -
 
-24. ¿El dado de la tirada reactiva es **1d20 compartido** con la tirada raíz (decisión #28), o ya migra al dado de combate?
-    - Default propuesto: 1d20 compartido en 4f (decisión #28 lo cierra para H1; H1 ya cerró). En 4f mantenemos 1d20 hasta que algún sub-paso futuro decida migrar.
+17. [★] ¿Dónde vive el orquestador?
+    - (a) `src/state/exploration-flow.ts` nuevo, hermano de `travel-flow` y `world-flow`.
+    - (b) Métodos nuevos en `world-flow`.
+    - (c) Decide el director.
 -
 
-25. La animación del dado de tirada reactiva debe ser **distinta** a la del dado de combate (§4.15.6). ¿Cómo se distingue visualmente?
-    - (a) Color (rojo combate vs azul exploración).
-    - (b) Forma (d6 cubo combate vs d20 dodecaedro exploración).
-    - (c) Tamaño / posición / sonido distinto.
-    - (d) Decide MODOPIPELINE.
+18. `enemy` lanza combate. Hoy el catálogo tiene **un solo enemigo** (el Lobo). ¿4f entrega más enemigos o el Lobo cubre todas las entradas de combate hasta H8?
+    - Asumo que el Lobo cubre, y queda declarado como deuda: 15 enemigos son el elemento 4 del inventario de v1 y su hito es H8. Confirma.
 -
 
-26. ¿La tirada reactiva muestra siempre **2 botones** `[Intentar evadir / mitigar]` y `[Afrontar]` según §4.15.6?
-    - Confirma que NO hay caso donde se elimine alguno (e.g. NPC sin tirada → solo `[Afrontar]`).
+19. `damage` con el PJ a poco HP: §4.15.3 dice que la trampa **nunca mata directamente** (deja mínimo 1 HP). ¿Eso vale para todo `damage` de exploración, o sólo para el tipo `trap`?
+    - Asumo que **para todo `damage` de exploración**: morir leyendo un texto ambiental sin haber podido decidir nada es la peor muerte posible en un juego con permadeath (#65). Lo que mata es el combate, la fatiga (#98) y las decisiones. Confirma.
 -
 
-27. ¿Si el PJ no tiene la habilidad requerida, el botón aparece **gris con tooltip** o se omite?
-    - Default propuesto: gris con tooltip ("Percepción insuficiente"). §4.15.6 lo dice. Confirma.
+20. `item` cuando la mochila está llena (20 slots, `INVENTORY_RULES`). ¿Qué pasa?
+    - (a) Modal de "no te cabe", el item se pierde.
+    - (b) Modal de descarte: elige qué tiras.
+    - (c) El item se queda en el POI y se puede volver a por él.
 -
 
-28. ¿La tirada reactiva entrena habilidad **gane o pierda** (decisión #30)? ¿En 4f cableamos también `skills.{id}.usage` o eso es deuda para H8?
+21. [REPO] Deuda de #98: el PJ nace con 4 raciones y **no hay forma de conseguir más**; el destino escrito es "4f, banda 16-17 de §9.5". ¿4f garantiza que las genéricas de la banda de recurso incluyan raciones?
+    - Asumo que sí, y que es un requisito de cierre y no un deseo: sin eso, cualquier run larga sigue muriendo de hambre. Confirma.
 -
 
-29. [REPO] §4.15.7 da una tabla de tiradas reactivas por tipo de evento (con DIF orientativas). ¿En 4f se respetan las DIF de §4.15.7 literal, o el director ajusta a la baja para playtest?
--
-
----
-
-## Bloque F — Tablas placeholder y biomas
-
-30. [★] ¿En 4f se entregan **tablas placeholder por bioma** o solo una tabla genérica para todo?
-    - (a) Una tabla genérica única en 4f (sin distinción de bioma).
-    - (b) 5 tablas placeholder mínimas (5 biomas × 10 entradas cada una = 50 entradas).
-    - (c) 5 tablas placeholder ricas (5 biomas × 30+ entradas cada una).
--
-
-31. [REPO] §4.10 lista los 5 biomas provisionales: llanura, bosque, desierto, glaciar, ruinas arcanas. ¿Estos son los biomas de 4f, o el cuestionario de lore los ha cambiado?
-    - Cuestionariolore Bloque 4 menciona "biomas con dificultad" (commit reciente). ¿Esto cambia la lista de biomas o solo añade ejes ortogonales (dificultad)?
--
-
-32. ¿Cada grid tiene **un bioma único** o puede tener mezcla?
-    - Default propuesto: un bioma por grid (cabe en `Grid.biome` del modelo de 4a; pero 4a no metió ese campo).
-    - ¿4f introduce el campo `biome` en cada grid del JSON, o el bioma se infiere por región/posición?
--
-
-33. ¿Los 5 biomas se distribuyen entre las 5 regiones de forma fija (cada región tiene un bioma dominante)?
-    - (a) Sí: Centro=ruinas, Norte=glaciar, Sur=bosque, Este=desierto, Oeste=llanura (provisional).
-    - (b) No: cada grid puede tener cualquier bioma, mezcla dentro de regiones.
--
-
-34. ¿Entre los 5 biomas, **bosque** es el dominante** (más grids) por la decisión de "naturaleza vencedora" (#47)? ¿Los otros 4 son minoritarios?
--
-
-35. ¿En 4f hay **archivos JSON por bioma** ya creados con entradas placeholder, o solo un archivo `data/exploration/default.json`?
+22. `xp` de exploración: ¿la tirada da XP por sí sola, o sólo por combate?
+    - Asumo que las entradas pueden darla cuando lo declaren, pero que la mayoría no lo hace. Confirma.
 -
 
 ---
 
-## Bloque G — Presentación de eventos (modal vs banner)
+## Bloque E — Tirada reactiva
 
-36. [★] §4.15.5 dice "Modal a pantalla completa para eventos de peso, banner para eventos ligeros". ¿Cuáles van a modal y cuáles a banner en 4f?
-    - **Modal** (eventos de peso): combate, evento narrativo, descubrimiento de POI, emboscada.
-    - **Banner** (eventos ligeros): hallazgo, NPC ambulante, refugio, trampa mitigada.
-    - **Sin modal ni banner**: Nada (silencioso o con texto sutil según pregunta 18).
-    - ¿Coherente?
+§4.15.6 cierra el marco: toda entrada declara `evade_check`, el modal muestra `[Intentar evadir]` y `[Afrontar]`, la tirada entrena la habilidad ganes o pierdas. `resolveEvadeCheck` ya existe en el motor. `PoiEvadeOverride` permite a cada entrada declarar la suya, y `null` significa "usa el default de §4.15.7 para este tipo".
+
+23. [★] ¿La tirada reactiva entra en 4f o se difiere?
+    - (a) **Entra entera**: sin ella el jugador mira el evento sin poder hacer nada, y §4.15.6 la llama "agencia del jugador".
+    - (b) **Se difiere a H5/H6**: 4f cablea la raíz y los efectos, y la reactiva llega cuando las habilidades tengan más recorrido.
+    - (c) Entra sólo para los tipos donde más pesa (combate, trampa, emboscada) y el resto afronta directo.
 -
 
-37. ¿El banner aparece en **qué posición** y por **cuánto tiempo**?
-    - (a) Banner superior, dura 3-5 segundos, click para cerrar antes.
-    - (b) Banner inferior, dura hasta el siguiente evento.
-    - (c) Banner lateral con cola (eventos se acumulan si vienen rápido).
+24. Si entra: los defaults de §4.15.7 por tipo de evento **no existen en código todavía**. ¿Se escriben en `data/` como tabla, o se hardcodean en el motor?
 -
 
-38. ¿El modal de evento de peso **bloquea TODA la UI** (overlay con dimming) hasta que el jugador resuelve?
-    - Asumo sí. Confirma.
+25. §4.15.6 dice que sin la habilidad requerida el botón sale **desactivado con tooltip**, sin tirar con penalizador fantasma. Un PJ recién creado tiene pocas habilidades. ¿Cuántas de las tiradas reactivas le van a salir apagadas en la primera hora, y eso te parece bien?
 -
 
-39. ¿La tirada visible **siempre se muestra**, incluso en eventos de banner?
-    - Default propuesto: sí (decisión #23: "tirada visible por completo"). Confirma.
--
-
-40. ¿Cuando se dispara la tirada raíz (1d20), ¿se ve la animación del dado **antes** de mostrar el resultado, o el resultado se muestra ya con la animación rodando?
-    - Default propuesto: animación de 1-2 segundos primero, luego resultado y modal/banner.
--
-
-41. ¿Hay opción de **velocidad de animación** ajustable (skip animación para jugadores rápidos)?
-    - Default propuesto: solo `prefers-reduced-motion` del usuario, sin opción granular en 4f.
--
-
-42. ¿La animación de tirada se puede **cancelar / saltar** con click?
+26. ¿La tirada reactiva se enseña con la misma animación que la raíz, o con una distinta? §4.15.6 pide "animación propia distinta a la del combate".
 -
 
 ---
 
-## Bloque H — Memoria de tiradas y log
+## Bloque F — Memoria de depleción y estado persistido
 
-43. [★] §4.15.8 dice "Historial de últimas 100 tiradas raíz **y reactivas** en memoria de sesión, purga al cerrar". ¿En 4f se cablea?
-    - (a) Sí, log persistente en sesión (pierdes al cerrar navegador).
-    - (b) Sí, log persistente en `save_slots` (sobrevive al cierre).
-    - (c) No, log solo en Modo Privado (#35), no en runtime normal.
+§9.5 cierra: "una entrada ya vista pierde peso de reaparición en esa run. Un POI visitado repetidamente se agota y empieza a repetirse — ése es el techo natural del farmeo". Hoy `WorldState` guarda `poiStates` con dos valores (`revelado` / `completado`) y **nada más**: no hay dónde anotar qué slots se han visto.
+
+27. [★] ¿Cómo se implementa la depleción?
+    - (a) **Set de slots vistos por POI** persistido en `world_state`. Al tirar, un slot ya visto se re-tira una vez (o se desplaza al siguiente sin ver).
+    - (b) **Contador de visitas por POI**: a partir de N visitas el POI deja de dar resultados nuevos.
+    - (c) Nada en 4f: la depleción se difiere y el farmeo queda abierto hasta H6.
 -
 
-44. ¿El jugador puede **abrir el log** de tiradas durante el juego?
-    - Asumo sí en Modo Privado. ¿En modo normal del jugador también?
+28. Si es (a): con 720 POIs × hasta 20 slots, el `world_state` puede engordar. ¿Preocupa?
+    - Mi lectura: no, si se aplica la misma convención de escasez que ya usa `world-state.ts` —guardar sólo lo que se aparta del default—, porque un run realista toca decenas de POIs, no setecientos. Confirma.
 -
 
-45. ¿La "**última tirada copiable**" (§4.8 menciona el concepto en combate) se aplica también a la tirada de exploración en 4f?
+29. [★] **¿Qué hace que un POI esté `completado`?** Es la pregunta que 4c dejó abierta y #103 dejó de necesitar, pero que sigue sin respuesta.
+    - (a) Agotar sus 20 slots.
+    - (b) Consumir su entrada curada, si la tiene.
+    - (c) La primera tirada resuelta, sea cual sea.
+    - (d) `completado` se retira: con Controlado midiéndose en visitados (#103), el segundo estado ya no lo usa nadie.
 -
 
-46. ¿El log muestra **detalle de la tirada** (entrada de tabla, peso aplicado, modificadores) o solo el resultado final?
-    - Default propuesto: detalle completo en Modo Privado (decisión #35), resultado simple en modo normal.
+30. La entrada curada de los 80 POIs con `hasCuratedSlot`: `shouldUseCuratedEntry(table, alreadyConsumed)` pide un `alreadyConsumed` que hoy no vive en ningún sitio. ¿Dónde se persiste?
+    - Asumo `world_state`, junto a los slots vistos, porque se rebobina con la muerte igual que todo lo demás (#94). Confirma.
 -
 
----
-
-## Bloque I — Cableado del sistema y módulos
-
-47. [★] §4.15.8 dice que `rules/exploration.ts` es el módulo SAGRADO con la API:
-    - `rollExplorationTick(worldState, character, trigger) → ExplorationEvent`
-    - `resolveEvadeCheck(event, character, dice) → EvadeResult`
-    - ¿En 4f se **respeta esta API literal** o el director propone cambios?
-    - El módulo `exploration.ts` ya existe en repo (heredado del esqueleto extendido). ¿Se reescribe o se extiende?
--
-
-48. ¿Las **tablas placeholder por bioma** viven en `src/data/exploration/<bioma>.json` (estructura ya prevista en biblia §7) o director propone otra ubicación?
--
-
-49. ¿El **flag `tutorial_lobo_completed`** (cableado en 4a) afecta a `rollExplorationTick`?
-    - Si `false` (PJ no ha hecho tutorial), ¿la función NO se llama nunca (porque solo se entra al overworld tras tutorial)?
-    - O ¿la función puede ser llamada y se comporta normal?
--
-
-50. ¿`rollExplorationTick` consume el PRNG **determinista** del mismo `dice.ts`? §4.15.8 lo confirma. ¿En 4f se garantiza determinismo (same state → same outcome)?
--
-
-51. [REPO] El repo tiene `src/rules/exploration.ts` y `src/rules/exploration.test.ts` (ya existentes). ¿4f los reescribe completamente, los extiende, o se construye un módulo paralelo?
--
-
-52. ¿El **modo Privado** del Banco / Campo de pruebas (decisión #16, §4.14) tiene en 4f las herramientas de tirada de exploración (forzar próximo evento, ver tabla activa, etc.)?
-    - Default propuesto: en 4f cableamos lo mínimo (próximo evento forzable). El resto es H9 (Modo Privado completo).
+31. [REPO] La entrada curada **puentea el d20** y no sustituye a los 20 slots: el POI lleva las dos cosas. ¿La curada se dispara en la **primera visita** antes de cualquier tirada?
 -
 
 ---
 
-## Bloque J — Edge cases y deuda
+## Bloque G — La contradicción de §9.6
 
-53. ¿Qué pasa si el jugador hace **click rápido entre dos grids** mientras está rodando una tirada del primero? ¿Se cancela la tirada, se encola, se ignora?
+**Esto es lo más importante del cuestionario.** §9.6 dice que el estado del grid modula **los pesos** de la tabla: "Controlado (fast travel disponible, recursos garantizados, tablas con menor varianza)". §4.15.2 y §4.15.6 hablan también de modular pesos por hora, clima, suerte y consumibles.
+
+**Pero en el modelo de #102 no hay pesos.** La cara del d20 es el slot. No hay nada que modular.
+
+32. [★] ¿Cómo se resuelve? Cuatro salidas, y ninguna es obviamente la buena:
+    - (a) **La modulación se retira.** §9.6 se reescribe: el estado del grid habilita cosas (fast travel) pero no toca la tabla. El d20 es plano y limpio, y la varianza es la misma en todas partes.
+    - (b) **Modulación por re-tirada**: en un grid Controlado se tiran dos d20 y se toma el mejor (o el más "seguro"). Es ventaja/desventaja de d20, no pesos.
+    - (c) **Modulación por desplazamiento**: el estado del grid suma o resta un modificador al d20 antes de resolver el slot, con clamp a [1, 20].
+    - (d) **Modulación por tabla alternativa**: un grid Controlado usa la tabla del POI y uno Inexplorado usa una variante hostil. Duplica el contenido a escribir.
 -
 
-54. ¿Qué pasa si el PJ está en **HP crítico (1 HP)** y la tirada da Combate? ¿Se permite, o el sistema "protege" al jugador con tirada negada?
-    - Default propuesto: se permite (frustración productiva, decisión #75).
+33. Si eliges (b) o (c), eso hace que **el reparto de bandas de §9.5 deje de ser el reparto real**. El 45% de "color del mundo" se convierte en otra cosa según dónde estés. ¿Lo aceptas?
 -
 
-55. ¿Qué pasa si la **tabla activa está vacía** (todas las entradas filtradas por `conditions`)? ¿Se devuelve "Nada" por default, error, o tirada se anula?
+34. La **suerte** (#43) es una de las tres variables que #83 declara activas en runtime, junto a bioma y nivel. Con el d20 plano, ¿dónde entra?
+    - Asumo que por la misma vía que elijas en la 32, y que si es (a) la suerte deja de tener efecto sobre la exploración y pasa a ser sólo de combate y loot. Confirma, porque eso vacía media decisión #43.
 -
 
-56. ¿Qué pasa si **dos eventos simultáneos** podrían dispararse (e.g. cruzar bioma + entrar POI a la vez)?
-    - Default propuesto: prioridad fija (entrar POI > cruzar bioma > pisar grid). Confirma.
--
-
-57. ¿Qué pasa si el jugador **cierra el navegador** durante una tirada? El estado del PJ debe persistir antes de que el modal aparezca.
--
-
-58. ¿Hay **casos donde la tirada se anula** (se "no tira") por estado del PJ (e.g. PJ con status `stunned` no puede explorar)? Asumo NO en 4f.
--
-
----
-
-## Bloque K — Visión y deudas
-
-59. ¿Hay algún tropo de "tabla aleatoria de eventos" en RPGs que quieras evitar específicamente?
-    - Default a evitar: tabla repetitiva donde todos los eventos se sienten genéricos (síntoma del 45% color del mundo mal calibrado).
--
-
-60. ¿Tu intuición de "tirada de exploración con bandas" viene de algún juego concreto (Caves of Qud, Slay the Spire en mapas, FTL, otro)? §9.5 menciona "color del mundo" como concepto raíz.
--
-
-61. ¿Quieres que la tirada visible sea **reproducible** (e.g. el jugador puede compartir la "semilla del momento" para reproducir su tirada en otro PC)?
-    - Asumo NO en 4f (es feature avanzada de Modo Privado). Confirma.
--
-
-62. ¿Quieres que en 4f haya **algún feedback de aprendizaje** (e.g. "Has visto este tipo de evento 5 veces" → desbloqueas pista narrativa)?
-    - Default a NO (memoria de progresión es §9.6 capa 3, queda como placeholder). Confirma.
--
-
-63. ¿Hay alguna **decisión de producto pendiente** que el director pueda haber pasado por alto?
--
-
-64. ¿Algún caso borde de UX que te preocupe específicamente en 4f? Es el sub-paso más complejo de H4; quiero saber dónde está tu intuición.
--
-
-65. ¿La densidad objetivo "10-15 eventos por sesión de 30-45 min" (§4.15.5) se debe **respetar** en 4f, o eso es objetivo de calibración H6+?
+35. El **bioma** es la otra. Con tablas por POI ya no hay tabla por bioma. ¿El bioma sigue significando algo mecánicamente, o queda como sabor del texto?
 -
 
 ---
 
-**Total: 65 preguntas. 12 marcadas [★] como bloqueantes. 6 marcadas [REPO] como confirmación rápida.**
+## Bloque H — Los otros disparadores y el código muerto
+
+§4.15.1 lista cinco disparadores. §4.15.8 dice que "entrar a POI" usa tabla por POI y **el resto usa tabla por bioma**.
+
+36. [★] ¿4f cablea sólo "entrar a POI", o también pisar casilla nueva, cruzar frontera de bioma, acampar y tramo de viaje rápido?
+    - Mi propuesta: **sólo entrar a POI**. Los otros cuatro necesitarían tablas por bioma que no existen, que nadie ha escrito y que #92 dejó fuera del modelo. Cablearlos sería reabrir el sistema que #102 cerró. Confirma o ajusta.
+-
+
+37. Si es así, §4.15.8 miente en su segunda mitad y hay que reescribirla. ¿De acuerdo?
+-
+
+38. [★] **`rollExplorationTick` y todo el aparato de `BiomeTable` no tienen ni un consumidor de producción.** Sólo sus propios tests. Es exactamente la situación en la que estaba `fast-travel.ts` antes de 4e, y #105 lo resolvió reescribiéndolo entero.
+    - (a) **Se retiran** de `exploration.ts` con sus tests, como se hizo con el fast travel viejo.
+    - (b) **Se quedan** por si los otros disparadores vuelven en H5.
+    - (c) Se marcan como muertos con un comentario y se retiran cuando H5 confirme que no vuelven.
+-
+
+39. Misma pregunta para `world-gen.ts`, que 4e dejó intacto por no estar en scope: genera un grafo procedural que el mundo fijo de #72 jubiló. ¿Se retira en 4f o sigue esperando?
+-
+
+---
+
+## Bloque I — Contenido mínimo para que 4f sea jugable
+
+Estado real hoy: **0 de 20 slots genéricos escritos, 0 entradas de arquetipo, 2 tablas de POI** (el piloto de 4f.0). `resolvePoiEntry` devuelve `null` para casi todo.
+
+40. [★] 4f no puede cerrarse sin contenido: sin las genéricas, entrar a un POI enseña una pantalla vacía. ¿Cuál es el mínimo?
+    - (a) **Las 20 genéricas, una por slot.** Cubre los 720 POIs de golpe y nunca hay hueco. Es lo mínimo que hace el sistema jugable.
+    - (b) Las 20 genéricas **× N variantes** (el motor ya soporta varias por slot para que no se repita la misma línea tres veces seguidas). Dime N.
+    - (c) Las 20 genéricas + las 4 tablas de arquetipo completas (80 entradas más).
+-
+
+41. ¿Las escribes tú antes de que yo codee 4f, en paralelo, o codeo yo contra las genéricas de relleno y tú las sustituyes después?
+    - Aquí no hay respuesta técnica correcta: es tu tiempo. Pero cambia el orden de trabajo, así que lo pregunto.
+-
+
+42. [REPO] Deuda del lore v2, C1: los nombres de las cinco regiones del dataset **contradicen las respuestas del lore v1 en tres de cinco**, y eso bloquea escribir nombres y descripciones de POI. ¿Bloquea también las genéricas?
+    - Mi lectura: **no**. Una entrada genérica de banda es ambiental y no nombra sitios; se puede escribir con el lore abierto. Las curadas de los 80 sí esperan. Confirma.
+-
+
+---
+
+## Bloque J — Cableado
+
+43. [★] ¿Qué módulos SAGRADOS toca 4f?
+    - Mi previsión: `rules/exploration.ts` (retirada del modelo viejo, defaults de §4.15.7 si la reactiva entra), `rules/world-state.ts` (memoria de depleción y curada consumida), y `data/exploration/` (el contenido compilado). ¿Ves alguno más?
+-
+
+44. ¿La memoria de depleción va en `WorldState` con `version: 1` o exige bump de versión del shape persistido?
+    - Es un campo nuevo en un jsonb; `hydrateWorldState` degrada sin romper. Asumo que **no hace falta bump**. Confirma.
+-
+
+45. Tests: estimo **30-40 unitarios** entre la cascada con depleción, el orquestador de efectos, los clamps de `damage`, y la mochila llena. ¿Te parece la banda correcta?
+-
+
+46. ¿Simulación antes de codear? §12.3 la exige para números de balanceo. Aquí el número gordo es el reparto de bandas de §9.5, que ya está cerrado y no se toca. Pero **la 32 sí es balance**: si eliges (b) o (c), el reparto real deja de ser el escrito.
+    - Mi propuesta: si eliges (a), no hace falta simular. Si eliges (b) o (c), **sí**, y la simulación va antes del código.
+-
+
+---
+
+## Bloque K — Edge cases, visión y deudas
+
+47. ¿Qué pasa si el jugador entra a un POI con la jornada agotada? Hoy `enterPOI` devuelve `false` y no se abre nada (corregido en v0.31).
+-
+
+48. ¿Qué pasa si sale un `enemy` y el PJ está a 1 HP? ¿Se avisa antes de entrar al combate, o el combate arranca y allá él?
+-
+
+49. ¿Qué pasa si cierra el navegador con un evento abierto sin resolver? El combate en curso no se serializa (deuda de #93). ¿El evento sí?
+    - Asumo que no, y que al recargar el POI está sin tirada abierta — coherente con #93. Confirma.
+-
+
+50. Con 4f cerrado, **H4 cierra y el prototipo entra en playtest** (paso 8 del roadmap de §3.2). ¿Hay algo que quieras dentro de H4 antes de darlo por cerrado y que no esté en ningún sub-paso?
+-
+
+51. ¿Algún caso borde de UX que te preocupe específicamente en 4f?
+-
+
+52. ¿Alguna decisión de producto pendiente que el director pueda haber pasado por alto?
+-
+
+---
+
+**Total: 52 preguntas. 13 marcadas [★] como bloqueantes. 5 marcadas [REPO] como confirmación rápida.**
+
+**La pregunta 32 es la que más pesa.** §9.6 promete una modulación que el modelo de #102 no puede dar, y eso lleva escrito en la biblia desde v0.24 sin que nadie lo mirara de frente. Las otras doce bloqueantes son de scope; ésa es de sistema.
 
 ---
 
 ## Cómo lo procesamos juntos después
 
-1. Cuando este cuestionario esté relleno, el director lee y identifica contradicciones internas + cruzadas con biblia §4.15 + §9 + cuestionarios previos.
-2. Sesión corta donde te paso solo las contradicciones (este sub-paso es el más complejo, asumo más contradicciones).
-3. MODOPIPELINE arranca para 4f: Prompt Master adapta brief, director valida, impeccable cierra.
-4. Cierre del sub-paso: 1-2 commits con OK explícito uno a uno. **Es el cierre formal de H4.**
+1. Cuando este cuestionario esté relleno, el director lee y identifica contradicciones internas + cruzadas.
+2. Sesión corta donde te paso sólo las contradicciones.
+3. MODOPIPELINE arranca para 4f: con el scope firmado, carril B — el brief se compila citando las decisiones y el director valida la traducción decisión→UI.
+4. Cierre del sub-paso: commits con OK explícito uno a uno.
