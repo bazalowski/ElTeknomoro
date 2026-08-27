@@ -34,9 +34,14 @@ import {
   deriveGridState,
   getGridPOIProgress,
   getPOIState,
+  hasAnchor,
+  isGridControlled,
   type GridState,
 } from '../rules/world-state';
 import type { WorldFlowHandle } from '../state/world-flow';
+import type { TravelFlowHandle } from '../state/travel-flow';
+import { canPlaceAnchorAt, countAnchorItems, isHomeAnchor } from '../rules/fast-travel';
+import { anchorRefusalCopy, showAnchorPrompt, showTravelModal } from './travel-modal';
 import {
   INITIAL_PAUSE_STATE,
   backToRoot,
@@ -66,7 +71,20 @@ import {
 
 export interface WorldViewDeps {
   flow: WorldFlowHandle;
+  // Orquestador de 4e. Va aparte de `flow` porque plantar, recoger y viajar
+  // mutan el PJ además del mundo, y `world-flow` declara que nunca escribe el
+  // Character (ver cabecera de `state/travel-flow.ts`).
+  travelFlow: TravelFlowHandle;
+  // Snapshot del PJ al montar. Sirve para lo que no cambia durante la vida de
+  // la vista: nombre, nivel, retrato.
   character: Character;
+  // Lectura del PJ VIVO. Hasta 4d bastaba el snapshot porque las dos cosas que
+  // mutaban al PJ —acampar y combatir— remontaban la vista entera. Las tres
+  // operaciones de 4e no remontan (plantar un ancla no debe resetear la
+  // cámara), así que sin este accesor la vista seguiría contando las raciones
+  // y las anclas de hace cinco acciones. Es el mismo fallo que 4d.2 encontró
+  // en el HUD tras una noche a la intemperie, en la otra dirección.
+  getCharacter: () => Character;
   // Entrar al combate desde el POI abierto (4c.1). La vista ya ha hecho su
   // parte de la transición (acercamiento al frame) cuando esto se invoca;
   // main monta la pantalla de combate y, al cerrarla, remonta esta vista, que
@@ -154,6 +172,15 @@ function escapeHtml(s: string): string {
 
 // Iconos por arquetipo (#89): 4 símbolos SVG autorales, un solo grosor de
 // trazo, sin emoji. Dibujados en viewBox 0..10.
+// Ancla vista de frente: caña, cepo y arco inferior con las dos uñas. Dibujada
+// sobre el mismo viewBox de 10×10 que los iconos de arquetipo para que las dos
+// familias de marcas compartan escala.
+const ANCHOR_PATH =
+  'M5 1.6a0.9 0.9 0 1 0 0 1.8 0.9 0.9 0 0 0 0-1.8Z' +
+  'M4.55 3.5h0.9v4.9h-0.9Z' +
+  'M3.1 4.3h3.8v0.8H3.1Z' +
+  'M2.1 5.6v1.1a2.9 2.9 0 0 0 5.8 0V5.6h-0.85v1.1a2.05 2.05 0 0 1-4.1 0V5.6Z';
+
 const ICON_PATHS: Record<POIArchetype, string> = {
   natural: 'M5 9.2V5.4 M5 5.4C3 5.4 2.3 3.2 3.9 2 M5 5.4c2 0 2.7-2.2 1.1-3.4 M3.2 9.2h3.6',
   ruina: 'M3.1 9.2V4.6l1-1 M6.9 9.2V2.6L5.8 3.5 M2 9.2h6',
@@ -218,7 +245,10 @@ type Selection =
   | { kind: 'poi'; poiId: string };
 
 export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
-  const { flow, character, onEnterCombat, onExitToMenu, onResetRun, onCamp } = deps;
+  const { flow, travelFlow, character, onEnterCombat, onExitToMenu, onResetRun, onCamp } = deps;
+  // Todo lo que dependa del inventario o de la vida del PJ se lee por aquí,
+  // nunca del snapshot `character`.
+  const pj = (): Character => deps.getCharacter();
   const storage = browserStorage();
   let prefs = readPreferences(storage);
   applyTextSize(prefs.textSize);
@@ -240,6 +270,7 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
         <div class="world-view__header-right">
           <button type="button" class="world-view__chip" data-wv-inventory>Inventario</button>
           <button type="button" class="world-view__chip" data-wv-pause>Pausa</button>
+          <button type="button" class="world-view__chip" data-wv-travel-open>Viajar</button>
           <button type="button" class="world-view__chip" data-wv-camp>Acampar</button>
           <div class="world-view__hud" role="status" aria-label="Estado del personaje">
             <span class="world-view__hud-name">${escapeHtml(character.name)}</span>
@@ -288,10 +319,16 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   const jornadaEl = root.querySelector<HTMLElement>('[data-wv-jornada]')!;
   const hambreEl = root.querySelector<HTMLElement>('[data-wv-hambre]')!;
   const campBtn = root.querySelector<HTMLButtonElement>('[data-wv-camp]')!;
-  // HP máximo leído del PJ persistido, no recalculado: createCharacter ya
-  // aplicó los bonos de perk sobre hp.max. Recomputarlo aquí duplicaría la
-  // regla en la vista y derivaría en cuanto cambie la fórmula.
-  hpEl.textContent = `${character.hp.current}/${character.hp.max}`;
+  const travelBtn = root.querySelector<HTMLButtonElement>('[data-wv-travel-open]')!;
+  // HP leído del PJ vivo en cada repintado, no fijado al montar: desde 4e hay
+  // operaciones que tocan al PJ sin remontar la vista. El máximo NO se
+  // recalcula —`createCharacter` ya aplicó los bonos de perk sobre `hp.max`— y
+  // recomputarlo aquí duplicaría la regla y derivaría en cuanto cambie.
+  const pintarHp = (): void => {
+    const c = pj();
+    hpEl.textContent = `${c.hp.current}/${c.hp.max}`;
+  };
+  pintarHp();
 
   // --- Fatiga de jornada (§9.7, decisiones #98/#99/#100) --------------------
 
@@ -322,11 +359,12 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
 
   function pintarFatiga(): void {
     const estado = flow.getState();
-    const restantes = actionsRemaining(estado, character);
+    const restantes = actionsRemaining(estado, pj());
     const banda = bandaDeJornada(restantes);
-    const raciones = countRations(character);
+    const raciones = countRations(pj());
 
     dayEl.textContent = String(estado.day);
+    pintarHp();
 
     for (let i = 0; i < pips.length; i++) {
       pips[i]!.classList.toggle('world-view__pip--gastado', i >= restantes);
@@ -345,8 +383,8 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
     // 4d los dos se ponen en rojo a la vez, y juntos se leerían como una sola
     // señal. Informa, no instruye: en 4d no hay ninguna fuente de raciones,
     // así que sugerir "busca comida" sería mentir sobre lo que la build tiene.
-    if (raciones === 0 && character.alive) {
-      const noches = nightsUntilStarvation(character);
+    if (raciones === 0 && pj().alive) {
+      const noches = nightsUntilStarvation(pj());
       hambreEl.hidden = false;
       hambreEl.textContent =
         noches <= 1
@@ -358,7 +396,12 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
 
     // #99: acampar SIEMPRE se puede, incluso a 0 acciones. Si no, el PJ que
     // gasta su octava acción viajando se queda encerrado sin salida.
-    campBtn.disabled = !character.alive;
+    campBtn.disabled = !pj().alive;
+    // Viajar sí depende de la jornada, pero el chip NO se apaga por eso: la
+    // lista es también donde se lee cuánto cuesta cada destino y por qué no se
+    // puede ir (Q21). Apagar la puerta dejaría al jugador sin la explicación.
+    // Sólo la muerte la cierra.
+    travelBtn.disabled = !pj().alive;
   }
 
   campBtn.addEventListener('click', () => abrirCampamento());
@@ -372,22 +415,23 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   //
   // El flag lo pone main y no se infiere del estado a propósito: `mountWorldView`
   // sirve también al retorno de un combate, y ahí #99 prohíbe abrir nada.
-  if (deps.openCampOnMount === true && character.alive) {
+  if (deps.openCampOnMount === true && pj().alive) {
     abrirCampamento();
   }
 
   function abrirCampamento(): void {
-    if (!character.alive) return;
+    if (!pj().alive) return;
+    const c = pj();
     const estado = flow.getState();
     // Todos los números salen del motor. Escribir un 5 a mano aquí dejaría el
     // copy mintiendo en cuanto H6 recalibre FATIGUE_RULES.
-    const maxTrasPenalizacion = character.hp.max - FATIGUE_RULES.hpMaxPenaltyPerNight;
+    const maxTrasPenalizacion = c.hp.max - FATIGUE_RULES.hpMaxPenaltyPerNight;
     showCampModal(root, {
       data: {
         day: estado.day,
-        rations: countRations(character),
-        hpCurrent: character.hp.current,
-        hpMax: character.hp.max,
+        rations: countRations(c),
+        hpCurrent: c.hp.current,
+        hpMax: c.hp.max,
         actionsSpent: estado.actionsSpent,
         actionsTotal: TOTAL_ACCIONES,
         hpMaxPenalty: FATIGUE_RULES.hpMaxPenaltyPerNight,
@@ -395,7 +439,7 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
           1,
           Math.ceil(Math.max(0, maxTrasPenalizacion) * FATIGUE_RULES.hpCurrentPenaltyRatio),
         ),
-        nightsLeft: nightsUntilStarvation(character),
+        nightsLeft: nightsUntilStarvation(c),
       },
       onConfirm: () => onCamp(),
     });
@@ -421,6 +465,19 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
     pat.appendChild(svgEl('path', { d, class: 'world-view__scene-motif' }));
     defs.appendChild(pat);
   }
+  // Glifo del ancla (#103). Q46 pedía "sutil pero diferenciable": la marca no
+  // puede competir con el color de región ni con el marcador del PJ, pero tiene
+  // que leerse de un vistazo sobre las cinco paletas del dataset. Se resuelve
+  // con FORMA y no con color de relleno — un ancla dibujada, con trazo claro y
+  // halo oscuro debajo, legible igual sobre el ocre del Centro que sobre el
+  // verde de los Bosques.
+  const anchorSym = svgEl('symbol', { id: 'wv-icon-ancla', viewBox: '0 0 10 10' });
+  anchorSym.appendChild(
+    svgEl('path', { d: ANCHOR_PATH, class: 'world-view__anchor-halo' }),
+  );
+  anchorSym.appendChild(svgEl('path', { d: ANCHOR_PATH, class: 'world-view__anchor-path' }));
+  defs.appendChild(anchorSym);
+
   svg.appendChild(defs);
 
   const camera = svgEl('g', { class: 'world-view__camera' });
@@ -431,11 +488,15 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   // enfocado → marcador del PJ. El orden pinta el marcador siempre encima.
   const gridLayer = svgEl('g');
   const labelLayer = svgEl('g', { class: 'world-view__region-labels', 'aria-hidden': 'true' });
+  // Las anclas van sobre las etiquetas de región y bajo el detalle del grid
+  // enfocado: al acercarse a un grid, su interior manda sobre la marca.
+  const anchorLayer = svgEl('g', { class: 'world-view__anchors', 'aria-hidden': 'true' });
   const detailLayer = svgEl('g');
   const sceneLayer = svgEl('g', { 'aria-hidden': 'true' });
   const markerLayer = svgEl('g');
   camera.appendChild(gridLayer);
   camera.appendChild(labelLayer);
+  camera.appendChild(anchorLayer);
   camera.appendChild(detailLayer);
   camera.appendChild(sceneLayer);
   camera.appendChild(markerLayer);
@@ -851,7 +912,7 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
       actions.push({
         id: 'combatir',
         label: 'Combatir',
-        enabled: character.alive && !combatLaunched,
+        enabled: pj().alive && !combatLaunched,
         danger: true,
         primary: true,
         onActivate: () => enterCombat(poi),
@@ -972,6 +1033,33 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
     }
   };
 
+  // Marcas de ancla sobre el mapa (#104, Q18). Se reconstruye la capa entera en
+  // vez de mantener un nodo por grid: hay como mucho 7 anclas (6 del cap + el
+  // Hogar) sobre 180 grids, así que un `<use>` por ancla es más barato que 180
+  // nodos ocultos, y el repintado es raro — sólo cambia al plantar o recoger.
+  const paintAnchors = (): void => {
+    const state = flow.getState();
+    anchorLayer.innerHTML = '';
+    for (const gridId of state.anchors) {
+      const g = getGrid(gridId);
+      if (g === null) continue;
+      // Esquina superior derecha de la celda, sin tapar el centro: ahí va el
+      // marcador del PJ cuando coinciden, y dos marcas superpuestas en el
+      // mismo punto no se leen como dos cosas.
+      const size = 3;
+      anchorLayer.appendChild(
+        svgEl('use', {
+          href: '#wv-icon-ancla',
+          x: String(unitX(g.position.x) + CELL - size - 0.6),
+          y: String(unitY(g.position.y) + 0.6),
+          width: String(size),
+          height: String(size),
+          class: 'world-view__anchor',
+        }),
+      );
+    }
+  };
+
   const paintMarker = (): void => {
     const g = getGrid(flow.getState().currentGridId)!;
     const cx = unitX(g.position.x) + CELL / 2;
@@ -1052,15 +1140,45 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
         // Jornada agotada: el verbo se apaga y DICE por qué, con las raciones
         // que quedan dentro del copy (#99, Q3b + Q18). Nunca se abre un modal
         // solo: acampar sigue siendo un click del jugador en su botón.
-        const hayJornada = canPerform(flow.getState(), character, 'travel');
-        const raciones = countRations(character);
+        const hayJornada = canPerform(flow.getState(), pj(), 'travel');
+        const raciones = countRations(pj());
         const copySinJornada =
           raciones > 0
             ? `El día se acabó. Acampa para empezar el siguiente: te ${raciones === 1 ? 'queda 1 ración' : `quedan ${raciones} raciones`}.`
             : 'El día se acabó y no te quedan raciones. Acampar te costará vida.';
 
+        // Verbos de ancla (#103). Sólo sobre el grid donde estás: plantar y
+        // recoger son actos físicos, no clicks sobre el mapa. El copy del
+        // rechazo sale del motor vía `anchorRefusalCopy`, para que la vista no
+        // tenga una segunda opinión sobre por qué no se puede.
+        const anchorControl = ((): string => {
+          if (!isHere) return '';
+          if (hasAnchor(state, g.id)) {
+            if (isHomeAnchor(g.id)) {
+              return `<p class="world-view__panel-anchor">Aquí está tu ancla del Hogar. No se levanta.</p>`;
+            }
+            const estado = travelFlow.anchorStatus();
+            return `
+              <button type="button" class="world-view__panel-btn" data-wv-anchor-take>Recoger ancla</button>
+              <p class="world-view__panel-reason">Plantadas ${estado.placed}/${estado.cap}.</p>
+            `;
+          }
+          const check = canPlaceAnchorAt(state, pj(), g.id);
+          if (check.ok) {
+            return `<button type="button" class="world-view__panel-btn world-view__panel-btn--travel" data-wv-anchor-put>Plantar ancla</button>`;
+          }
+          // `not_here` no puede darse dentro de esta rama y `unknown_grid`
+          // tampoco: el resto sí, y todos merecen decir qué falta.
+          return `
+            <button type="button" class="world-view__panel-btn" disabled>Plantar ancla</button>
+            <p class="world-view__panel-reason">${escapeHtml(
+              anchorRefusalCopy(check.reason, travelFlow.anchorStatus().cap),
+            )}</p>
+          `;
+        })();
+
         const travelControl = isHere
-          ? `<p class="world-view__panel-here">Estás aquí.</p>`
+          ? `<p class="world-view__panel-here">Estás aquí.</p>${anchorControl}`
           : !adjacent
             ? `<button type="button" class="world-view__panel-btn" disabled title="Solo puedes viajar a grids colindantes.">Viajar aquí</button>
                <p class="world-view__panel-reason">Solo a grids colindantes.</p>`
@@ -1088,15 +1206,18 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
           if (focusedGridId === g.id) unfocusGrid(true);
           else focusGrid(g.id, true);
         });
+        panel.querySelector<HTMLButtonElement>('[data-wv-anchor-put]')?.addEventListener('click', () => {
+          const outcome = travelFlow.placeAnchorHere();
+          if (outcome.ok) repintarMundo();
+        });
+        panel.querySelector<HTMLButtonElement>('[data-wv-anchor-take]')?.addEventListener('click', () => {
+          const outcome = travelFlow.retrieveAnchorHere();
+          if (outcome.ok) repintarMundo();
+        });
         panel.querySelector<HTMLButtonElement>('[data-wv-travel]')?.addEventListener('click', () => {
           const outcome = flow.travelTo(g.id);
           if (outcome.moved) {
-            paintGridStates();
-            paintMarker();
-            paintChrome();
-            pintarFatiga();
-            paintPanel();
-            if (focusedGridId !== null) buildDetail(getGrid(focusedGridId)!);
+            repintarMundo();
           } else if (outcome.reason === 'no_actions') {
             // El botón ya estaba apagado por `hayJornada`; llegar aquí sería
             // una carrera entre repintados. Se repinta y se deja constancia.
@@ -1109,6 +1230,97 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
     }
 
     panel.innerHTML = `<p class="world-view__panel-hint">Selecciona un grid del mapa.</p>`;
+  };
+
+  // --- Sub-paso 4e: anclas y viaje rápido -----------------------------------
+
+  // Secuencia de repintado tras una mutación que cambia mundo Y PJ. Existe
+  // porque las tres operaciones de 4e la necesitan entera y el handler de
+  // `travelTo` ya la tenía escrita a mano: tres copias de la misma lista de
+  // seis llamadas es la forma de que una se quede corta.
+  const repintarMundo = (): void => {
+    paintGridStates();
+    paintAnchors();
+    paintMarker();
+    paintChrome();
+    pintarFatiga();
+    paintPanel();
+    if (focusedGridId !== null) buildDetail(getGrid(focusedGridId)!);
+  };
+
+  // Fundido corto del viaje (#104, Q23b). 200-300 ms, y se salta entero con
+  // `prefers-reduced-motion` como #91 exige: sin la guarda, el único efecto
+  // sería un parpadeo para quien pidió que no los hubiera.
+  const FADE_MS = 240;
+
+  const viajarCon = (gridId: string): void => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const aplicar = (): void => {
+      const outcome = travelFlow.fastTravelTo(gridId);
+      if (!outcome.ok) {
+        // El modal ya apagaba la fila; llegar aquí es una carrera entre
+        // repintados. Se repinta y se deja el mundo coherente.
+        repintarMundo();
+        return;
+      }
+      // Viajar deja al PJ mirando el grid destino: la cámara lo sigue en vez
+      // de quedarse donde estaba, que dejaría al jugador buscándose.
+      focusGrid(gridId, false);
+      repintarMundo();
+    };
+
+    if (reduce || destroyed) {
+      aplicar();
+      return;
+    }
+    viewport.classList.add('world-view__viewport--fading');
+    window.setTimeout(() => {
+      if (destroyed) return;
+      aplicar();
+      viewport.classList.remove('world-view__viewport--fading');
+    }, FADE_MS / 2);
+  };
+
+  const abrirViaje = (): void => {
+    const estado = flow.getState();
+    showTravelModal(root, {
+      destinations: travelFlow.destinations(),
+      rations: countRations(pj()),
+      actionsLeft: actionsRemaining(estado, pj()),
+      onTravel: (gridId) => viajarCon(gridId),
+    });
+  };
+
+  travelBtn.addEventListener('click', () => abrirViaje());
+
+  // Propuesta de plantar (#103, Q12c). Se dispara SÓLO en la transición: se
+  // guarda si el grid ya estaba Controlado antes de la acción y sólo se
+  // propone si acaba de dejar de no estarlo. Sin esta guarda, cada repintado
+  // sobre un grid ya Controlado volvería a abrir el modal.
+  const proponerAnclaSiProcede = (gridId: string, estabaControlado: boolean): void => {
+    if (estabaControlado) return;
+    const estado = flow.getState();
+    if (!isGridControlled(estado, gridId)) return;
+    if (hasAnchor(estado, gridId)) return;
+    // Si no puede plantarla (sin anclas, sin jornada, cap lleno) no se propone
+    // nada: un modal que sólo sirve para decir que no se puede es una
+    // interrupción, y el motivo ya está escrito en el panel del grid.
+    if (!canPlaceAnchorAt(estado, pj(), gridId).ok) return;
+
+    const grid = getGrid(gridId);
+    if (grid === null) return;
+    const status = travelFlow.anchorStatus();
+    showAnchorPrompt(root, {
+      regionName: regionById.get(grid.regionId)!.displayName,
+      gridId,
+      anchorsLeftAfter: countAnchorItems(pj()) - 1,
+      placed: status.placed,
+      cap: status.cap,
+      onConfirm: () => {
+        travelFlow.placeAnchorHere();
+        repintarMundo();
+      },
+    });
   };
 
   // --- Zoom semántico -------------------------------------------------------
@@ -1151,6 +1363,10 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
     const poi = getPOI(poiId);
     if (!poi) return;
 
+    // Se mide ANTES de entrar: entrar es lo que revela, así que preguntarlo
+    // después no distingue "acaba de completarse" de "ya lo estaba".
+    const estabaControladoAlEntrar = isGridControlled(flow.getState(), poi.gridId);
+
     // Un POI se mira desde dentro de su grid. Si el jugador llega aquí desde
     // la regional (restauración de vista persistida), el grid se monta antes.
     if (focusedGridId !== poi.gridId) {
@@ -1189,6 +1405,13 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
     paintPanel();
     paintScene();
     scene.focus({ preventScroll: true });
+
+    // Entrar revela el POI (§9.9) y el cuarto revelado deja el grid Controlado
+    // (#103): ése es el único momento en que la propuesta procede. Va al final
+    // del montaje y no en medio, para que el modal se abra sobre una vista ya
+    // pintada — si el jugador dice que no, queda mirando el POI que acaba de
+    // abrir y no una escena a medio construir.
+    proponerAnclaSiProcede(poi.gridId, estabaControladoAlEntrar);
   };
 
   // Desmonta la escena sin decidir a dónde va la cámara ni qué vista se
@@ -1574,7 +1797,7 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
       const poi = getPOI(poiId);
       // Sin jornada no se entra. El panel ya lo explica, así que aquí basta
       // con no hacer nada en vez de abrir un modal que nadie pidió (#99).
-      if (poi === null || !canPerform(flow.getState(), character, 'enter_poi')) return;
+      if (poi === null || !canPerform(flow.getState(), pj(), 'enter_poi')) return;
       focusPOI(poiId, true);
       return;
     }
@@ -1707,6 +1930,7 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
   // contenedor. Sin animación en el primer pintado.
 
   paintGridStates();
+  paintAnchors();
   paintMarker();
   paintChrome();
   paintPanel();

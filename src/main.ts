@@ -14,6 +14,7 @@ import { renderWorldView } from './render/world-view';
 import { startH2Flow } from './state/h2-flow';
 import { startCombatFlow } from './state/combat-flow';
 import { createWorldFlow } from './state/world-flow';
+import { createTravelFlow, type TravelFlowHandle } from './state/travel-flow';
 import { createRng } from './rules/dice';
 import { actionsRemaining, camp, hasRation } from './rules/fatigue';
 import { applyTextSize } from './render/options-panel';
@@ -40,7 +41,11 @@ let currentSession: Session | null = null;
 // pelea, y vuelve al MISMO flow con el PJ actualizado. Recargar el estado del
 // mundo desde Supabase al volver sería una ida y vuelta innecesaria y una
 // ventana en la que el POI recién completado aún no ha llegado al servidor.
-let worldSession: { flow: WorldFlowHandle; character: Character } | null = null;
+let worldSession: {
+  flow: WorldFlowHandle;
+  travelFlow: TravelFlowHandle;
+  character: Character;
+} | null = null;
 
 // Slot que se está jugando (§8.2, #10). Es estado de SESIÓN, no de partida: se
 // elige en el Menú principal cada vez que se entra y no se persiste en ningún
@@ -185,12 +190,26 @@ function startWorldRun(root: HTMLElement, character: Character): void {
         // vigente para resolver el techo de jornada.
         getCharacter: () => worldSession?.character ?? character,
       });
-      worldSession = { flow, character };
+      // Orquestador de 4e. Escribe el PJ además del mundo, y `world-flow` no
+      // sabe hacerlo: `persistCharacter` sustituye el PJ de la sesión y lo
+      // manda a backend por el mismo canal que usa acampar.
+      const travelFlow = createTravelFlow({
+        worldFlow: flow,
+        getCharacter: () => worldSession?.character ?? character,
+        persistCharacter: (c) => {
+          if (worldSession !== null) worldSession.character = c;
+          saveCharacterUpdate(c, requireActiveSlot()).catch((err) => {
+            console.error('main: saveCharacterUpdate falló tras una acción de viaje:', err);
+          });
+        },
+        catalog: ITEMS_BY_ID,
+      });
+      worldSession = { flow, travelFlow, character };
       // Arranque de sesión: es el único momento en que #99 permite montar el
       // modal de acampar ya abierto (sin confirmar), y sólo si el día está
       // agotado y no quedan raciones.
       const jornadaAgotada = actionsRemaining(worldState, character) === 0;
-      mountWorldView(root, flow, character, jornadaAgotada && !hasRation(character));
+      mountWorldView(root, flow, travelFlow, character, jornadaAgotada && !hasRation(character));
     })
     .catch((err) => {
       console.error('main: loadWorldState falló al salir al mundo:', err);
@@ -206,6 +225,7 @@ function startWorldRun(root: HTMLElement, character: Character): void {
 function mountWorldView(
   root: HTMLElement,
   flow: WorldFlowHandle,
+  travelFlow: TravelFlowHandle,
   character: Character,
   // #99 caso (c). Se pasa explícitamente y NO se infiere del estado: esta
   // función sirve también al retorno de un combate, y ahí #99 prohíbe abrir
@@ -213,11 +233,16 @@ function mountWorldView(
   openCampOnMount = false,
 ): void {
   mode = 'world';
-  worldSession = { flow, character };
+  worldSession = { flow, travelFlow, character };
   root.innerHTML = '';
   renderWorldView(root, {
     flow,
+    travelFlow,
     character,
+    // El PJ vivo, no el snapshot: desde 4e plantar, recoger y viajar mutan el
+    // inventario sin remontar la vista, y `persistCharacter` sustituye el de
+    // la sesión. Sin esto la vista contaría raciones y anclas viejas.
+    getCharacter: () => worldSession?.character ?? character,
     openCampOnMount,
     onEnterCombat: (poiId) => startPOICombat(root, poiId),
     onCamp: () => campAndRemount(root, flow),
@@ -278,7 +303,7 @@ function campAndRemount(root: HTMLElement, flow: WorldFlowHandle): void {
     return;
   }
 
-  mountWorldView(root, flow, result.character);
+  mountWorldView(root, flow, session.travelFlow, result.character);
   // La transición cubre el remonte, que resetea el pan/zoom manual (no se
   // persiste). Sin ella, despertar sería un salto de cámara sin explicación.
   root.querySelector<HTMLElement>('[data-world-view]')?.classList.add('world-view--amanece');
@@ -311,7 +336,7 @@ function startPOICombat(root: HTMLElement, poiId: string): void {
     }
     // `null` (salida sin guardar) conserva el PJ previo al combate: el slot no
     // se tocó, así que la vista tampoco debe pintar un PJ que no se guardó.
-    mountWorldView(root, session.flow, result?.character ?? session.character);
+    mountWorldView(root, session.flow, session.travelFlow, result?.character ?? session.character);
   });
   // Otra mitad del crossfade de #93: la vista de mundo se fue en fade, la de
   // combate entra en fade. Sin esto el salto sería un corte seco justo donde

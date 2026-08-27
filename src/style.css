@@ -5143,3 +5143,316 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
   fill: var(--c-hueso-descolorido);
   fill-opacity: 0.06;
 }
+
+/* =============================================================================
+   Sub-paso 4e — Anclas y viaje rápido (#103, #104)
+   ========================================================================== */
+
+/* Marca de ancla sobre el mapa regional (Q18, Q46: "sutil pero diferenciable").
+   Se resuelve con FORMA, no con color de relleno: el ancla tiene que leerse
+   igual sobre el ocre del Centro (#8B7355) que sobre el verde de los Bosques,
+   y un tinte plano se pierde en la mitad de las regiones. El halo oscuro
+   debajo es lo que separa la silueta del fondo sin pintar una chapa encima —
+   el mismo error que #91 corrigió en el marcador del PJ. */
+.world-view__anchor {
+  pointer-events: none;
+}
+
+.world-view__anchor-halo {
+  fill: none;
+  stroke: oklch(14% 0.012 145 / 0.85);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+}
+
+.world-view__anchor-path {
+  fill: var(--c-hueso-claro);
+}
+
+/* Dentro de un grid enfocado la marca estorba: el interior manda. */
+.world-view__svg--grid-focus .world-view__anchors {
+  opacity: 0.25;
+}
+
+.world-view__panel-anchor {
+  margin: 0;
+  flex-basis: 100%;
+  font-size: 0.78rem;
+  color: var(--c-corteza-palida);
+  border-left: 1px solid var(--c-corteza-palida);
+  padding-left: 8px;
+}
+
+/* Fundido del viaje (Q23b). 240 ms partidos en dos mitades: el mundo se apaga,
+   se cambia de grid, el mundo vuelve. Sólo la capa de mundo — el header y el
+   HUD no parpadean, por lo mismo que el tinte de noche los deja fuera.
+   `prefers-reduced-motion` no necesita regla aquí: la vista se salta el fundido
+   entero en JS, porque una transición de 0s seguiría dejando el parpadeo. */
+.world-view__viewport {
+  transition: opacity 120ms ease-out;
+}
+
+.world-view__viewport--fading {
+  opacity: 0;
+}
+
+/* -- Modal de destinos ----------------------------------------------------- */
+
+.travel-modal,
+.anchor-prompt {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 3vw, 32px);
+  background: oklch(14% 0.012 145 / 0.78);
+  animation: confirm-modal-fade 120ms ease-out both;
+}
+
+.travel-modal__panel,
+.anchor-prompt__panel {
+  width: 100%;
+  max-width: 32rem;
+  padding: clamp(20px, 3vw, 32px);
+  background: var(--c-tinta-tierra-baja);
+  color: var(--c-hueso-descolorido);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  font-family: Inter, 'Söhne', -apple-system, system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.travel-modal__eyebrow,
+.anchor-prompt__eyebrow {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-corteza-palida);
+}
+
+/* Serif display, igual que acampar: viajar cuesta comida y un tercio del día.
+   Es una decisión con precio, no un menú de navegación. */
+.travel-modal__title,
+.anchor-prompt__title {
+  margin: 0;
+  font-family: 'Cormorant Garamond', 'GT Sectra', 'Source Serif', Georgia, serif;
+  font-weight: 400;
+  font-size: 1.9rem;
+  line-height: 1.05;
+  color: var(--c-hueso-claro);
+}
+
+/* La despensa. Va arriba y no junto al botón porque es el contexto con el que
+   se lee la lista entera: sin saber cuántas raciones quedan, "1 ración" no
+   informa de nada (#104, Q20a). */
+.travel-modal__ledger {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--c-corteza-palida);
+}
+
+.travel-modal__num,
+.anchor-prompt__num {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.95em;
+  color: var(--c-hueso-claro);
+}
+
+.travel-modal__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--c-tinta-tierra-media);
+  border: 1px solid var(--c-tinta-tierra-media);
+  max-height: 22rem;
+  overflow-y: auto;
+}
+
+.travel-modal__row {
+  background: var(--c-tinta-tierra-baja);
+}
+
+.travel-modal__dest {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  font: inherit;
+  text-align: left;
+  color: var(--c-hueso-descolorido);
+  background: none;
+  border: 0;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+}
+
+.travel-modal__dest:hover:not(:disabled),
+.travel-modal__dest:focus-visible:not(:disabled) {
+  background: var(--c-tinta-tierra-media);
+  border-left-color: var(--c-verde-pantano);
+  outline: none;
+}
+
+.travel-modal__dest:disabled {
+  cursor: default;
+  color: var(--c-corteza-palida);
+}
+
+/* El destino bloqueado NO se esconde (Q22): esconder un ancla que el jugador
+   sabe que plantó le haría buscarla. Se apaga y dice por qué. */
+.travel-modal__row--blocked .travel-modal__dest {
+  opacity: 0.55;
+}
+
+.travel-modal__dest-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.travel-modal__dest-name {
+  font-size: 0.98rem;
+  color: var(--c-hueso-claro);
+}
+
+.travel-modal__dest:disabled .travel-modal__dest-name {
+  color: inherit;
+}
+
+.travel-modal__dest-id {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: var(--c-corteza-palida);
+}
+
+.travel-modal__tag {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-ambar-enfermo);
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  padding: 1px 5px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.travel-modal__dest-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.travel-modal__dist {
+  font-size: 0.8rem;
+  color: var(--c-corteza-palida);
+}
+
+.travel-modal__cost {
+  font-size: 0.78rem;
+  color: var(--c-hueso-descolorido);
+}
+
+.travel-modal__reason {
+  margin: 0;
+  padding: 0 14px 10px;
+  font-size: 0.75rem;
+  color: var(--c-ambar-enfermo);
+}
+
+.travel-modal__empty {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--c-corteza-palida);
+}
+
+.travel-modal__actions,
+.anchor-prompt__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.travel-modal__btn,
+.anchor-prompt__btn {
+  font: inherit;
+  font-size: 0.88rem;
+  color: var(--c-hueso-descolorido);
+  background: var(--c-tinta-tierra-media);
+  border: 1px solid var(--c-corteza-palida);
+  border-radius: 2px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.travel-modal__btn:hover,
+.anchor-prompt__btn:hover {
+  color: var(--c-hueso-claro);
+  border-color: var(--c-hueso-descolorido);
+}
+
+.anchor-prompt__btn--confirm {
+  background: var(--c-verde-musgo-profundo);
+  border-color: var(--c-verde-pantano);
+}
+
+/* -- Propuesta de plantar ancla -------------------------------------------- */
+
+.anchor-prompt__panel {
+  max-width: 28rem;
+}
+
+.anchor-prompt__body {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+/* Tabla: aquí los números se comparan entre ellos (plantadas contra cap,
+   coste contra lo que queda), así que van en mono. */
+.anchor-prompt__summary {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--c-tinta-tierra-media);
+  border: 1px solid var(--c-tinta-tierra-media);
+}
+
+.anchor-prompt__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 12px;
+  background: var(--c-tinta-tierra-baja);
+  font-size: 0.85rem;
+}
+
+.anchor-prompt__row dt {
+  color: var(--c-corteza-palida);
+}
+
+.anchor-prompt__row dd {
+  margin: 0;
+}
+
+.anchor-prompt__warn {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--c-ambar-enfermo);
+  border-left: 1px solid currentColor;
+  padding-left: 8px;
+}
