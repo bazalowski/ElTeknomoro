@@ -5120,3 +5120,20 @@ button[data-action="login"]:hover:not(:disabled) { background: #5a7fb8; }
   background: oklch(52% 0.11 30);
   border-color: oklch(52% 0.11 30);
 }
+
+/* Zonas de click de los POIs (corrección de 4b, 26/8/2026).
+   Invisibles pero sólidas: reparten el grid entero entre sus POIs para que no
+   haya que apuntar al icono. Sin `fill` explícito un rect SVG no recibe
+   eventos, así que se pinta transparente en vez de dejarlo sin relleno. */
+.world-view__poi-zone {
+  fill: transparent;
+  cursor: pointer;
+}
+
+/* Realce al pasar por encima de la zona: el POI de esa parte del grid se
+   ilumina, así el jugador ve a qué va a pinchar antes de pinchar. Sin esto,
+   una zona invisible es indistinguible de la zona muerta que sustituye. */
+.world-view__poi-zone:hover {
+  fill: var(--c-hueso-descolorido);
+  fill-opacity: 0.06;
+}

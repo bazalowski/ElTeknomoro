@@ -613,8 +613,62 @@ export function renderWorldView(root: HTMLElement, deps: WorldViewDeps): void {
       );
     }
 
+    // ZONAS DE CLICK: el grid entero se reparte entre sus POIs.
+    //
+    // El icono de un POI mide 1,5×1,5 dentro de un grid de 10×10. Con 4 POIs
+    // eso deja el 91% de la superficie muerta: el jugador tenía que apuntar a
+    // un icono pequeño y todo lo demás no respondía. Aquí cada una de las 25
+    // celdas del mini-grid se asigna al POI más cercano y recibe un rect
+    // transparente con su `data-poi-id`, así que pinchar en cualquier parte
+    // del grid selecciona el POI de esa zona.
+    //
+    // Se reparte por cercanía y no por cuadrantes fijos porque 4b.0 (#89) varió
+    // las posiciones dentro del 5×5: un reparto hardcodeado se desalinearía en
+    // cuanto un POI no esté donde el reparto supone.
+    //
+    // Van en su propia capa y ANTES que los POIs para que iconos y etiquetas se
+    // pinten encima: si un rect de zona quedara sobre la etiqueta del POI
+    // vecino, le robaría los clicks.
+    const pois = getPOIsByGrid(g.id);
+    if (pois.length > 0) {
+      const zonas = svgEl('g', { class: 'world-view__poi-zones' });
+      const jugadorAqui = state.currentGridId === g.id;
+
+      for (let my = 0; my < WORLD_CIFRAS.miniGridSize; my++) {
+        for (let mx = 0; mx < WORLD_CIFRAS.miniGridSize; mx++) {
+          // La celda del PJ se queda fuera del reparto: ahí está su retrato, y
+          // que pinchar en uno mismo seleccione un POI cualquiera es peor que
+          // que no haga nada.
+          if (jugadorAqui && mx === WORLD_CIFRAS.playerCell.x && my === WORLD_CIFRAS.playerCell.y) {
+            continue;
+          }
+
+          let cercano = pois[0]!;
+          let mejor = Infinity;
+          for (const poi of pois) {
+            const d = (poi.position.x - mx) ** 2 + (poi.position.y - my) ** 2;
+            if (d < mejor) {
+              mejor = d;
+              cercano = poi;
+            }
+          }
+
+          const zona = svgEl('rect', {
+            class: 'world-view__poi-zone',
+            x: String(ox + mx * SUB),
+            y: String(oy + my * SUB),
+            width: String(SUB),
+            height: String(SUB),
+          });
+          zona.dataset.poiId = cercano.id;
+          zonas.appendChild(zona);
+        }
+      }
+      group.appendChild(zonas);
+    }
+
     // POIs con niebla (§9.9).
-    for (const poi of getPOIsByGrid(g.id)) {
+    for (const poi of pois) {
       const px = ox + (poi.position.x + 0.5) * SUB;
       const py = oy + (poi.position.y + 0.5) * SUB;
       const poiState = getPOIState(state, poi.id);

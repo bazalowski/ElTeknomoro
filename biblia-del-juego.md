@@ -1936,6 +1936,14 @@ Lo que se añade es un **atajo por doble click** sobre el propio objeto, que es 
 
 Efecto colateral: el manejador de teclado del SVG duplicaba la lógica del click con otro cuerpo y ya habían divergido. Los dos caminos llaman ahora a las mismas dos funciones.
 
+**Zonas muertas del interior del grid corregidas (26/8/2026, reportado por Bazalo tras una sesión de prueba).** Dentro de un grid enfocado, el único punto clickable de un POI era su icono de **1,5×1,5** unidades dentro de un grid de **10×10**. Con 4 POIs por grid, eso dejaba el **91% de la superficie sin responder**: había que apuntar a un icono pequeño y el resto de la pantalla estaba muerto.
+
+Ahora **el grid entero se reparte entre sus POIs**: cada una de las 25 celdas del mini-grid 5×5 se asigna al POI más cercano y recibe una zona de click invisible. La superficie útil pasa del 9% al **96%** (la celda del PJ se queda fuera del reparto a propósito: ahí está su retrato, y que pinchar en uno mismo seleccionase un POI cualquiera sería peor que no hacer nada).
+
+El reparto es **por cercanía y no por cuadrantes fijos**, porque 4b.0 (#89) varió las posiciones dentro del 5×5 y un reparto hardcodeado se desalinearía. En `sur-001`, por ejemplo, los POIs están en (0,1), (3,1), (0,4) y (4,3), que no son cuadrantes.
+
+Las zonas llevan realce al pasar por encima: una zona invisible sin feedback es indistinguible de la zona muerta que sustituye.
+
 **Estado al cierre de v0.31:**
 
 - Biblia: 13 secciones, 102 decisiones numeradas, 0 bloqueantes abiertos.
